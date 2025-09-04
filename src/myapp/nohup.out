@@ -1,0 +1,14 @@
+
+> dev
+> vite
+
+Port 5173 is in use, trying another one...
+
+  VITE v7.1.4  ready in 434 ms
+
+  ➜  Local:   http://localhost:5174/
+  ➜  Network: use --host to expose
+
+  LARAVEL v12.28.1  plugin v2.0.1
+
+  ➜  APP_URL: http://localhost:8000
