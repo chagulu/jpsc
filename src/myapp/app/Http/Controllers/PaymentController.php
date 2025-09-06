@@ -23,7 +23,7 @@ class PaymentController extends Controller
         abort(500, 'Fee details not configured.');
     }
 
-    return view('payments.summary', [
+    return view('summary', [
         'application' => $application,
         'baseFee'     => $fee->base_fee,
         'gst'         => $fee->gst,
