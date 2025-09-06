@@ -44,25 +44,31 @@
       </div>
       <hr>
       <div class="row mb-3">
-        <div class="col-6 row-label">Base Fee:</div>
-        <div class="col-6 text-end amount">₹{{ number_format($baseFee, 2) }}</div>
-      </div>
-      <div class="row mb-3">
-        <div class="col-6 row-label">GST (18%):</div>
-        <div class="col-6 text-end amount">₹{{ number_format($gst, 2) }}</div>
-      </div>
-      <div class="row mb-3">
-        <div class="col-6 row-label">Total Payable:</div>
-        <div class="col-6 text-end amount fs-5">₹{{ number_format($total, 2) }}</div>
-      </div>
+    <div class="col-6 row-label">Base Fee:</div>
+    <div class="col-6 text-end amount">₹{{ number_format($baseFee, 2) }}</div>
+</div>
+<div class="row mb-3">
+    <div class="col-6 row-label">GST (18%):</div>
+    <div class="col-6 text-end amount">₹{{ number_format($gst, 2) }}</div>
+</div>
+<div class="row mb-3">
+    <div class="col-6 row-label">Total Payable:</div>
+    <div class="col-6 text-end amount fs-5">₹{{ number_format($total, 2) }}</div>
+</div>
+
 
       <div class="alert alert-info mt-4">
         Verify your details before proceeding. Once you proceed, you will be redirected to the secure Paytm payment page.
       </div>
 
-      <div class="d-grid">
-        <button class="btn btn-primary btn-lg">Proceed to Pay</button>
+      {{-- Centered Proceed Button --}}
+      <div class="text-center mt-3">
+        <form action="{{ route('payment.initiate', $application->id) }}" method="POST">
+          @csrf
+          <button type="submit" class="btn btn-primary btn-lg">Proceed to Pay</button>
+        </form>
       </div>
+
   </div>
 </div>
 @endsection

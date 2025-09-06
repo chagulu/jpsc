@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\JetApplicationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ApplicantController;
+ use App\Http\Controllers\PaymentController;
 
 
 /*
@@ -58,6 +59,14 @@ Route::post('/jet-application', [JetApplicationController::class, 'submitForm'])
 
 Route::get('/payment-summary/{id}', [JetApplicationController::class, 'summary'])
      ->name('payment.summary');
+
+    
+
+Route::get('payment/summary/{application}', [PaymentController::class, 'summary'])->name('payment.summary');
+Route::post('payment/initiate/{application}', [PaymentController::class, 'initiate'])->name('payment.initiate');
+Route::post('payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
+
+
 
 
     
