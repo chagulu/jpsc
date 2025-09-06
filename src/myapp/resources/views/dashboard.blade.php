@@ -96,39 +96,40 @@
                   </ul>
                 </div>
               </li>
-              <li class="nav-section">
+              {{-- <li class="nav-section">
                 <span class="sidebar-mini-icon">
                   <i class="fa fa-ellipsis-h"></i>
                 </span>
                 <h4 class="text-section">Components</h4>
-              </li>
+              </li> --}}
               <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#base">
+              <a data-bs-toggle="collapse" href="#base">
                   <i class="fas fa-layer-group"></i>
-                  <p>Base</p>
+                  <p>Application</p>
                   <span class="caret"></span>
-                </a>
-                <div class="collapse" id="base">
+              </a>
+              <div class="collapse" id="base">
                   <ul class="nav nav-collapse">
-                    <li>
-                      <a href="components/avatars.html">
-                        <span class="sub-item">Avatars</span>
-                      </a>
-                    </li>
-                </ul>
-                </div>
-              </li>
+                      <li>
+                          <a href="{{ route('applicants.index') }}">
+                            <span class="sub-item">Application List</span>
+                        </a>
+                      </li>
+                  </ul>
+              </div>
+            </li>
+
               <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarLayouts">
                   <i class="fas fa-th-list"></i>
-                  <p>Sidebar Layouts</p>
+                  <p>Payments</p>
                   <span class="caret"></span>
                 </a>
                 <div class="collapse" id="sidebarLayouts">
                   <ul class="nav nav-collapse">
                     <li>
                       <a href="sidebar-style-2.html">
-                        <span class="sub-item">Sidebar Style 2</span>
+                        <span class="sub-item">Payments</span>
                       </a>
                     </li>
                     

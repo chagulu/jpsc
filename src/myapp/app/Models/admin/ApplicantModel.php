@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,59 +9,62 @@ class ApplicantModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'applicants';
+    // Correct table name
+    protected $table = 'applications';
 
     // Mass assignable fields
     protected $fillable = [
-        // Personal Info
         'full_name',
         'gender',
         'date_of_birth',
-        'age_on_date',
-        'domicile_state',
-
-        // Category Info
-        'primary_category',
-        'caste_id',
+        'age',
+        'domicile_bihar',
+        'category',
+        'caste',
         'non_creamy_layer',
-
-        // Disability / PWD Info
         'is_pwd',
-        'nature_of_disability',
-        'minimum_40_disability',
-
-        // Ex-serviceman / Govt Service
+        'disability_nature',
+        'pwd_40_percent',
         'ex_serviceman',
-        'defence_service_years',
-        'defence_service_months',
-        'defence_service_days',
-        'ncc_service',
-        'bihar_gov_employee',
-        'attempts_after_gov_employee',
-
-        // Contact Info
+        'defence_service_year',
+        'defence_service_month',
+        'defence_service_day',
+        'worked_after_ncc',
+        'bihar_govt_employee',
+        'govt_service_years',
+        'attempts_after_emp',
         'mobile_no',
-        'confirm_mobile_no',
         'email',
-        'confirm_email',
-
-        // Captcha
-        'captcha_code',
+        'status',
+        'application_no',
+        'form_json',
+        'submission_stage',
+        'submitted_at',
+        'last_edit_at',
+        'ip_address',
+        'user_agent',
     ];
 
     // Optional: Casts
     protected $casts = [
         'date_of_birth' => 'date',
-        'age_on_date' => 'integer',
-        'defence_service_years' => 'integer',
-        'defence_service_months' => 'integer',
-        'defence_service_days' => 'integer',
-        'attempts_after_gov_employee' => 'integer',
+        'age' => 'integer',
+        'govt_service_years' => 'decimal:1',
+        'defence_service_year' => 'integer',
+        'defence_service_month' => 'integer',
+        'defence_service_day' => 'integer',
+        'pwd_40_percent' => 'boolean',
+        'domicile_bihar' => 'boolean',
+        'is_pwd' => 'boolean',
+        'worked_after_ncc' => 'boolean',
+        'submitted_at' => 'datetime',
+        'last_edit_at' => 'datetime',
+        'form_json' => 'array',
     ];
 
-    // Relationship with caste_details
-    public function caste()
+    // If you want a relation with payments
+    public function payments()
     {
-        return $this->belongsTo(CasteDetail::class, 'caste_id', 'id');
+        return $this->hasMany(Payment::class, 'application_id', 'id');
     }
 }
