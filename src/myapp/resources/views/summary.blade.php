@@ -1,10 +1,12 @@
-@extends('layouts.app') {{-- optional, if you have a layout --}}
+@extends('layouts.public')
+@section('title','Payment Summary')
 
 @section('content')
 <div class="container">
 
-  <div class="bssc-header d-flex align-items-center shadow-sm mb-3">
-      <img src="https://saraltyping.com/wp-content/uploads/2021/08/bihar-ssc-logo-1-1.webp" alt="BSSC Logo" style="height:100px;width:100px;">
+  {{-- Header --}}
+  <div class="bssc-header d-flex align-items-center shadow-sm">
+      <img src="https://saraltyping.com/wp-content/uploads/2021/08/bihar-ssc-logo-1-1.webp" alt="BSSC Logo">
       <div class="flex-grow-1 text-center">
         <div style="font-size: 1.15rem; font-weight: 700; color: #1b3869;">Bihar Staff Selection Commission</div>
         <div style="font-size: 0.98rem; color: #313131;">P.O.-VETERINARY COLLEGE, PATNA - 800014</div>
@@ -13,45 +15,49 @@
       </div>
   </div>
 
-  <div class="summary-card p-4 shadow rounded bg-white">
-      <h2 class="summary-title text-center mb-4">Payment Summary</h2>
+  {{-- Notice --}}
+  <div class="notice-board">
+    <div class="marquee">
+      <span>सभी आवेदकों को सूचित किया जाता है कि ऑनलाइन आवेदन प्रक्रिया 5 अक्टूबर 2025 तक खुली रहेगी | कृपया आगे की सूचना एवं अपडेट्स के लिए इस नोटिस बोर्ड पर ध्यान दें | For assistance, contact support@bssc.gov.in.</span>
+    </div>
+  </div>
 
-      <div class="row mb-2">
-        <div class="col-6 fw-semibold">Application ID:</div>
+  {{-- Summary card --}}
+  <div class="summary-card">
+      <h2 class="summary-title">Payment Summary</h2>
+
+      <div class="row mb-3">
+        <div class="col-6 row-label">Application ID:</div>
         <div class="col-6 text-end">{{ $application->application_no }}</div>
       </div>
-
-      <div class="row mb-2">
-        <div class="col-6 fw-semibold">Applicant Name:</div>
+      <div class="row mb-3">
+        <div class="col-6 row-label">Applicant Name:</div>
         <div class="col-6 text-end">{{ $application->full_name }}</div>
       </div>
-
-      <div class="row mb-2">
-        <div class="col-6 fw-semibold">Mobile:</div>
+      <div class="row mb-3">
+        <div class="col-6 row-label">Mobile:</div>
         <div class="col-6 text-end">{{ $application->mobile_no }}</div>
       </div>
-
-      <div class="row mb-2">
-        <div class="col-6 fw-semibold">Email:</div>
+      <div class="row mb-3">
+        <div class="col-6 row-label">Email:</div>
         <div class="col-6 text-end">{{ $application->email ?? '—' }}</div>
       </div>
-
       <hr>
-      <div class="row mb-2">
-        <div class="col-6 fw-semibold">Base Fee:</div>
-        <div class="col-6 text-end text-primary">₹{{ number_format($baseFee, 2) }}</div>
+      <div class="row mb-3">
+        <div class="col-6 row-label">Base Fee:</div>
+        <div class="col-6 text-end amount">₹{{ number_format($baseFee, 2) }}</div>
       </div>
-      <div class="row mb-2">
-        <div class="col-6 fw-semibold">GST (18%):</div>
-        <div class="col-6 text-end text-primary">₹{{ number_format($gst, 2) }}</div>
+      <div class="row mb-3">
+        <div class="col-6 row-label">GST (18%):</div>
+        <div class="col-6 text-end amount">₹{{ number_format($gst, 2) }}</div>
       </div>
-      <div class="row mb-2">
-        <div class="col-6 fw-semibold">Total Payable:</div>
-        <div class="col-6 text-end fs-5 text-primary">₹{{ number_format($total, 2) }}</div>
+      <div class="row mb-3">
+        <div class="col-6 row-label">Total Payable:</div>
+        <div class="col-6 text-end amount fs-5">₹{{ number_format($total, 2) }}</div>
       </div>
 
       <div class="alert alert-info mt-4">
-        Verify your details before proceeding. Once you click Pay, you’ll be redirected to the secure Paytm payment page.
+        Verify your details before proceeding. Once you proceed, you will be redirected to the secure Paytm payment page.
       </div>
 
       <div class="d-grid">
