@@ -52,5 +52,8 @@ Route::post('/jet-application', [JetApplicationController::class, 'submitForm'])
     ->name('jet.application.submit')
     ->middleware('throttle:5,1'); // Limit: 5 submissions per minute
 
+Route::get('/payment-summary/{id}', [JetApplicationController::class, 'summary'])
+     ->name('payment.summary');
+
 // Include authentication routes (Laravel Breeze / Jetstream)
 require __DIR__.'/auth.php';
