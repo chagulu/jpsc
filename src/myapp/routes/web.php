@@ -3,8 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\JetApplicationController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\ApplicantController;
  use App\Http\Controllers\PaymentController;
+  use App\Http\Controllers\Admin\ApplicationSearchController;
 
 
 /*
@@ -34,7 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     // List applicants with filters and pagination
-   Route::get('/applicants', [ApplicantController::class, 'index'])->name('applicants.index');
+   Route::get('/admin/applications', [ApplicationSearchController::class, 'index'])->name('admin.applications.index');
 });
 
 /*

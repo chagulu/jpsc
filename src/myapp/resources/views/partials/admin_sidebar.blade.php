@@ -29,7 +29,7 @@
                     </a>
                     <div class="collapse" id="app">
                         <ul class="nav nav-collapse">
-                            <li><a href="{{ route('applicants.index') }}"><span class="sub-item">Application List</span></a></li>
+                            <li><a href="{{ route('admin.applications.index') }}"><span class="sub-item">Application List</span></a></li>
                         </ul>
                     </div>
                 </li>
