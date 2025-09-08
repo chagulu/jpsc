@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// Default welcome page
+// Default route → Candidate login
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('candidate.login');  // Redirect to candidate login
 });
 
 // Dashboard (requires authentication and email verification)
@@ -84,5 +84,9 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
     });
 });
 
-// Include Laravel Breeze / Jetstream auth scaffolding
+/*
+|--------------------------------------------------------------------------
+| Include Laravel Breeze / Jetstream auth scaffolding (Admin login)
+|--------------------------------------------------------------------------
+*/
 require __DIR__ . '/auth.php';
