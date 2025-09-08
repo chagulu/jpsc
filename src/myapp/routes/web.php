@@ -5,6 +5,7 @@ use App\Http\Controllers\JetApplicationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Admin\ApplicationSearchController;
 use App\Http\Controllers\Auth\CandidateAuthController;
+use App\Http\Controllers\Auth\TwoFactorController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,12 +19,28 @@ Route::get('/', function () {
     return redirect()->route('candidate.login');  // Redirect to candidate login
 });
 
-// Dashboard (requires authentication and email verification)
+/*
+|--------------------------------------------------------------------------
+| 2FA for Admin Login
+|--------------------------------------------------------------------------
+*/
+Route::get('/2fa', [TwoFactorController::class, 'showForm'])->name('2fa.verify.form');
+Route::post('/2fa', [TwoFactorController::class, 'verifyOtp'])->name('2fa.verify');
+
+/*
+|--------------------------------------------------------------------------
+| Dashboard (Admin)
+|--------------------------------------------------------------------------
+*/
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Authenticated user routes (profile management)
+/*
+|--------------------------------------------------------------------------
+| Authenticated Admin routes (Profile, Applications)
+|--------------------------------------------------------------------------
+*/
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -43,17 +60,21 @@ Route::get('/jet-application', [JetApplicationController::class, 'showForm'])
     ->name('jet.application.form');
 
 Route::post('/jet-application', [JetApplicationController::class, 'submitForm'])
-    ->name('jet.application.submit')
-    ->middleware('throttle:5,1');
+    ->middleware('throttle:5,1')
+    ->name('jet.application.submit');
 
 Route::get('/profile-summary/{id}', [JetApplicationController::class, 'profileSummary'])
     ->name('profile.summary');
+
 Route::get('/payment-summary/{id}', [JetApplicationController::class, 'summary'])
     ->name('payment.summary');
 
-Route::get('payment/summary/{application}', [PaymentController::class, 'summary'])->name('payment.summary');
-Route::post('payment/initiate/{application}', [PaymentController::class, 'initiate'])->name('payment.initiate');
-Route::post('payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
+Route::get('payment/summary/{application}', [PaymentController::class, 'summary'])
+    ->name('payment.summary');
+Route::post('payment/initiate/{application}', [PaymentController::class, 'initiate'])
+    ->name('payment.initiate');
+Route::post('payment/callback', [PaymentController::class, 'callback'])
+    ->name('payment.callback');
 
 /*
 |--------------------------------------------------------------------------
@@ -62,7 +83,7 @@ Route::post('payment/callback', [PaymentController::class, 'callback'])->name('p
 */
 Route::prefix('candidate')->name('candidate.')->group(function () {
 
-    // Candidate login form (enter email / mobile / otr_no)
+    // Candidate login form
     Route::get('/login', function () {
         return view('candidate.login');
     })->name('login');

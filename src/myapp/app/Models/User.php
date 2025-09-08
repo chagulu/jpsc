@@ -2,47 +2,57 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
+     * Mass-assignable attributes.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $fillable = [
         'name',
         'email',
         'password',
+        'is_2fa_enabled',   // tinyint(1) in table
+        'otp',              // varchar(6)
+        'otp_expires_at',   // timestamp
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * Hidden for arrays / JSON.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
         'remember_token',
+        'otp', // hide OTP in API responses
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * Casts for attributes.
      *
-     * @return array<string, string>
+     * @var array<string,string>
      */
-    protected function casts(): array
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'otp_expires_at'    => 'datetime',
+        'is_2fa_enabled'    => 'boolean',
+    ];
+
+    /**
+     * Automatically hash passwords when set.
+     */
+    protected function setPasswordAttribute($value): void
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        if ($value) {
+            $this->attributes['password'] = bcrypt($value);
+        }
     }
 }
