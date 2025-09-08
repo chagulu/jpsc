@@ -31,7 +31,8 @@ class CandidateAuthController extends Controller
         if (! $candidate) {
             return response()->json([
                 'success' => false,
-                'message' => 'Candidate not found.'
+                'message' => 'Candidate not found. Please register first.',
+                'register_link' => route('jet.application.form')
             ], 404);
         }
 
@@ -49,7 +50,7 @@ class CandidateAuthController extends Controller
                 ->subject('Your Candidate Login OTP');
         });
 
-        // Send OTP via mobile (stub)
+        // TODO: Send OTP via SMS
         // SmsService::send($candidate->mobile_number, "Your OTP is {$otp}");
 
         return response()->json([
@@ -64,7 +65,7 @@ class CandidateAuthController extends Controller
     public function verifyOtp(Request $request)
     {
         $validated = $request->validate([
-            'identifier' => ['required'],
+            'identifier' => ['required'], // email / mobile / otr_no
             'otp' => ['required', 'digits:6'],
         ]);
 

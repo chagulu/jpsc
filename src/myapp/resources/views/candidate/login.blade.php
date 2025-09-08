@@ -28,6 +28,7 @@
       .notice{margin-top:.6rem;color:#007700;}
       .error{margin-top:.6rem;color:#cc0000;}
       #otp-section{display:none;}
+      .register-link{display:none;margin-top:.6rem;}
       .admin-link{display:block;margin-top:1.2rem;text-align:center;}
       ol{padding-left:1.3rem;}
   </style>
@@ -80,6 +81,9 @@
         <button type="submit">Request OTP</button>
       </form>
 
+      {{-- Register link if candidate not found --}}
+      <a id="register-link" href="{{ route('jet.application.form') }}" class="register-link">Candidate not found? Register here</a>
+
       {{-- Verify OTP --}}
       <div id="otp-section" class="mt-3">
         <form id="verify-otp-form">
@@ -107,6 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const otpSection = document.getElementById('otp-section');
   const verifyForm = document.getElementById('verify-otp-form');
   const msg = document.getElementById('message');
+  const registerLink = document.getElementById('register-link');
 
   function flash(text, isError = false) {
     msg.textContent = text;
@@ -129,6 +134,11 @@ document.addEventListener('DOMContentLoaded', function () {
         flash(data.message || 'OTP sent!');
         document.getElementById('verify_identifier').value = identifier;
         otpSection.style.display = 'block';
+        registerLink.style.display = 'none';
+      } else if (data.register_link) {
+        flash(data.message || 'Candidate not found.', true);
+        registerLink.href = data.register_link;
+        registerLink.style.display = 'block';
       } else {
         flash(data.message || 'Unable to send OTP', true);
       }
