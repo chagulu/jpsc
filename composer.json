@@ -1,0 +1,5 @@
+{
+    "require": {
+        "anandsiddharth/laravel-paytm-wallet": "^2.0"
+    }
+}
