@@ -2,19 +2,18 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\JetApplicationController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\Admin\ApplicationSearchController;
+use App\Http\Controllers\Auth\CandidateAuthController;
 use Illuminate\Support\Facades\Route;
- use App\Http\Controllers\PaymentController;
-  use App\Http\Controllers\Admin\ApplicationSearchController;
-
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
+| These routes are loaded by the RouteServiceProvider within the "web"
+| middleware group. Build something great!
 |
 */
 
@@ -33,43 +32,60 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
     // List applicants with filters and pagination
-   Route::get('/admin/applications', [ApplicationSearchController::class, 'index'])->name('admin.applications.index');
+    Route::get('/admin/applications', [ApplicationSearchController::class, 'index'])->name('admin.applications.index');
 });
 
 /*
 |--------------------------------------------------------------------------
 | JET Application Public Form Routes
 |--------------------------------------------------------------------------
-|
-| These routes expose a public JET application form. 
-| The GET route shows the form and the POST route handles form submission.
-| Throttle middleware limits submissions to 5 per minute to prevent abuse.
-|
 */
-
-// Show the JET application form
 Route::get('/jet-application', [JetApplicationController::class, 'showForm'])
     ->name('jet.application.form');
 
-// Handle the JET application form submission
 Route::post('/jet-application', [JetApplicationController::class, 'submitForm'])
     ->name('jet.application.submit')
     ->middleware('throttle:5,1'); // Limit: 5 submissions per minute
 
 Route::get('/payment-summary/{id}', [JetApplicationController::class, 'summary'])
-     ->name('payment.summary');
-
-    
+    ->name('payment.summary');
 
 Route::get('payment/summary/{application}', [PaymentController::class, 'summary'])->name('payment.summary');
 Route::post('payment/initiate/{application}', [PaymentController::class, 'initiate'])->name('payment.initiate');
 Route::post('payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 
+/*
+|--------------------------------------------------------------------------
+| Candidate OTP Login Routes
+|--------------------------------------------------------------------------
+|
+| Candidates use email + OTP (no password). We keep these separate from
+| default auth using the "candidate" guard defined in config/auth.php
+|
+*/
+Route::prefix('candidate')->name('candidate.')->group(function () {
 
+    // Step 1: Candidate enters email & requests OTP
+    Route::get('/login', function () {
+        return view('candidate.login');   // Blade form for email/OTP
+    })->name('login');
 
+    Route::post('/request-otp', [CandidateAuthController::class, 'requestOtp'])->name('requestOtp');
 
-    
+    // Step 2: Candidate submits OTP to log in
+    Route::post('/verify-otp', [CandidateAuthController::class, 'verifyOtp'])->name('verifyOtp');
 
-// Include authentication routes (Laravel Breeze / Jetstream)
-require __DIR__.'/auth.php';
+    // Authenticated candidate routes
+    Route::middleware('auth:candidate')->group(function () {
+        Route::get('/dashboard', function () {
+            return view('candidate.dashboard');
+        })->name('dashboard');
+
+        Route::post('/logout', [CandidateAuthController::class, 'logout'])->name('logout');
+    });
+});
+
+// Include Laravel Breeze / Jetstream auth scaffolding
+require __DIR__ . '/auth.php';
