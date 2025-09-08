@@ -1,0 +1,98 @@
+@extends('layouts.public')
+@section('title','Payment Summary')
+
+@section('content')
+<div class="container">
+
+  {{-- Header --}}
+  <div class="bssc-header d-flex align-items-center shadow-sm">
+      <img src="https://saraltyping.com/wp-content/uploads/2021/08/bihar-ssc-logo-1-1.webp" alt="BSSC Logo">
+      <div class="flex-grow-1 text-center">
+        <div style="font-size: 1.15rem; font-weight: 700; color: #1b3869;">Bihar Staff Selection Commission</div>
+        <div style="font-size: 0.98rem; color: #313131;">P.O.-VETERINARY COLLEGE, PATNA - 800014</div>
+        <div style="font-size: 0.93rem; color: #38406f;">Adv No.-05/25, 4th Graduate Level Combined Competitive Exam</div>
+        <div style="font-size: 0.93rem; color: #3b525e;">चतुर्थ स्नातक स्तरीय संयुक्त प्रतियोगिता परीक्षा</div>
+      </div>
+  </div>
+
+  {{-- Notice --}}
+  <div class="notice-board">
+    <div class="marquee">
+      <span>सभी आवेदकों को सूचित किया जाता है कि ऑनलाइन आवेदन प्रक्रिया 5 अक्टूबर 2025 तक खुली रहेगी | कृपया आगे की सूचना एवं अपडेट्स के लिए इस नोटिस बोर्ड पर ध्यान दें | For assistance, contact support@bssc.gov.in.</span>
+    </div>
+  </div>
+
+  {{-- Summary card --}}
+  <div class="summary-card">
+      <h2 class="summary-title">Confirm Profile Details</h2>
+
+      <!-- <div class="row mb-3">
+        <div class="col-6 row-label">Application ID:</div>
+        <div class="col-6 text-end">{{ $application->application_no }}</div>
+      </div> -->
+      <div class="row mb-3">
+        <div class="col-6 row-label">Aadhar Card Number:</div>
+        <div class="col-6 text-end">{{ $application->aadhaar_card_number }}</div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-6 row-label">Applicant Name:</div>
+        <div class="col-6 text-end">{{ $application->full_name }}</div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-6 row-label">Mobile:</div>
+        <div class="col-6 text-end">{{ $application->mobile_no }}</div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-6 row-label">Email:</div>
+        <div class="col-6 text-end">{{ $application->email}}</div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-6 row-label">Date of Birth:</div>
+        <div class="col-6 text-end">{{ $application->date_of_birth }}</div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-6 row-label">Gender:</div>
+        <div class="col-6 text-end">{{ $application->gender }}</div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-6 row-label">Father Name:</div>
+        <div class="col-6 text-end">{{ $application->father_name }}</div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-6 row-label">Mother Name:</div>
+        <div class="col-6 text-end">{{ $application->mother_name }}</div>
+      </div>
+      <hr>
+      <!-- <div class="row mb-3">
+    <div class="col-6 row-label">Base Fee:</div>
+    <div class="col-6 text-end amount">₹{{ number_format($baseFee, 2) }}</div>
+    </div> -->
+<!-- <div class="row mb-3">
+    <div class="col-6 row-label">GST (18%):</div>
+    <div class="col-6 text-end amount">₹{{ number_format($gst, 2) }}</div>
+</div> -->
+<!-- <div class="row mb-3">
+    <div class="col-6 row-label">Total Payable:</div>
+    <div class="col-6 text-end amount fs-5">₹{{ number_format($total, 2) }}</div>
+</div> -->
+
+
+      <!-- <div class="alert alert-info mt-4">
+        Verify your details before proceeding. Once you proceed, you will be redirected to the secure Paytm payment page.
+      </div> -->
+
+      {{-- Centered Proceed Button --}}
+      <div class="text-center mt-3">
+        <form action="{{ route('payment.initiate', $application->id) }}" method="POST">
+          @csrf
+          <button type="submit" class="btn btn-primary btn-lg">Proceed to Pay</button>
+        </form>
+      </div>
+
+  </div>
+</div>
+@endsection

@@ -46,6 +46,8 @@ Route::post('/jet-application', [JetApplicationController::class, 'submitForm'])
     ->name('jet.application.submit')
     ->middleware('throttle:5,1');
 
+Route::get('/profile-summary/{id}', [JetApplicationController::class, 'profileSummary'])
+    ->name('profile.summary');
 Route::get('/payment-summary/{id}', [JetApplicationController::class, 'summary'])
     ->name('payment.summary');
 
