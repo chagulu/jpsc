@@ -3,39 +3,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Candidate Login (Email + OTP)</title>
+  <title>Candidate Login (Email/Mobile/OTR + OTP)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <style>
-      body{
-          background:linear-gradient(135deg,#f8fafc 0%,#e3effd 100%);
-          font-family:'Segoe UI','Roboto',Arial,sans-serif;
-          margin:0;
-          padding:0;
-      }
-      .bssc-header{
-          background:#fff;
-          border-radius:8px;
-          box-shadow:0 2px 10px rgba(44,104,162,.11);
-          padding:14px 20px;
-          margin-bottom:.8rem;
-      }
+      body{background:linear-gradient(135deg,#f8fafc 0%,#e3effd 100%);font-family:'Segoe UI','Roboto',Arial,sans-serif;margin:0;padding:0;}
+      .bssc-header{background:#fff;border-radius:8px;box-shadow:0 2px 10px rgba(44,104,162,.11);padding:14px 20px;margin-bottom:.8rem;}
       .bssc-header img{height:80px;width:80px;object-fit:contain;margin-right:20px;}
-      .notice-board{
-          background:#16467f;
-          color:#fff;
-          font-weight:700;
-          padding:8px 0;
-          font-size:1rem;
-          margin-bottom:.8rem;
-      }
+      .notice-board{background:#16467f;color:#fff;font-weight:700;padding:8px 0;font-size:1rem;margin-bottom:.8rem;}
       .marquee{white-space:nowrap;overflow:hidden;box-sizing:border-box;}
       .marquee span{display:inline-block;padding-left:100%;animation:marquee 16s linear infinite;}
       @keyframes marquee{0%{transform:translate(0,0);}100%{transform:translate(-100%,0);}}
-
       .container-flex{display:flex;max-width:1200px;margin:0 auto;min-height:calc(100vh - 150px);}
       .info-pane{flex:7;background:#fff;border-radius:10px;box-shadow:0 2px 12px rgba(44,104,162,.10);padding:2rem;margin-right:1rem;}
       .login-pane{flex:3;background:#fff;border-radius:10px;box-shadow:0 2px 12px rgba(44,104,162,.10);padding:2rem;}
@@ -81,7 +62,7 @@
       <ol>
         <li>Visit the official website <a href="https://www.jpsc.gov.in" target="_blank">www.jpsc.gov.in</a></li>
         <li>Find the advertisement & click <strong>Apply Online</strong>.</li>
-        <li>Register using your valid email & mobile number.</li>
+        <li>Register using your valid email, mobile number, or OTR number.</li>
         <li>Fill the online form, upload photo & signature.</li>
         <li>Pay the application fee online and save the receipt.</li>
         <li>Keep a copy of the application for future reference.</li>
@@ -94,21 +75,23 @@
 
       {{-- Request OTP --}}
       <form id="request-otp-form">
-        <label for="email">Email address</label>
-        <input id="email" name="email" type="email" required>
+        <label for="identifier">Email / Mobile / OTR No</label>
+        <input id="identifier" name="identifier" type="text" required>
         <button type="submit">Request OTP</button>
       </form>
 
       {{-- Verify OTP --}}
-      <form id="otp-section" class="mt-3">
-        <label for="verify_email">Email</label>
-        <input id="verify_email" name="email" type="email" readonly>
+      <div id="otp-section" class="mt-3">
+        <form id="verify-otp-form">
+          <label for="verify_identifier">Email / Mobile / OTR No</label>
+          <input id="verify_identifier" name="identifier" type="text" readonly>
 
-        <label for="otp">Enter OTP</label>
-        <input id="otp" name="otp" type="text" maxlength="6" required>
+          <label for="otp">Enter OTP</label>
+          <input id="otp" name="otp" type="text" maxlength="6" required>
 
-        <button type="submit">Verify & Login</button>
-      </form>
+          <button type="submit">Verify & Login</button>
+        </form>
+      </div>
 
       <div id="message"></div>
 
@@ -121,7 +104,8 @@
 document.addEventListener('DOMContentLoaded', function () {
   const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
   const requestForm = document.getElementById('request-otp-form');
-  const otpForm = document.getElementById('otp-section');
+  const otpSection = document.getElementById('otp-section');
+  const verifyForm = document.getElementById('verify-otp-form');
   const msg = document.getElementById('message');
 
   function flash(text, isError = false) {
@@ -132,19 +116,19 @@ document.addEventListener('DOMContentLoaded', function () {
   // Request OTP
   requestForm.addEventListener('submit', function (e) {
     e.preventDefault();
-    const email = document.getElementById('email').value;
+    const identifier = document.getElementById('identifier').value;
 
     fetch("{{ route('candidate.requestOtp') }}", {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf },
-      body: JSON.stringify({ email })
+      body: JSON.stringify({ identifier })
     })
     .then(res => res.json())
     .then(data => {
       if (data.success) {
         flash(data.message || 'OTP sent!');
-        document.getElementById('verify_email').value = email;
-        otpForm.style.display = 'block';
+        document.getElementById('verify_identifier').value = identifier;
+        otpSection.style.display = 'block';
       } else {
         flash(data.message || 'Unable to send OTP', true);
       }
@@ -153,15 +137,15 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // Verify OTP
-  otpForm.addEventListener('submit', function (e) {
+  verifyForm.addEventListener('submit', function (e) {
     e.preventDefault();
-    const email = document.getElementById('verify_email').value;
+    const identifier = document.getElementById('verify_identifier').value;
     const otp = document.getElementById('otp').value;
 
     fetch("{{ route('candidate.verifyOtp') }}", {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf },
-      body: JSON.stringify({ email, otp })
+      body: JSON.stringify({ identifier, otp })
     })
     .then(res => res.json())
     .then(data => {
