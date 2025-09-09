@@ -106,47 +106,59 @@ class JetApplicationController extends Controller
     try {
         $applicationNo = 'APP-' . time() . '-' . rand(1000, 9999);
 
-        // 1️⃣ Create candidate
-        $candidate = Candidate::create([
-            'email'         => $request->emailId,
-            'mobile_number' => $request->mobileNumber,
-        ]);
+        // 1️⃣ Check if candidate exists by email or mobile
+        $candidate = Candidate::where('email', $request->emailId)
+                              ->orWhere('mobile_number', $request->mobileNumber)
+                              ->first();
 
-        // 2️⃣ Prepare application attributes
+        if (!$candidate) {
+            // Create candidate if not exists
+            $candidate = Candidate::create([
+                'email'         => $request->emailId,
+                'mobile_number' => $request->mobileNumber,
+            ]);
+        }
+
+        // 2️⃣ Check if candidate already has an application
+        if (JetApplicationModel::where('candidate_id', $candidate->id)->exists()) {
+            return back()->withErrors(['db' => 'You have already submitted an application.'])->withInput();
+        }
+
+        // 3️⃣ Prepare application attributes
         $attributes = [
-            'application_no' => $applicationNo,
-            'candidate_id'   => $candidate->id,
-            'full_name'      => $request->name,
-            'gender'         => $request->gender,
-            'date_of_birth'  => $request->dateOfBirth,
-            'age'            => Carbon::parse($request->dateOfBirth)
-                                  ->diffInYears(Carbon::create(2025, 8, 1)),
-            'mobile_no'      => $request->mobileNumber,
-            'email'          => $request->emailId,
-            'domicile_bihar' => $request->domicileBihar ?? 0,
-            'category'       => $request->category ?? 'UR',
-            'caste'          => $request->caste ?? null,
-            'non_creamy_layer'=> $request->nonCreamyLayer ?? 'No',
-            'is_pwd'         => $request->isPwd ?? 0,
-            'disability_nature'=> $request->disabilityNature ?? null,
-            'pwd_40_percent' => $request->pwd40Percent ?? 0,
-            'ex_serviceman'  => $request->exServiceman ?? 'No',
-            'defence_service_year' => $request->defenceServiceYear ?? null,
-            'defence_service_month'=> $request->defenceServiceMonth ?? null,
-            'defence_service_day'  => $request->defenceServiceDay ?? null,
-            'worked_after_ncc'     => $request->workedAfterNcc ?? 0,
-            'bihar_govt_employee'  => $request->biharGovtEmployee ?? 'No',
-            'govt_service_years'   => $request->govtServiceYears ?? null,
-            'attempts_after_emp'   => $request->attemptsAfterEmp ?? null,
-            'status'               => 'Draft',
-            'submission_stage'     => 'Draft',
-            'submitted_at'         => null,
-            'last_edit_at'         => now(),
-            'ip_address'           => request()->ip(),
-            'user_agent'           => request()->userAgent(),
+            'application_no'    => $applicationNo,
+            'candidate_id'      => $candidate->id,
+            'full_name'         => $request->name,
+            'gender'            => $request->gender,
+            'date_of_birth'     => $request->dateOfBirth,
+            'age'               => Carbon::parse($request->dateOfBirth)
+                                        ->diffInYears(Carbon::create(2025, 8, 1)),
+            'mobile_no'         => $request->mobileNumber,
+            'email'             => $request->emailId,
+            'domicile_bihar'    => $request->domicileBihar ?? 0,
+            'category'          => $request->category ?? 'UR',
+            'caste'             => $request->caste ?? null,
+            'non_creamy_layer'  => $request->nonCreamyLayer ?? 'No',
+            'is_pwd'            => $request->isPwd ?? 0,
+            'disability_nature' => $request->disabilityNature ?? null,
+            'pwd_40_percent'    => $request->pwd40Percent ?? 0,
+            'ex_serviceman'     => $request->exServiceman ?? 'No',
+            'defence_service_year'  => $request->defenceServiceYear ?? null,
+            'defence_service_month' => $request->defenceServiceMonth ?? null,
+            'defence_service_day'   => $request->defenceServiceDay ?? null,
+            'worked_after_ncc'      => $request->workedAfterNcc ?? 0,
+            'bihar_govt_employee'   => $request->biharGovtEmployee ?? 'No',
+            'govt_service_years'    => $request->govtServiceYears ?? null,
+            'attempts_after_emp'    => $request->attemptsAfterEmp ?? null,
+            'status'                => 'Draft',
+            'submission_stage'      => 'Draft',
+            'submitted_at'          => null,
+            'last_edit_at'          => now(),
+            'ip_address'            => $request->ip(),
+            'user_agent'            => $request->userAgent(),
         ];
 
-        // 3️⃣ Create application
+        // 4️⃣ Create the application
         $application = JetApplicationModel::create($attributes);
 
         return redirect()
@@ -166,6 +178,7 @@ class JetApplicationController extends Controller
         return back()->withErrors(['db' => $msg])->withInput();
     }
 }
+
 
 
 
