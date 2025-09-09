@@ -7,8 +7,10 @@ use App\Models\Candidate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
+use Carbon\Carbon;
 
 class JetApplicationController extends Controller
 {
@@ -17,8 +19,77 @@ class JetApplicationController extends Controller
      */
     public function showForm()
     {
-        // return view('jet_application');
         return view('jet_application_form1');
+    }
+
+    /**
+     * Send OTP for mobile/email
+     */
+    public function sendOtp(Request $request)
+    {
+        $request->validate([
+            'type'  => 'required|in:mobile,email',
+            'value' => 'required|string'
+        ]);
+
+        $otp = rand(100000, 999999); // 6 digit OTP
+        $key = "otp_{$request->type}_{$request->value}";
+
+        // Store in cache (5 minutes)
+        Cache::put($key, $otp, now()->addMinutes(5));
+
+        if ($request->type === 'mobile') {
+            // TODO: integrate SMS service like Twilio or MSG91
+            Log::info("Sending OTP {$otp} to mobile {$request->value}");
+        } else {
+            // Send via email
+            Mail::raw("Your OTP is: $otp", function ($message) use ($request) {
+                $message->to($request->value)
+                        ->subject("Your OTP Code");
+            });
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "OTP sent successfully to {$request->type}.",
+        ]);
+    }
+
+    /**
+     * Verify OTP for mobile/email
+     */
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'type'  => 'required|in:mobile,email',
+            'value' => 'required|string',
+            'otp'   => 'required|numeric'
+        ]);
+
+        $key = "otp_{$request->type}_{$request->value}";
+        $cachedOtp = Cache::get($key);
+
+        if (!$cachedOtp) {
+            return response()->json([
+                'success' => false,
+                'message' => 'OTP expired or not found',
+            ], 400);
+        }
+
+        if ($cachedOtp != $request->otp) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid OTP',
+            ], 400);
+        }
+
+        // OTP verified → remove from cache
+        Cache::forget($key);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'OTP verified successfully',
+        ]);
     }
 
     /**
@@ -26,7 +97,6 @@ class JetApplicationController extends Controller
      */
     public function submitForm(Request $request)
     {
-        // 1. Log incoming payload for debugging
         Log::info('Incoming application payload', [
             'payload' => $request->all(),
             'ip'      => $request->ip(),
@@ -36,19 +106,15 @@ class JetApplicationController extends Controller
         try {
             $applicationNo = 'APP-' . time() . '-' . rand(1000, 9999);
 
-            // Age calculation (optional)
             $age = Carbon::parse($request->dob)
                         ->diffInYears(Carbon::create(2025, 8, 1));
 
-            // Wrap in transaction
             $application = DB::transaction(function () use ($request, $applicationNo) {
-                // 1. Insert into candidates table
                 Candidate::create([
                     'email'         => $request->emailId,
                     'mobile_number' => $request->mobileNumber,
                 ]);
 
-                // 2. Prepare attributes for applications table
                 $attributes = [
                     'application_no'              => $applicationNo,
                     'aadhaar_card_number'         => $request->aadhaarCardNumber,
@@ -69,23 +135,19 @@ class JetApplicationController extends Controller
                     'alternate_number'            => $request->alternateNumber,
                 ];
 
-                // 3. Insert into applications table
                 return JetApplicationModel::create($attributes);
             });
 
-            // 4. Check if application saved successfully
             if (!$application || !$application->id) {
                 Log::error('Insert failed: no ID returned', ['data' => $request->all()]);
                 return back()->withErrors(['db' => 'Failed to save application.'])->withInput();
             }
 
-            // Success → redirect to summary page
             return redirect()
                 ->route('profile.summary', $application->id)
                 ->with('success', 'Application saved successfully.');
 
         } catch (\Throwable $e) {
-            // 5. Handle errors
             Log::error('Error inserting application: '.$e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
                 'data'  => $request->all(),
@@ -99,19 +161,12 @@ class JetApplicationController extends Controller
         }
     }
 
-
-    /**
-     * Edit
-     */
     public function edit($id)
     {
         $application = JetApplicationModel::findOrFail($id);
         return view('applications.edit', compact('application'));
     }
 
-    /**
-     * Update
-     */
     public function update(Request $request, $id)
     {
         $rules = [
@@ -142,9 +197,6 @@ class JetApplicationController extends Controller
             ->with('success', 'Application updated successfully.');
     }
 
-    /**
-     * Payment summary page
-     */
     public function summary($id)
     {
         $application = JetApplicationModel::findOrFail($id);

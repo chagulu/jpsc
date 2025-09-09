@@ -75,6 +75,8 @@ Route::post('payment/initiate/{application}', [PaymentController::class, 'initia
     ->name('payment.initiate');
 Route::post('payment/callback', [PaymentController::class, 'callback'])
     ->name('payment.callback');
+Route::post('/send-otp', [JetApplicationController::class, 'sendOtp'])->name('otp.send');
+Route::post('/verify-otp', [JetApplicationController::class, 'verifyOtp'])->name('otp.verify');
 
 /*
 |--------------------------------------------------------------------------

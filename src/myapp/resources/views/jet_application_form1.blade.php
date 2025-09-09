@@ -102,33 +102,33 @@
                   <div class="form-group row">
                     <label for="mobileNumber" class="col-sm-3 col-form-label">Mobile Number <span class="required">*</span></label>
                     <div class="col-sm-4">
-                      <input type="text" class="form-control" id="mobileNumber" name="mobileNumber" maxlength="10" onchange="validateMobile()" oninput="this.value=this.value.replace(/[^0-9]/g,'')" placeholder="Mobile Number">
+                     <input type="text" id="mobileNumber" onchange="validateMobile(this)" />
                     </div>
                   </div>
 
-                  <!-- Confirm Mobile -->
+                  <!-- Confirm Mobile + OTP -->
                   <div class="form-group row">
                     <label class="col-sm-3 col-form-label">Confirm Mobile Number<span class="required">*</span></label>
-                    <div class="col-sm-4" id="confirmDiv">
-                      <input type="text" class="form-control" id="confirmMobileNumber" name="confirmMobileNumber" maxlength="10" onchange="validateConfirmMobileNumber()" oninput="this.value=this.value.replace(/[^0-9]/g,'')" placeholder="Confirm mobile Number" >
-                    </div>
+                    <div class="col-sm-4">
+                    <input type="text" id="confirmMobileNumber" onchange="validateMobile(this)" />
+
+
+                  </div>
                     <div class="col-sm-2" id="verifiedTickMobile" style="display:none;">
                       <h2 style="color:green">✔</h2>
                     </div>
-                    <div class="col-sm-2" id="otpmobile" style="display:none;">
+                    <div class="col-sm-2" id="otpFieldMobile" style="display:none;">
                       <input type="text" class="form-control" id="mobileNumberOtp" name="mobileNumberOtp" placeholder="Enter OTP.." maxlength="6">
                     </div>
-                    <div class="col-sm-2" id="otpmobile">
-                      <input type="button" class="btn btn-primary" id="sendOtpMobile" onclick="sendOtpForOtr('mobile','send')" value="Send OTP">
+                    <div class="col-sm-2">
+                      <input type="button" class="btn btn-primary" id="sendOtpMobile" value="Send OTP">
                     </div>
-                    <div id="verifyOtp" style="display:none;">
-                      <input type="button" class="btn btn-primary" id="verifyOtpMobile" onclick="sendOtpForOtr('mobile','verify')" value="Verify">
+                    <div id="verifyOtpMobileDiv" style="display:none;">
+                      <input type="button" class="btn btn-primary" id="verifyOtpMobile" value="Verify">
                     </div>
                   </div>
 
-                  
-
-                  <!-- Email -->
+                  <!-- Email + OTP -->
                   <div class="form-group row">
                     <label for="emailId" class="col-sm-3 col-form-label">Email ID<span class="required">*</span></label>
                     <div class="col-sm-4">
@@ -145,13 +145,13 @@
                       <h2 style="color:green">✔</h2>
                     </div>
                     <div class="col-sm-2" id="otpField" style="display:none;">
-                      <input type="text" class="form-control" id="otpInput" name="otp" placeholder="OTP">
+                      <input type="text" class="form-control" id="otpInput" name="otp" placeholder="OTP" maxlength="6">
                     </div>
                     <div class="col-sm-2">
-                      <input type="button" class="btn btn-primary" id="sendOtpButton" value="Send OTP" onclick="sendOtpForOtr('email','send')">
+                      <input type="button" class="btn btn-primary" id="sendOtpButton" value="Send OTP">
                     </div>
                     <div id="verifyOtpEmail" style="display:none;">
-                      <input type="button" class="btn btn-primary" onclick="sendOtpForOtr('email','verify')" value="Verify">
+                      <input type="button" class="btn btn-primary" id="verifyOtpEmailBtn" value="Verify">
                     </div>
                   </div>
 
@@ -372,9 +372,8 @@
 </a>
 
 <!-- Scripts -->
-<script src="/otr_new/vendor/jquery/jquery.min.js"></script>
-<script src="/otr_new/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="/otr_new/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <input type="hidden" id="start">
 <input type="hidden" id="stop">
@@ -412,17 +411,7 @@
         return true;
     }
 
-    /* Mobile Validation */
-    function validateMobile() {
-        const mobile = document.getElementById("mobileNumber").value;
-        if (!/^[6-9]\d{9}$/.test(mobile)) {
-            alert("Enter a valid 10-digit mobile number starting with 6-9.");
-            document.getElementById("mobileNumber").value = "";
-            document.getElementById("mobileNumber").focus();
-            return false;
-        }
-        return true;
-    }
+   
 
     function validateConfirmMobileNumber() {
         const mobile = document.getElementById("mobileNumber").value;
@@ -552,7 +541,7 @@
     /* OTP Handling Stub (you can connect backend later) */
     function sendOtpForOtr(type, action) {
         if (action === "send") {
-            alert("OTP sent to " + type);
+            
         } else if (action === "verify") {
             alert("OTP verified for " + type);
         }
@@ -638,7 +627,7 @@
         }
 
         // Simulate OTP send
-        alert("OTP sent to " + mobile);
+        
 
         // Show OTP input + verify button
         $("#otpFieldMobile").show();
@@ -668,7 +657,7 @@
         }
 
         // Simulate OTP verification
-        alert("Mobile OTP Verified Successfully!");
+       
 
         $("#verifiedTickMobile").show(); // Show green tick
         $("#otpFieldMobile").hide();     // Hide OTP input
@@ -688,7 +677,7 @@
         }
 
         // Simulate OTP send
-        alert("OTP sent to " + email);
+       
 
         // Show OTP field + Verify button
         $("#otpField").show();
@@ -718,7 +707,7 @@
         }
 
         // Simulate OTP verification
-        alert("Email OTP Verified Successfully!");
+       
 
         $("#verifiedTickEmail").show(); // Show green tick
         $("#otpField").hide();          // Hide OTP input
@@ -848,7 +837,256 @@
           window.location.href = "/"; // Redirect to home page
       }
   }
+
+  /* ---------------- MOBILE OTP ---------------- */
+$("#sendOtpMobile").on("click", function () {
+    let mobile = $("#confirmMobileNumber").val().trim();
+    if (!/^[6-9]\d{9}$/.test(mobile)) {
+        alert("Enter valid 10-digit mobile number starting with 6-9.");
+        return;
+    }
+    
+    $("#otpFieldMobile").show();
+    $("#verifyOtpMobileDiv").show();
+    let timer = 30, btn = $(this);
+    btn.prop("disabled", true).val("Resend in " + timer);
+    let interval = setInterval(function () {
+        timer--; btn.val("Resend in " + timer);
+        if (timer <= 0) { clearInterval(interval); btn.prop("disabled", false).val("Send OTP"); }
+    }, 1000);
+});
+
+$("#verifyOtpMobile").on("click", function () {
+    let otp = $("#mobileNumberOtp").val().trim();
+    if (!/^\d{6}$/.test(otp)) { alert("Enter valid 6-digit OTP."); return; }
+    
+    $("#verifiedTickMobile").show(); $("#otpFieldMobile").hide(); $("#verifyOtpMobileDiv").hide(); $("#sendOtpMobile").hide();
+});
+
+/* ---------------- EMAIL OTP ---------------- */
+$("#sendOtpButton").on("click", function () {
+    let email = $("#confirmEmailId").val().trim();
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!pattern.test(email)) { alert("Enter valid email."); return; }
+    
+    $("#otpField").show(); $("#verifyOtpEmail").show();
+    let timer = 30, btn = $(this);
+    btn.prop("disabled", true).val("Resend in " + timer);
+    let interval = setInterval(function () {
+        timer--; btn.val("Resend in " + timer);
+        if (timer <= 0) { clearInterval(interval); btn.prop("disabled", false).val("Send OTP"); }
+    }, 1000);
+});
+
+$("#verifyOtpEmailBtn").on("click", function () {
+    let otp = $("#otpInput").val().trim();
+    if (!/^\d{6}$/.test(otp)) { alert("Enter valid 6-digit OTP."); return; }
+    alert("Email OTP Verified!");
+    $("#verifiedTickEmail").show(); $("#otpField").hide(); $("#verifyOtpEmail").hide(); $("#sendOtpButton").hide();
+});
+
+window.setDefaultData = function() {
+  
+
+    // Example: reset form fields (customize as needed)
+    const mobile = document.getElementById("mobile");
+    const confirmMobile = document.getElementById("confirm_mobile");
+
+    if (mobile && confirmMobile) {
+        mobile.value = "";
+        confirmMobile.value = "";
+    }
+};
+
+window.loadDefaultData = function() {
+   // Example: set some default values in form fields
+    const name = document.getElementById("name");
+    const email = document.getElementById("email");
+
+    if (name && email) {
+        name.value = "Test User"; // remove or customize
+        email.value = "test@example.com"; // remove or customize
+    }
+};
+
+window.getSupportDocumentUploadData = function () {
+    
+
+    // Example placeholder logic
+    // Later you can fetch from API or load from DB if needed
+    const supportDocField = document.getElementById("supportDocument");
+    if (supportDocField) {
+        console.log("Support document field found");
+        // Example: set default value or placeholder
+        supportDocField.placeholder = "Upload your support document here";
+    }
+};
+
+
+
+
+
+    // Validate Confirm Mobile Number
+    window.validateConfirmMobileNumber = function (input) {
+        console.log("validateConfirmMobileNumber() called");
+        const mobileField = document.getElementById("mobile"); // make sure your mobile input has id="mobile"
+        if (mobileField && input.value !== mobileField.value) {
+            alert("Mobile numbers do not match.");
+            input.value = "";
+            input.focus();
+        }
+    };
+
+/* ------------------ MOBILE OTP HANDLING ------------------ */
+$("#sendOtpMobile").on("click", function () {
+    let mobile = $("#confirmMobileNumber").val().trim();
+
+    if (!/^[6-9]\d{9}$/.test(mobile)) {
+        alert("Please enter a valid 10-digit mobile number starting with 6-9.");
+        return;
+    }
+
+    $.ajax({
+        url: "/send-otp",
+        method: "POST",
+        data: {
+            type: "mobile",
+            value: mobile,   // ✅ backend expects "value"
+            _token: "{{ csrf_token() }}"
+        },
+        success: function (response) {
+            alert("OTP sent to " + mobile);
+
+            $("#otpFieldMobile").show();
+            $("#verifyOtpMobileDiv").show();
+
+            // Start resend countdown
+            let timer = 30;
+            let btn = $("#sendOtpMobile");
+            btn.prop("disabled", true).val("Resend in " + timer);
+
+            let interval = setInterval(function () {
+                timer--;
+                btn.val("Resend in " + timer);
+                if (timer <= 0) {
+                    clearInterval(interval);
+                    btn.prop("disabled", false).val("Send OTP");
+                }
+            }, 1000);
+        },
+        error: function (xhr) {
+            alert("Failed to send OTP: " + xhr.responseText);
+        }
+    });
+});
+
+$("#verifyOtpMobile").on("click", function () {
+    let otp = $("#mobileNumberOtp").val().trim();
+    let mobile = $("#confirmMobileNumber").val().trim();
+
+    if (!/^\d{6}$/.test(otp)) {
+        alert("Please enter a valid 6-digit OTP.");
+        return;
+    }
+
+    $.ajax({
+        url: "/verify-otp",
+        method: "POST",
+        data: {
+            type: "mobile",
+            value: mobile,   // ✅ backend expects "value"
+            otp: otp,
+            _token: "{{ csrf_token() }}"
+        },
+        success: function (response) {
+            alert("Mobile OTP Verified Successfully!");
+            $("#verifiedTickMobile").show();
+            $("#otpFieldMobile").hide();
+            $("#verifyOtpMobileDiv").hide();
+            $("#sendOtpMobile").hide();
+        },
+        error: function (xhr) {
+            alert("OTP verification failed: " + xhr.responseText);
+        }
+    });
+});
+
+
+/* ------------------ EMAIL OTP HANDLING ------------------ */
+$("#sendOtpButton").on("click", function () {
+    let email = $("#confirmEmailId").val().trim();
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!pattern.test(email)) {
+        alert("Please enter a valid email address.");
+        return;
+    }
+
+    $.ajax({
+        url: "/send-otp",
+        method: "POST",
+        data: {
+            type: "email",
+            value: email,   // ✅ backend expects "value"
+            _token: "{{ csrf_token() }}"
+        },
+        success: function (response) {
+            alert("OTP sent to " + email);
+            $("#otpField").show();
+            $("#verifyOtpEmail").show();
+        },
+        error: function (xhr) {
+            alert("Failed to send OTP: " + xhr.responseText);
+        }
+    });
+});
+
+$("#verifyOtpEmailBtn").on("click", function () {
+    let otp = $("#otpInput").val().trim();
+    let email = $("#confirmEmailId").val().trim();
+
+    if (!/^\d{6}$/.test(otp)) {
+        alert("Please enter a valid 6-digit OTP.");
+        return;
+    }
+
+    $.ajax({
+        url: "/verify-otp",
+        method: "POST",
+        data: {
+            type: "email",
+            value: email,   // ✅ backend expects "value"
+            otp: otp,
+            _token: "{{ csrf_token() }}"
+        },
+        success: function (response) {
+            alert("Email OTP Verified Successfully!");
+            $("#verifiedTickEmail").show();
+            $("#otpField").hide();
+            $("#verifyOtpEmail").hide();
+            $("#sendOtpButton").hide();
+        },
+        error: function (xhr) {
+            alert("Email OTP verification failed: " + xhr.responseText);
+        }
+    });
+});
+
+window.validateMobile = function (input) {
+    const field = input || document.getElementById("mobileNumber");
+    const value = field.value.trim();
+    const regex = /^[6-9]\d{9}$/;
+    if (!regex.test(value)) {
+        alert("Please enter a valid 10-digit mobile number starting with 6-9.");
+        field.value = "";
+        field.focus();
+    }
+};
+
+
+
 </script>
+
 
 </body>
 </html>
