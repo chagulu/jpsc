@@ -107,101 +107,102 @@ public function sendOtp(Request $request)
             ], 400);
         }
 
-        // OTP verified → remove from cache
+        // ✅ OTP verified → remove from cache
         Cache::forget($key);
+
+        // ✅ Save verification flag in session
+        session([
+            "otp_verified.{$request->type}" => $request->value
+        ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'OTP verified successfully',
+            'message' => ucfirst($request->type).' OTP verified successfully',
         ]);
     }
+
 
     /**
      * Handle POST of JET form
      */
-  public function submitForm(Request $request)
-{
-    Log::info('Incoming application payload', [
-        'payload' => $request->all(),
-        'ip'      => $request->ip(),
-        'agent'   => $request->userAgent(),
-    ]);
-
-    try {
-        $applicationNo = 'APP-' . time() . '-' . rand(1000, 9999);
-
-        // 1️⃣ Check if candidate exists by email or mobile
-        $candidate = Candidate::where('email', $request->emailId)
-                              ->orWhere('mobile_number', $request->mobileNumber)
-                              ->first();
-
-        if (!$candidate) {
-            // Create candidate if not exists
-            $candidate = Candidate::create([
-                'email'         => $request->emailId,
-                'mobile_number' => $request->mobileNumber,
-            ]);
+    public function submitForm(Request $request)
+    {
+        // 🚨 Before doing anything, validate OTP verification
+        if (session("otp_verified.mobile") !== $request->mobileNumber) {
+            return back()->withErrors(['otp' => 'Mobile number not verified with OTP.'])->withInput();
         }
 
-        // 2️⃣ Check if candidate already has an application
-        if (JetApplicationModel::where('candidate_id', $candidate->id)->exists()) {
-            return back()->withErrors(['db' => 'You have already submitted an application.'])->withInput();
+        if (session("otp_verified.email") !== $request->emailId) {
+            return back()->withErrors(['otp' => 'Email not verified with OTP.'])->withInput();
         }
 
-        // 3️⃣ Prepare application attributes
-        $attributes = [
-            'application_no'    => $applicationNo,
-            'candidate_id'      => $candidate->id,
-            'full_name'         => $request->name,
-            'gender'            => $request->gender,
-            'date_of_birth'     => $request->dateOfBirth,
-            'age'               => Carbon::parse($request->dateOfBirth)
-                                        ->diffInYears(Carbon::create(2025, 8, 1)),
-            'mobile_no'         => $request->mobileNumber,
-            'email'             => $request->emailId,
-            'domicile_bihar'    => $request->domicileBihar ?? 0,
-            'category'          => $request->category ?? 'UR',
-            'caste'             => $request->caste ?? null,
-            'non_creamy_layer'  => $request->nonCreamyLayer ?? 'No',
-            'is_pwd'            => $request->isPwd ?? 0,
-            'disability_nature' => $request->disabilityNature ?? null,
-            'pwd_40_percent'    => $request->pwd40Percent ?? 0,
-            'ex_serviceman'     => $request->exServiceman ?? 'No',
-            'defence_service_year'  => $request->defenceServiceYear ?? null,
-            'defence_service_month' => $request->defenceServiceMonth ?? null,
-            'defence_service_day'   => $request->defenceServiceDay ?? null,
-            'worked_after_ncc'      => $request->workedAfterNcc ?? 0,
-            'bihar_govt_employee'   => $request->biharGovtEmployee ?? 'No',
-            'govt_service_years'    => $request->govtServiceYears ?? null,
-            'attempts_after_emp'    => $request->attemptsAfterEmp ?? null,
-            'status'                => 'Draft',
-            'submission_stage'      => 'Draft',
-            'submitted_at'          => null,
-            'last_edit_at'          => now(),
-            'ip_address'            => $request->ip(),
-            'user_agent'            => $request->userAgent(),
-        ];
-
-        // 4️⃣ Create the application
-        $application = JetApplicationModel::create($attributes);
-
-        return redirect()
-            ->route('profile.summary', $application->id)
-            ->with('success', 'Application saved successfully.');
-
-    } catch (\Throwable $e) {
-        Log::error('Error inserting application: '.$e->getMessage(), [
-            'trace' => $e->getTraceAsString(),
-            'data'  => $request->all(),
+        Log::info('Incoming application payload', [
+            'payload' => $request->all(),
+            'ip'      => $request->ip(),
+            'agent'   => $request->userAgent(),
         ]);
 
-        $msg = str_contains($e->getMessage(), 'Duplicate entry')
-            ? 'Mobile number or email already exists for another candidate.'
-            : 'Could not save application: '.$e->getMessage();
+        try {
+            $applicationNo = 'APP-' . time() . '-' . rand(1000, 9999);
 
-        return back()->withErrors(['db' => $msg])->withInput();
+            // ✅ Candidate logic unchanged ...
+            $candidate = Candidate::where('email', $request->emailId)
+                                ->orWhere('mobile_number', $request->mobileNumber)
+                                ->first();
+
+            if (!$candidate) {
+                $candidate = Candidate::create([
+                    'email'         => $request->emailId,
+                    'mobile_number' => $request->mobileNumber,
+                ]);
+            }
+
+            if (JetApplicationModel::where('candidate_id', $candidate->id)->exists()) {
+                return back()->withErrors(['db' => 'You have already submitted an application.'])->withInput();
+            }
+
+            // ✅ Application insert logic continues...
+            $attributes = [
+                'application_no'    => $applicationNo,
+                'candidate_id'      => $candidate->id,
+                'full_name'         => $request->name,
+                'gender'            => $request->gender,
+                'date_of_birth'     => $request->dateOfBirth,
+                'age'               => Carbon::parse($request->dateOfBirth)
+                                            ->diffInYears(Carbon::create(2025, 8, 1)),
+                'mobile_no'         => $request->mobileNumber,
+                'email'             => $request->emailId,
+                'status'            => 'Draft',
+                'submission_stage'  => 'Draft',
+                'submitted_at'      => null,
+                'last_edit_at'      => now(),
+                'ip_address'        => $request->ip(),
+                'user_agent'        => $request->userAgent(),
+            ];
+
+            $application = JetApplicationModel::create($attributes);
+
+            // ✅ Once submitted, clear OTP session
+            session()->forget('otp_verified');
+
+            return redirect()
+                ->route('profile.summary', $application->id)
+                ->with('success', 'Application saved successfully.');
+
+        } catch (\Throwable $e) {
+            Log::error('Error inserting application: '.$e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'data'  => $request->all(),
+            ]);
+
+            $msg = str_contains($e->getMessage(), 'Duplicate entry')
+                ? 'Mobile number or email already exists for another candidate.'
+                : 'Could not save application: '.$e->getMessage();
+
+            return back()->withErrors(['db' => $msg])->withInput();
+        }
     }
-}
+
 
 
 
