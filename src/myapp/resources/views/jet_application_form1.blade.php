@@ -792,35 +792,41 @@ $("#verifyOtpMobile").on("click", function () {
 
     // 1️⃣ Validate OTP format
     if (!/^\d{6}$/.test(otp)) {
-        alert("Please enter a valid 6-digit OTP.");
+        showError("Please enter a valid 6-digit OTP.");
         return;
     }
 
     // 2️⃣ Send OTP to server for verification
     $.ajax({
-        url: "/verify-otp",       // Your backend endpoint
+        url: "/verify-otp",
         method: "POST",
         data: {
             type: "mobile",
-            value: mobile,       // Mobile number to verify
+            value: mobile,
             otp: otp,
             _token: "{{ csrf_token() }}"
         },
         success: function (response) {
-            // 3️⃣ On success, show tick and hide inputs/buttons
-            $("#verifiedTickMobile").show();
-            $("#otpFieldMobile").hide();
-            $("#verifyOtpMobileDiv").hide();
-            $("#sendOtpMobile").hide();
+            if (response.success) {
+                showSuccess("Mobile OTP Verified Successfully ✅");
+                // 3️⃣ On success, show tick and hide inputs/buttons
+                $("#verifiedTickMobile").show();
+                $("#otpFieldMobile").hide();
+                $("#verifyOtpMobileDiv").hide();
+                $("#sendOtpMobile").hide();
+            } else {
+                showError(response.message || "Invalid OTP. Please try again.");
+                $("#mobileNumberOtp").val("").focus(); // Clear and focus
+            }
         },
         error: function (xhr) {
-            // 4️⃣ On failure, show error and keep OTP input visible
-            alert("Invalid OTP. Please try again.");
-            $("#mobileNumberOtp").val(""); // Optionally clear input
-            $("#mobileNumberOtp").focus();
+            let res = xhr.responseJSON;
+            showError(res && res.message ? res.message : "OTP verification failed. Try again.");
+            $("#mobileNumberOtp").val("").focus();
         }
     });
 });
+
 
 
 
@@ -1021,11 +1027,13 @@ $("#verifyOtpEmailBtn").on("click", function () {
     let otp = $("#otpInput").val().trim();
     let email = $("#confirmEmailId").val().trim();
 
+    // 1️⃣ Validate OTP format
     if (!/^\d{6}$/.test(otp)) {
-        alert("Please enter a valid 6-digit OTP.");
+        showError("Please enter a valid 6-digit OTP.");
         return;
     }
 
+    // 2️⃣ Send OTP to server for verification
     $.ajax({
         url: "/verify-otp",
         method: "POST",
@@ -1037,20 +1045,23 @@ $("#verifyOtpEmailBtn").on("click", function () {
         },
         success: function (response) {
             if (response.success) {
-                alert("Email OTP Verified Successfully!");
+                showSuccess("Email OTP Verified Successfully ✅");
+                // 3️⃣ On success, show tick and hide inputs/buttons
                 $("#verifiedTickEmail").show();
                 $("#otpField").hide();
                 $("#verifyOtpEmail").hide();
                 $("#sendOtpButton").hide();
             } else {
-                // OTP invalid — show error and keep input visible
-                alert(response.message || "Invalid OTP. Please try again.");
+                showError(response.message || "Invalid OTP. Please try again.");
+                $("#otpInput").val("").focus();
                 $("#otpField").show();
                 $("#verifyOtpEmail").show();
             }
         },
         error: function (xhr) {
-            alert("Email OTP verification failed: " + xhr.responseText);
+            let res = xhr.responseJSON;
+            showError(res && res.message ? res.message : "Email OTP verification failed. Try again.");
+            $("#otpInput").val("").focus();
         }
     });
 });
