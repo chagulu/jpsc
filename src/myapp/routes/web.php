@@ -69,10 +69,21 @@ Route::get('/profile-summary/{id}', [JetApplicationController::class, 'profileSu
 Route::get('/payment-summary/{id}', [JetApplicationController::class, 'summary'])
     ->name('payment.summary');
 
+Route::get('jet-application/{application}', [JetApplicationController::class, 'edit'])
+    ->name('jet.application.edit');
+Route::put('jet-application/{application}', [JetApplicationController::class, 'updateNew'])->name('jet.application.update');
+
 Route::get('payment/summary/{application}', [PaymentController::class, 'summary'])
     ->name('payment.summary');
 Route::post('payment/initiate/{application}', [PaymentController::class, 'initiate'])
     ->name('payment.initiate');
+
+Route::get('profile-summary-save/{id}', [JetApplicationController::class, 'initiate'])
+    ->name('profile.summary.save');
+
+Route::get('profile-thankyou', [JetApplicationController::class, 'thankyou'])
+    ->name('profile.thankyou');
+
 Route::post('payment/callback', [PaymentController::class, 'callback'])
     ->name('payment.callback');
 Route::post('/send-otp', [JetApplicationController::class, 'sendOtp'])->name('otp.send');

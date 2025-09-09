@@ -86,12 +86,11 @@
       </div> -->
 
       {{-- Centered Proceed Button --}}
-      <div class="text-center mt-3">
-        <form action="{{ route('payment.initiate', $application->id) }}" method="POST">
-          @csrf
-          <button type="submit" class="btn btn-primary btn-lg">Proceed to Pay</button>
-        </form>
-      </div>
+      <form action="{{ route('profile.summary.save', $application->id) }}" method="GET">
+        @csrf
+        <button type="submit" name="action" value="agree" class="btn btn-primary btn-lg">I Agree</button>
+        <button type="submit" name="action" value="update" class="btn btn-primary btn-lg">Update</button>
+    </form>
 
   </div>
 </div>

@@ -12,6 +12,18 @@ class JetApplicationModel extends Model
     protected $table = 'applications';
 
     protected $fillable = [
+        'application_no',
+        'aadhaar_card_number',
+        'confirm_name',
+        'roll_number',
+        'rd_is_changed_name',
+        'have_you_ever_changed_name',
+        'changed_name',
+        'verify_changed_name',
+        'upload_supported_document',
+        'date_of_birth',
+        'father_name',
+        'mother_name',
         'candidate_id',       // foreign key
         'full_name',
         'gender',

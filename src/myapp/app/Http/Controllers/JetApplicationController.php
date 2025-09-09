@@ -133,6 +133,22 @@ public function sendOtp(Request $request)
         'agent'   => $request->userAgent(),
     ]);
 
+    $rules = [
+        'email'           => 'required|email|max:150|unique:users,email', // Assuming 'users' is your table name
+        'name'            => 'required|string|max:150',
+        'rollNumber'      => 'required|string|max:10',
+        'gender'          => 'required|in:Male,Female,Third Gender',
+        'dateOfBirth'     => 'required|date',
+        'fatherName'      => 'required|string|max:20',
+        'motherName'      => 'required|string|max:20',
+        'mobileNumber'    => 'required|digits:10|unique:users,mobileNumber', // Assuming 'users' is your table name
+    ];
+    $validator = Validator::make($request->all(), $rules);
+    if ($validator->fails()) {
+        // return with validation errors
+        return back()->withErrors($validator)->withInput();
+    }
+
     try {
         $applicationNo = 'APP-' . time() . '-' . rand(1000, 9999);
 
@@ -157,29 +173,22 @@ public function sendOtp(Request $request)
         // 3️⃣ Prepare application attributes
         $attributes = [
             'application_no'    => $applicationNo,
-            'candidate_id'      => $candidate->id,
-            'full_name'         => $request->name,
-            'gender'            => $request->gender,
-            'date_of_birth'     => $request->dateOfBirth,
-            'age'               => Carbon::parse($request->dateOfBirth)
-                                        ->diffInYears(Carbon::create(2025, 8, 1)),
-            'mobile_no'         => $request->mobileNumber,
-            'email'             => $request->emailId,
-            'domicile_bihar'    => $request->domicileBihar ?? 0,
-            'category'          => $request->category ?? 'UR',
-            'caste'             => $request->caste ?? null,
-            'non_creamy_layer'  => $request->nonCreamyLayer ?? 'No',
-            'is_pwd'            => $request->isPwd ?? 0,
-            'disability_nature' => $request->disabilityNature ?? null,
-            'pwd_40_percent'    => $request->pwd40Percent ?? 0,
-            'ex_serviceman'     => $request->exServiceman ?? 'No',
-            'defence_service_year'  => $request->defenceServiceYear ?? null,
-            'defence_service_month' => $request->defenceServiceMonth ?? null,
-            'defence_service_day'   => $request->defenceServiceDay ?? null,
-            'worked_after_ncc'      => $request->workedAfterNcc ?? 0,
-            'bihar_govt_employee'   => $request->biharGovtEmployee ?? 'No',
-            'govt_service_years'    => $request->govtServiceYears ?? null,
-            'attempts_after_emp'    => $request->attemptsAfterEmp ?? null,
+            'aadhaar_card_number' => $request->aadhaarCardNumber,
+            'mobile_no' => $request->mobileNumber,
+            'email' => $request->emailId,
+            'full_name' => $request->name,
+            'confirm_name' => $request->confirmName,
+            'roll_number' => $request->rollNumber,
+            'rd_is_changed_name' => $request->rdIsChangedName,
+            'have_you_ever_changed_name' => $request->haveYouEverChangedName,
+            'changed_name' => $request->changedName,
+            'verify_changed_name' => $request->verifyChangedName,
+            'upload_supported_document' => $request->uploadSupportedDocument,
+            'date_of_birth' => $request->dateOfBirth,
+            'gender' => $request->gender,
+            'father_name' => $request->fatherName,
+            'mother_name' => $request->motherName,
+            'alternate_number' => $request->alternateNumber,
             'status'                => 'Draft',
             'submission_stage'      => 'Draft',
             'submitted_at'          => null,
@@ -222,7 +231,7 @@ public function sendOtp(Request $request)
     public function edit($id)
     {
         $application = JetApplicationModel::findOrFail($id);
-        return view('applications.edit', compact('application'));
+        return view('applications_edit', compact('application'));
     }
 
     public function update(Request $request, $id)
@@ -285,5 +294,95 @@ public function sendOtp(Request $request)
             'gst'         => $gst,
             'total'       => $total,
         ]);
+    }
+
+    public function initiate(Request $request, $application_id)
+    {
+        
+        $application = JetApplicationModel::findOrFail($application_id);
+        // dd( $application);
+        if ($request->action === 'agree') {
+            return view('thankYou', [
+                'otr_number' => $application->application_no
+            ]);
+        } elseif ($request->action === 'update') {
+            return view('applications_edit', [
+                'application' => $application
+            ]);
+        }
+    
+    }
+
+    public function thankyou(){
+        return view('thankYou');
+    }
+
+    public function updateNew(Request $request, $id){
+        Log::info('Incoming application payload', [
+            'payload' => $request->all(),
+            'ip'      => $request->ip(),
+            'agent'   => $request->userAgent(),
+        ]);
+
+        $rules = [
+            //'email'           => 'required|email|max:150|unique:users,email', // Assuming 'users' is your table name
+            'name'       => 'required|string|max:150',
+            'rollNumber'      => 'required|string|max:10',
+            'gender'          => 'required|in:Male,Female,Third Gender',
+            'dateOfBirth'     => 'required|date',
+            'fatherName'      => 'required|string|max:20',
+            'motherName'      => 'required|string|max:20',
+            //'mobileNumber'    => 'required|digits:10|unique:users,mobileNumber', // Assuming 'users' is your table name
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            // return with validation errors
+            return back()->withErrors($validator)->withInput();
+        }
+        try {
+            $application = JetApplicationModel::findOrFail($id);
+            $age = $request->filled('dob')
+                ? Carbon::parse($request->dob)->diffInYears(Carbon::create(2025, 8, 1))
+                : $application->age;
+
+            $application->update([
+                'aadhaar_card_number' => $request->aadhaarCardNumber,
+                'email' => $request->emailId,
+                'name' => $request->name,
+                'confirm_name' => $request->confirmName,
+                'roll_number' => $request->rollNumber,
+                'rd_is_changed_name' => $request->rdIsChangedName,
+                'have_you_ever_changed_name' => $request->haveYouEverChangedName,
+                'changed_name' => $request->changedName,
+                'verify_changed_name' => $request->verifyChangedName,
+                'upload_supported_document' => $request->uploadSupportedDocument,
+                'date_of_birth' => $request->dateOfBirth,
+                'gender' => $request->gender,
+                'father_name' => $request->fatherName,
+                'mother_name' => $request->motherName,
+                'alternate_number' => $request->alternateNumber,
+                'status'                => 'Draft',
+                'submission_stage'      => 'Draft',
+                'submitted_at'          => null,
+                'last_edit_at'          => now(),
+                'ip_address'            => $request->ip(),
+                'user_agent'            => $request->userAgent(),
+            ]);
+
+            return redirect()
+                ->route('profile.summary', $application->id)
+                ->with('success', 'Application saved successfully.');
+        }catch (\Throwable $e) {
+            Log::error('Error inserting application: '.$e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'data'  => $request->all(),
+            ]);
+
+            $msg = str_contains($e->getMessage(), 'Duplicate entry')
+                ? 'Mobile number or email already exists for another candidate.'
+                : 'Could not save application: '.$e->getMessage();
+
+            return back()->withErrors(['db' => $msg])->withInput();
+        }
     }
 }

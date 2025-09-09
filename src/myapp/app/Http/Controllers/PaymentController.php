@@ -35,40 +35,40 @@ class PaymentController extends Controller
      * Create a payment entry and redirect to Paytm.
      */
     public function initiate(Request $request, Application $application)
-{
-    $fee = Fee::first();
-    if (!$fee) {
-        abort(500, 'Fee details not configured.');
+    {
+        $fee = Fee::first();
+        if (!$fee) {
+            abort(500, 'Fee details not configured.');
+        }
+
+        // Create payment record with amount from fee table
+        $payment = Payment::create([
+            'application_id' => $application->id,
+            'amount'         => $fee->total_payable,
+            'status'         => 'PENDING',
+            'order_id'       => uniqid('ORD-'),
+        ]);
+
+        PaymentLog::create([
+        'payment_id'    => $payment->id,
+        'application_id'=> $application->id, // <-- add this
+        'stage'         => 'INIT_REQUEST',
+        'payload'       => json_encode($request->all())
+        ]);
+
+
+        $paytm = PaytmWallet::with('receive');
+        $paytm->prepare([
+            'order'         => $payment->order_id,
+            'user'          => $application->id,
+            'mobile_number' => $application->mobile_no,
+            'email'         => $application->email,
+            'amount'        => $payment->amount,
+            'callback_url'  => route('payment.callback')
+        ]);
+
+        return $paytm->receive();
     }
-
-    // Create payment record with amount from fee table
-    $payment = Payment::create([
-        'application_id' => $application->id,
-        'amount'         => $fee->total_payable,
-        'status'         => 'PENDING',
-        'order_id'       => uniqid('ORD-'),
-    ]);
-
-    PaymentLog::create([
-    'payment_id'    => $payment->id,
-    'application_id'=> $application->id, // <-- add this
-    'stage'         => 'INIT_REQUEST',
-    'payload'       => json_encode($request->all())
-    ]);
-
-
-    $paytm = PaytmWallet::with('receive');
-    $paytm->prepare([
-        'order'         => $payment->order_id,
-        'user'          => $application->id,
-        'mobile_number' => $application->mobile_no,
-        'email'         => $application->email,
-        'amount'        => $payment->amount,
-        'callback_url'  => route('payment.callback')
-    ]);
-
-    return $paytm->receive();
-}
 
 
 
