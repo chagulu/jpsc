@@ -79,7 +79,8 @@
               </div>
               <div class="card-body">
 
-                <form action="{{ route('jet.application.submit') }}" method="POST">
+               <form id="candidateForm" action="{{ route('jet.application.submit') }}" method="POST">
+
                 @csrf
                   <center><p style="color:red;font-weight:bold;"></p></center>
 
@@ -102,7 +103,7 @@
                   <div class="form-group row">
                     <label for="mobileNumber" class="col-sm-3 col-form-label">Mobile Number <span class="required">*</span></label>
                     <div class="col-sm-4">
-                     <input type="text" id="mobileNumber" onchange="validateMobile(this)" />
+                     <input type="text" class="form-control" name ="mobileNumber" id="mobileNumber" onchange="validateMobile(this)" />
                     </div>
                   </div>
 
@@ -110,7 +111,7 @@
                   <div class="form-group row">
                     <label class="col-sm-3 col-form-label">Confirm Mobile Number<span class="required">*</span></label>
                     <div class="col-sm-4">
-                    <input type="text" id="confirmMobileNumber" onchange="validateMobile(this)" />
+                    <input type="text" class="form-control" id="confirmMobileNumber" onchange="validateMobile(this)" />
 
 
                   </div>
@@ -406,20 +407,6 @@
             alert("Aadhaar numbers do not match.");
             document.getElementById("confirmAadhaarCardNumber").value = "";
             document.getElementById("confirmAadhaarCardNumber").focus();
-            return false;
-        }
-        return true;
-    }
-
-   
-
-    function validateConfirmMobileNumber() {
-        const mobile = document.getElementById("mobileNumber").value;
-        const confirm = document.getElementById("confirmMobileNumber").value;
-        if (mobile !== confirm) {
-            alert("Mobile numbers do not match.");
-            document.getElementById("confirmMobileNumber").value = "";
-            document.getElementById("confirmMobileNumber").focus();
             return false;
         }
         return true;
@@ -827,7 +814,7 @@
       //$("#overlay").show();
 
       // Submit the form
-      document.querySelector("form").submit();
+      document.getElementById("candidateForm").submit();
   }
 
   /* Go to Home Page */
@@ -922,20 +909,36 @@ window.getSupportDocumentUploadData = function () {
     }
 };
 
+// Validate Mobile Number
+window.validateMobile = function (input) {
+    const field = input || document.getElementById("mobileNumber");
+    const value = field.value.trim();
+    const regex = /^[6-9]\d{9}$/;
+
+    if (!regex.test(value)) {
+        alert("Please enter a valid 10-digit mobile number starting with 6-9.");
+        field.value = "";
+        field.focus();
+        return false;
+    }
+    return true;
+};
+
+// Validate Confirm Mobile Number
+window.validateConfirmMobileNumber = function () {
+    const mobile = document.getElementById("mobileNumber").value.trim();
+    const confirm = document.getElementById("confirmMobileNumber").value.trim();
+
+    if (mobile !== confirm) {
+        alert("Mobile numbers do not match.");
+        document.getElementById("confirmMobileNumber").value = "";
+        document.getElementById("confirmMobileNumber").focus();
+        return false;
+    }
+    return true;
+};
 
 
-
-
-    // Validate Confirm Mobile Number
-    window.validateConfirmMobileNumber = function (input) {
-        console.log("validateConfirmMobileNumber() called");
-        const mobileField = document.getElementById("mobile"); // make sure your mobile input has id="mobile"
-        if (mobileField && input.value !== mobileField.value) {
-            alert("Mobile numbers do not match.");
-            input.value = "";
-            input.focus();
-        }
-    };
 
 /* ------------------ MOBILE OTP HANDLING ------------------ */
 $("#sendOtpMobile").on("click", function () {
@@ -1072,16 +1075,20 @@ $("#verifyOtpEmailBtn").on("click", function () {
     });
 });
 
-window.validateMobile = function (input) {
-    const field = input || document.getElementById("mobileNumber");
-    const value = field.value.trim();
-    const regex = /^[6-9]\d{9}$/;
-    if (!regex.test(value)) {
-        alert("Please enter a valid 10-digit mobile number starting with 6-9.");
-        field.value = "";
-        field.focus();
+
+
+function isValidMobileNumber(number) {
+    // Check if number is exactly 10 digits
+    if (!/^\d{10}$/.test(number)) {
+        alert("Please enter a valid 10-digit mobile number");
+        return false;
     }
-};
+    return true;
+}
+
+
+
+
 
 
 

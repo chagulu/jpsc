@@ -9,12 +9,10 @@ class JetApplicationModel extends Model
 {
     use HasFactory;
 
-    // Table name
     protected $table = 'applications';
 
-    // Mass-assignable columns
     protected $fillable = [
-        // Applicant fields
+        'candidate_id',       // foreign key
         'full_name',
         'gender',
         'domicile_bihar',
@@ -37,8 +35,6 @@ class JetApplicationModel extends Model
         'date_of_birth',
         'age',
         'status',
-
-        // Application fields
         'application_no',
         'form_json',
         'submission_stage',
@@ -48,26 +44,25 @@ class JetApplicationModel extends Model
         'user_agent',
     ];
 
-    // Attribute casting
     protected $casts = [
-        'form_json'       => 'array',
-        'date_of_birth'   => 'date',
-        'submitted_at'    => 'datetime',
-        'last_edit_at'    => 'datetime',
-        'domicile_bihar'  => 'boolean',
-        'non_creamy_layer'=> 'boolean',
-        'is_pwd'          => 'boolean',
-        'pwd_40_percent'  => 'boolean',
-        'ex_serviceman'   => 'boolean',
-        'worked_after_ncc'=> 'boolean',
-        'bihar_govt_employee' => 'boolean',
+        'form_json'         => 'array',
+        'date_of_birth'     => 'date',
+        'submitted_at'      => 'datetime',
+        'last_edit_at'      => 'datetime',
+        'domicile_bihar'    => 'boolean',
+        'non_creamy_layer'  => 'boolean',
+        'is_pwd'            => 'boolean',
+        'pwd_40_percent'    => 'boolean',
+        'ex_serviceman'     => 'boolean',
+        'worked_after_ncc'  => 'boolean',
+        'bihar_govt_employee'=> 'boolean',
         'govt_service_years'=> 'decimal:1',
-        'age'             => 'integer',
+        'age'               => 'integer',
     ];
 
-    // Example relationship to payments table
-    public function payments()
+    // Relationship: each application belongs to a candidate
+    public function candidate()
     {
-        return $this->hasMany(PaymentLog::class, 'application_id');
+        return $this->belongsTo(Candidate::class, 'candidate_id');
     }
 }
