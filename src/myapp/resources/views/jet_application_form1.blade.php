@@ -639,33 +639,7 @@
 
 
     /* ------------------ EMAIL OTP HANDLING ------------------ */
-    $("#sendOtpButton").on("click", function () {
-    let email = $("#confirmEmailId").val().trim();
-    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!pattern.test(email)) {
-        alert("Please enter a valid email address.");
-        return;
-    }
-
-    $.ajax({
-        url: "/send-otp",
-        method: "POST",
-        data: {
-            type: "email",
-            value: email,   // ✅ backend expects "value"
-            _token: "{{ csrf_token() }}"
-        },
-        success: function (response) {
-            alert("OTP sent to " + email);
-            $("#otpField").show();
-            $("#verifyOtpEmail").show();
-        },
-        error: function (xhr) {
-            alert("Failed to send OTP: " + xhr.responseText);
-        }
-    });
-});
+    
 
     $("#verifyOtpEmail").on("click", function () {
         let otp = $("#otpInput").val().trim();
@@ -848,19 +822,6 @@ $("#verifyOtpMobile").on("click", function () {
 
 
 /* ---------------- EMAIL OTP ---------------- */
-$("#sendOtpButton").on("click", function () {
-    let email = $("#confirmEmailId").val().trim();
-    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!pattern.test(email)) { alert("Enter valid email."); return; }
-    
-    $("#otpField").show(); $("#verifyOtpEmail").show();
-    let timer = 30, btn = $(this);
-    btn.prop("disabled", true).val("Resend in " + timer);
-    let interval = setInterval(function () {
-        timer--; btn.val("Resend in " + timer);
-        if (timer <= 0) { clearInterval(interval); btn.prop("disabled", false).val("Send OTP"); }
-    }, 1000);
-});
 
 
 
@@ -989,12 +950,15 @@ $("#sendOtpMobile").off("click").on("click", function () {
 // Use delegated event binding in case button is dynamically rendered
 $(document).on("click", "#sendOtpButton", function () {
     let email = $("#confirmEmailId").val().trim();
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!email) {
-        alert("Please enter your email first.");
+    if (!pattern.test(email)) {
+        alert("Enter a valid email.");
         return;
     }
 
+    let btn = $(this);
+    
     $.ajax({
         url: "/send-otp",
         method: "POST",
@@ -1004,15 +968,40 @@ $(document).on("click", "#sendOtpButton", function () {
             _token: "{{ csrf_token() }}"
         },
         success: function (response) {
-            alert("OTP sent to your email!");
-            $("#otpField").show();        // Show OTP input
-            $("#verifyOtpEmail").show();   // Show verify button
+            if (response.success) {
+                alert("OTP sent to your email!");
+
+                // Show OTP field and verify button
+                $("#otpField").show();
+                $("#verifyOtpEmail").show();
+
+                // Start resend timer
+                let timer = 30;
+                btn.prop("disabled", true).val("Resend in " + timer);
+                let interval = setInterval(function () {
+                    timer--;
+                    btn.val("Resend in " + timer);
+                    if (timer <= 0) {
+                        clearInterval(interval);
+                        btn.prop("disabled", false).val("Send OTP");
+                    }
+                }, 1000);
+            } else {
+                // Backend returned error (email exists, etc.)
+                alert(response.message || "Failed to send OTP.");
+                $("#otpField").hide();
+                $("#verifyOtpEmail").hide();
+            }
         },
         error: function (xhr) {
             alert("Failed to send OTP: " + xhr.responseText);
+            $("#otpField").hide();
+            $("#verifyOtpEmail").hide();
         }
     });
 });
+
+
 
 $("#verifyOtpEmailBtn").on("click", function () {
     let otp = $("#otpInput").val().trim();
