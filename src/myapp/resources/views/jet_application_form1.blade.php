@@ -645,22 +645,7 @@
     /* ------------------ EMAIL OTP HANDLING ------------------ */
     
 
-    $("#verifyOtpEmail").on("click", function () {
-        let otp = $("#otpInput").val().trim();
-
-        if (!/^\d{6}$/.test(otp)) {
-            alert("Please enter a valid 6-digit OTP.");
-            return;
-        }
-
-        // Simulate OTP verification
-       
-
-        $("#verifiedTickEmail").show(); // Show green tick
-        $("#otpField").hide();          // Hide OTP input
-        $("#verifyOtpEmail").hide();    // Hide verify button
-        $("#sendOtpButton").hide();     // Hide send OTP button
-    });
+    
 
 
     function saveCandidateProfile() {
@@ -1046,25 +1031,30 @@ $("#verifyOtpEmailBtn").on("click", function () {
         success: function (response) {
             if (response.success) {
                 showSuccess("Email OTP Verified Successfully ✅");
-                // 3️⃣ On success, show tick and hide inputs/buttons
+
+                // 3️⃣ On success → show tick & hide inputs/buttons
                 $("#verifiedTickEmail").show();
                 $("#otpField").hide();
-                $("#verifyOtpEmail").hide();
+                $("#verifyOtpEmailBtn").hide();
                 $("#sendOtpButton").hide();
             } else {
+                // If invalid OTP
                 showError(response.message || "Invalid OTP. Please try again.");
                 $("#otpInput").val("").focus();
                 $("#otpField").show();
-                $("#verifyOtpEmail").show();
+                $("#verifyOtpEmailBtn").show();
             }
         },
         error: function (xhr) {
             let res = xhr.responseJSON;
             showError(res && res.message ? res.message : "Email OTP verification failed. Try again.");
             $("#otpInput").val("").focus();
+            $("#otpField").show();
+            $("#verifyOtpEmailBtn").show();
         }
     });
 });
+
 
 function isValidMobileNumber(number) {
     // Check if number is exactly 10 digits
