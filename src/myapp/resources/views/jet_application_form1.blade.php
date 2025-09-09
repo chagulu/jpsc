@@ -964,12 +964,12 @@ $(document).on("click", "#sendOtpButton", function () {
     const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!pattern.test(email)) {
-        alert("Enter a valid email.");
+        showError("Enter a valid email.");
         return;
     }
 
     let btn = $(this);
-    
+
     $.ajax({
         url: "/send-otp",
         method: "POST",
@@ -980,7 +980,7 @@ $(document).on("click", "#sendOtpButton", function () {
         },
         success: function (response) {
             if (response.success) {
-                alert("OTP sent to your email!");
+                showSuccess("OTP sent to your email!");
 
                 // Show OTP field and verify button
                 $("#otpField").show();
@@ -998,20 +998,23 @@ $(document).on("click", "#sendOtpButton", function () {
                     }
                 }, 1000);
             } else {
-                // Backend returned error (email exists, etc.)
-                alert(response.message || "Failed to send OTP.");
+                showError(response.message || "Failed to send OTP.");
                 $("#otpField").hide();
                 $("#verifyOtpEmail").hide();
             }
         },
         error: function (xhr) {
-            alert("Failed to send OTP: " + xhr.responseText);
+            let response = xhr.responseJSON;
+            if (response && response.message) {
+                showError(response.message);
+            } else {
+                showError("Failed to send OTP. Please try again.");
+            }
             $("#otpField").hide();
             $("#verifyOtpEmail").hide();
         }
     });
 });
-
 
 
 $("#verifyOtpEmailBtn").on("click", function () {
