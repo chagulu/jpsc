@@ -38,17 +38,18 @@ public function sendOtp(Request $request)
     // 1️⃣ Check if candidate already exists
     if ($request->type === 'mobile') {
         if (Candidate::where('mobile_number', $request->value)->exists()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Mobile number already exists'
-            ], 409);
-        }
+        return response()->json([
+            'success' => false,
+            'message' => 'Mobile number already exists'
+        ]);
+    }
+
     } elseif ($request->type === 'email') {
         if (Candidate::where('email', $request->value)->exists()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Email already exists'
-            ], 409);
+            ]);
         }
     }
 

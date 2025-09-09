@@ -78,6 +78,10 @@
                 <h6 class="m-0 font-weight-bold text-primary">Profile Details</h6>
               </div>
               <div class="card-body">
+                <!-- Success & Error Message Divs -->
+              <div id="successMessage" class="alert alert-success" style="display:none;"></div>
+              <div id="errorMessage" class="alert alert-danger" style="display:none;"></div>
+
 
                <form id="candidateForm" action="{{ route('jet.application.submit') }}" method="POST">
 
@@ -894,11 +898,13 @@ window.validateConfirmMobileNumber = function () {
 
 
 /* ------------------ MOBILE OTP HANDLING ------------------ */
+
+
 $("#sendOtpMobile").off("click").on("click", function () {
     let mobile = $("#confirmMobileNumber").val().trim();
 
     if (!/^[6-9]\d{9}$/.test(mobile)) {
-        alert("Please enter a valid 10-digit mobile number starting with 6-9.");
+        showError("Please enter a valid 10-digit mobile number starting with 6-9.");
         return;
     }
 
@@ -912,9 +918,9 @@ $("#sendOtpMobile").off("click").on("click", function () {
         },
         success: function (response) {
             if (response.success) {
-                alert("OTP sent to " + mobile);
+                showSuccess("OTP sent to " + mobile);
 
-                // Only show OTP input and verify button now
+                // Show OTP input and verify button
                 $("#otpFieldMobile").show();
                 $("#verifyOtpMobileDiv").show();
 
@@ -932,14 +938,19 @@ $("#sendOtpMobile").off("click").on("click", function () {
                     }
                 }, 1000);
             } else {
-                alert("Failed to send OTP. Try again.");
+                showError(response.message || "Failed to send OTP. Try again.");
+                $("#otpFieldMobile").hide();
+                $("#verifyOtpMobileDiv").hide();
             }
         },
         error: function () {
-            alert("Error sending OTP. Check your connection.");
+            showError("Error sending OTP. Check your connection.");
+            $("#otpFieldMobile").hide();
+            $("#verifyOtpMobileDiv").hide();
         }
     });
 });
+
 
 
 
@@ -1049,6 +1060,17 @@ function isValidMobileNumber(number) {
     }
     return true;
 }
+
+    function showSuccess(msg) {
+        $("#successMessage").text(msg).show();
+        $("#errorMessage").hide();
+    }
+
+    function showError(msg) {
+        $("#errorMessage").text(msg).show();
+        $("#successMessage").hide();
+    }
+
 </script>
 
 
