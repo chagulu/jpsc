@@ -1061,15 +1061,22 @@ function isValidMobileNumber(number) {
     return true;
 }
 
-    function showSuccess(msg) {
-        $("#successMessage").text(msg).show();
-        $("#errorMessage").hide();
-    }
+   function showSuccess(msg) {
+    $("#successMessage").text(msg).show();
+    $("#errorMessage").hide();
 
-    function showError(msg) {
-        $("#errorMessage").text(msg).show();
-        $("#successMessage").hide();
-    }
+    // Auto-hide after 10 seconds
+    setTimeout(() => { $("#successMessage").fadeOut(); }, 10000);
+}
+
+function showError(msg) {
+    $("#errorMessage").text(msg).show();
+    $("#successMessage").hide();
+
+    // Auto-hide after 10 seconds
+    setTimeout(() => { $("#errorMessage").fadeOut(); }, 10000);
+}
+
 
 </script>
 
