@@ -134,14 +134,14 @@ public function sendOtp(Request $request)
     ]);
 
     $rules = [
-        'email'           => 'required|email|max:150|unique:users,email', // Assuming 'users' is your table name
+        'emailId'         => 'required|email|max:150|unique:candidates,email', // Assuming 'users' is your table name
         'name'            => 'required|string|max:150',
         'rollNumber'      => 'required|string|max:10',
         'gender'          => 'required|in:Male,Female,Third Gender',
         'dateOfBirth'     => 'required|date',
         'fatherName'      => 'required|string|max:20',
         'motherName'      => 'required|string|max:20',
-        'mobileNumber'    => 'required|digits:10|unique:users,mobileNumber', // Assuming 'users' is your table name
+        'mobileNumber'    => 'required|digits:10|unique:candidates,mobile_number', // Assuming 'users' is your table name
     ];
     $validator = Validator::make($request->all(), $rules);
     if ($validator->fails()) {
