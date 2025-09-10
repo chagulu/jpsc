@@ -67,6 +67,10 @@ Route::get('/profile-summary', [JetApplicationController::class, 'profileSummary
     ->middleware('auth:candidate')
     ->name('profile.summary');
 
+Route::get('/candidate-application', [JetApplicationController::class, 'candidatedDashboardApplication'])
+    ->middleware('auth:candidate')
+    ->name('application');
+
 
 Route::get('/payment-summary/{id}', [JetApplicationController::class, 'summary'])
     ->name('payment.summary');

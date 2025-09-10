@@ -408,4 +408,22 @@ public function sendOtp(Request $request)
             return back()->withErrors(['db' => $msg])->withInput();
         }
     }
+
+      public function candidatedDashboardApplication(Request $request)
+      {
+        // Get logged-in candidate
+        $candidate = auth('candidate')->user();
+
+        if (! $candidate) {
+            return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
+        }
+
+        // Fetch the candidate's latest application
+        $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
+
+        if (! $application) {
+            return back()->withErrors(['db' => 'No application found for your profile.']);
+        }
+        return view('application', compact('application'));
+    }
 }

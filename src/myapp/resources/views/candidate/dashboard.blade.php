@@ -56,7 +56,7 @@
       <h6 class="mt-2">Candidate Dashboard</h6>
     </div>
     <a href="#"><i class="fas fa-user"></i> Profile</a>
-    <a href="#"><i class="fas fa-file-alt"></i> Application</a>
+    <a href="/candidate-application"><i class="fas fa-file-alt"></i> Application</a>
     <a href="#"><i class="fas fa-id-card"></i> Admit Card</a>
     <a href="#"><i class="fas fa-poll"></i> Results</a>
     <a href="#"><i class="fas fa-bell"></i> Notifications</a>
