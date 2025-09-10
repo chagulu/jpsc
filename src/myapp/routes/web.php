@@ -80,7 +80,8 @@ Route::get('payment/summary/{application}', [PaymentController::class, 'summary'
 Route::post('payment/initiate/{application}', [PaymentController::class, 'initiate'])
     ->name('payment.initiate');
 
-Route::get('profile-summary-save/{id}', [JetApplicationController::class, 'initiate'])
+Route::get('profile-summary-save', [JetApplicationController::class, 'initiate'])
+    ->middleware('auth:candidate')
     ->name('profile.summary.save');
 
 Route::get('profile-thankyou', [JetApplicationController::class, 'thankyou'])

@@ -306,22 +306,35 @@ public function sendOtp(Request $request)
 }
 
 
-    public function initiate(Request $request, $application_id)
-    {
-        
-        $application = JetApplicationModel::findOrFail($application_id);
-        // dd( $application);
-        if ($request->action === 'agree') {
-            return view('thankYou', [
-                'otr_number' => $application->application_no
-            ]);
-        } elseif ($request->action === 'update') {
-            return view('applications_edit', [
-                'application' => $application
-            ]);
-        }
-    
+    public function initiate(Request $request)
+{
+    // Get logged-in candidate
+    $candidate = auth('candidate')->user();
+
+    if (! $candidate) {
+        return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
     }
+
+    // Fetch the candidate's latest application
+    $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
+
+    if (! $application) {
+        return back()->withErrors(['db' => 'No application found for your profile.']);
+    }
+
+    if ($request->action === 'agree') {
+        return view('thankYou', [
+            'otr_number' => $application->application_no
+        ]);
+    } elseif ($request->action === 'update') {
+        return view('applications_edit', [
+            'application' => $application
+        ]);
+    }
+
+    return back()->withErrors(['action' => 'Invalid action provided.']);
+}
+
 
     public function thankyou(){
         return view('thankYou');
