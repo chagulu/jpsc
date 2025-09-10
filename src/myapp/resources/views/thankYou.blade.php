@@ -64,6 +64,14 @@
 </head>
 <body>
     <div class="thankyou-card">
+        {{-- Logout Button --}}
+<div class="text-end mt-3">
+    <form action="{{ route('candidate.logout') }}" method="POST" style="display:inline;">
+        @csrf
+        <button type="submit" class="btn btn-danger btn-sm">Logout</button>
+    </form>
+</div>
+
         <div class="thankyou-icon">&#10004;</div>
         <h1>OTR Success!</h1>
         <p>Your OTR has been successfully generated. An email SMS with your login credentials have been sent to your email address and mobile number.</p>

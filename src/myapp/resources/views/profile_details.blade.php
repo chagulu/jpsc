@@ -22,6 +22,13 @@
     </div>
   </div>
 
+  <div class="text-end mt-3">
+    <form action="{{ route('candidate.logout') }}" method="POST" style="display:inline;">
+        @csrf
+        <button type="submit" class="btn btn-danger btn-sm">Logout</button>
+    </form>
+</div>
+
   {{-- Summary card --}}
   <div class="summary-card">
       <h2 class="summary-title">Confirm Profile Details</h2>
