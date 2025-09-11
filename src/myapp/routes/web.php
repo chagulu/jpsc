@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\JetApplicationController;
-use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\Application\JetApplicationController;
+use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Admin\ApplicationSearchController;
 use App\Http\Controllers\Auth\CandidateAuthController;
 use App\Http\Controllers\Auth\TwoFactorController;
@@ -25,12 +25,12 @@ Route::post('/2fa', [TwoFactorController::class, 'verifyOtp'])->name('2fa.verify
 /** JET application public-facing endpoints (public form + callbacks) */
 Route::get('/jet-application', [JetApplicationController::class, 'showForm'])
     ->name('jet.application.form'); // public form GET [2]
+    
 Route::post('/jet-application', [JetApplicationController::class, 'submitForm'])
     ->middleware('throttle:5,1')
     ->name('jet.application.submit'); // submit with rate limit [7]
-Route::get('jet-application/{application}', [JetApplicationController::class, 'edit'])
-    ->name('jet.application.edit'); // edit link (kept open as in original) [2]
-Route::put('jet-application/{application}', [JetApplicationController::class, 'updateNew'])
+
+Route::put('jet-application/{application}', [JetApplicationController::class, 'updateForm'])
     ->name('jet.application.update'); // update (kept as-is) [2]
 
 /** Payment (kept open as originally) */
@@ -81,7 +81,7 @@ Route::get('/profile-summary', [JetApplicationController::class, 'profileSummary
 Route::get('/candidate-application', [JetApplicationController::class, 'candidatedDashboardApplication'])
     ->middleware('auth:candidate')
     ->name('application'); // application dashboard [6]
-Route::get('/profile-summary-save', [JetApplicationController::class, 'initiate'])
+Route::get('/get-profile-summary', [JetApplicationController::class, 'getProfileSummary'])
     ->middleware('auth:candidate')
     ->name('profile.summary.save'); // save summary action [6]
 

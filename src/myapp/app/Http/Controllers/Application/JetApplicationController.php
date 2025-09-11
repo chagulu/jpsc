@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Application;
 
 use App\Models\JetApplicationModel;
 use App\Models\Candidate;
@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
+use App\Http\Controllers\Controller;
 
 class JetApplicationController extends Controller
 {
@@ -19,7 +20,7 @@ class JetApplicationController extends Controller
      */
     public function showForm()
     {
-        return view('jet_application_form1');
+        return view('application.jet_application_form');
     }
 
     /**
@@ -125,152 +126,127 @@ public function sendOtp(Request $request)
     /**
      * Handle POST of JET form
      */
- public function submitForm(Request $request)
-{
-    Log::info('Incoming application payload', [
-        'payload' => $request->all(),
-        'ip'      => $request->ip(),
-        'agent'   => $request->userAgent(),
-    ]);
-
-    $rules = [
-        'emailId'         => 'required|email|max:150|unique:candidates,email',
-        'name'            => 'required|string|max:150',
-        'rollNumber'      => 'required|string|max:10',
-        'gender'          => 'required|in:Male,Female,Third Gender',
-        'dateOfBirth'     => 'required|date',
-        'fatherName'      => 'required|string|max:20',
-        'motherName'      => 'required|string|max:20',
-        'mobileNumber'    => 'required|digits:10|unique:candidates,mobile_number',
-    ];
-
-    $validator = Validator::make($request->all(), $rules);
-
-    if ($validator->fails()) {
-        return back()->withErrors($validator)->withInput();
-    }
-
-    try {
-        $applicationNo = 'APP-' . time() . '-' . rand(1000, 9999);
-
-        // 1️⃣ Find or create candidate
-        $candidate = Candidate::where('email', $request->emailId)
-                              ->orWhere('mobile_number', $request->mobileNumber)
-                              ->first();
-
-        if (! $candidate) {
-            $candidate = Candidate::create([
-                'email'         => $request->emailId,
-                'mobile_number' => $request->mobileNumber,
-            ]);
-        }
-
-        // 2️⃣ Ensure candidate doesn’t already have an application
-        if (JetApplicationModel::where('candidate_id', $candidate->id)->exists()) {
-            return back()->withErrors(['db' => 'You have already submitted an application.'])->withInput();
-        }
-
-        // 3️⃣ Prepare attributes
-        $attributes = [
-            'candidate_id'        => $candidate->id,
-            'application_no'      => $applicationNo,
-            'aadhaar_card_number' => $request->aadhaarCardNumber,
-            'mobile_no'           => $request->mobileNumber,
-            'email'               => $request->emailId,
-            'full_name'           => $request->name,
-            'confirm_name'        => $request->confirmName,
-            'roll_number'         => $request->rollNumber,
-            'rd_is_changed_name'  => $request->rdIsChangedName,
-            'have_you_ever_changed_name' => $request->haveYouEverChangedName,
-            'changed_name'        => $request->changedName,
-            'verify_changed_name' => $request->verifyChangedName,
-            'upload_supported_document' => $request->uploadSupportedDocument,
-            'date_of_birth'       => $request->dateOfBirth,
-            'gender'              => $request->gender,
-            'father_name'         => $request->fatherName,
-            'mother_name'         => $request->motherName,
-            'alternate_number'    => $request->alternateNumber,
-            'status'              => 'Draft',
-            'submission_stage'    => 'Draft',
-            'submitted_at'        => null,
-            'last_edit_at'        => now(),
-            'ip_address'          => $request->ip(),
-            'user_agent'          => $request->userAgent(),
-        ];
-
-        // 4️⃣ Save application
-        $application = JetApplicationModel::create($attributes);
-
-        // 5️⃣ Update candidate with otr_no
-        $candidate->update(['otr_no' => $applicationNo]);
-
-        // 6️⃣ Auto-login candidate (if not already logged in)
-        auth('candidate')->login($candidate);
-
-        // 7️⃣ Redirect without ID in URL
-        return redirect()
-            ->route('profile.summary')
-            ->with('success', 'Application saved successfully.');
-
-    } catch (\Throwable $e) {
-        Log::error('Error inserting application: '.$e->getMessage(), [
-            'trace' => $e->getTraceAsString(),
-            'data'  => $request->all(),
+    public function submitForm(Request $request)
+    {
+        Log::info('Incoming application payload', [
+            'payload' => $request->all(),
+            'ip'      => $request->ip(),
+            'agent'   => $request->userAgent(),
         ]);
 
-        $msg = str_contains($e->getMessage(), 'Duplicate entry')
-            ? 'Mobile number or email already exists for another candidate.'
-            : 'Could not save application: '.$e->getMessage();
-
-        return back()->withErrors(['db' => $msg])->withInput();
-    }
-}
-
-    public function edit($id)
-    {
-        $application = JetApplicationModel::findOrFail($id);
-        return view('applications_edit', compact('application'));
-    }
-
-    public function update(Request $request, $id)
-    {
         $rules = [
-            'full_name' => 'required|string|max:150',
+            'emailId'         => 'required|email|max:150|unique:candidates,email',
+            'name'            => 'required|string|max:150',
+            'rollNumber'      => 'required|string|max:10',
+            'gender'          => 'required|in:Male,Female,Third Gender',
+            'dateOfBirth'     => 'required|date',
+            'fatherName'      => 'required|string|max:20',
+            'motherName'      => 'required|string|max:20',
+            'mobileNumber'    => 'required|digits:10|unique:candidates,mobile_number',
         ];
+
         $validator = Validator::make($request->all(), $rules);
+
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
 
-        $application = JetApplicationModel::findOrFail($id);
-        $age = $request->filled('dob')
-            ? Carbon::parse($request->dob)->diffInYears(Carbon::create(2025, 8, 1))
-            : $application->age;
+        try {
+            $applicationNo = 'APP-' . time() . '-' . rand(1000, 9999);
 
-        $application->update([
-            'full_name'    => $request->full_name,
-            'gender'       => $request->gender ?? $application->gender,
-            'date_of_birth'=> $request->dob
-                                  ? Carbon::parse($request->dob)->toDateString()
-                                  : $application->date_of_birth,
-            'mobile_no'    => $request->mobile_no ?? $application->mobile_no,
-            'age'          => $age,
-        ]);
+            // 1️⃣ Find or create candidate
+            $candidate = Candidate::where('email', $request->emailId)
+                                ->orWhere('mobile_number', $request->mobileNumber)
+                                ->first();
 
-        return redirect()
-            ->route('application.edit', $application->id)
-            ->with('success', 'Application updated successfully.');
+            if (! $candidate) {
+                $candidate = Candidate::create([
+                    'email'         => $request->emailId,
+                    'mobile_number' => $request->mobileNumber,
+                ]);
+            }
+
+            // 2️⃣ Ensure candidate doesn’t already have an application
+            if (JetApplicationModel::where('candidate_id', $candidate->id)->exists()) {
+                return back()->withErrors(['db' => 'You have already submitted an application.'])->withInput();
+            }
+
+            // 3️⃣ Prepare attributes
+            $attributes = [
+                'candidate_id'        => $candidate->id,
+                'application_no'      => $applicationNo,
+                'aadhaar_card_number' => $request->aadhaarCardNumber,
+                'mobile_no'           => $request->mobileNumber,
+                'email'               => $request->emailId,
+                'full_name'           => $request->name,
+                'confirm_name'        => $request->confirmName,
+                'roll_number'         => $request->rollNumber,
+                'rd_is_changed_name'  => $request->rdIsChangedName,
+                'have_you_ever_changed_name' => $request->haveYouEverChangedName,
+                'changed_name'        => $request->changedName,
+                'verify_changed_name' => $request->verifyChangedName,
+                'upload_supported_document' => $request->uploadSupportedDocument,
+                'date_of_birth'       => $request->dateOfBirth,
+                'gender'              => $request->gender,
+                'father_name'         => $request->fatherName,
+                'mother_name'         => $request->motherName,
+                'alternate_number'    => $request->alternateNumber,
+                'status'              => 'Draft',
+                'submission_stage'    => 'Draft',
+                'submitted_at'        => null,
+                'last_edit_at'        => now(),
+                'ip_address'          => $request->ip(),
+                'user_agent'          => $request->userAgent(),
+            ];
+
+            // 4️⃣ Save application
+            $application = JetApplicationModel::create($attributes);
+
+            // 5️⃣ Update candidate with otr_no
+            $candidate->update(['otr_no' => $applicationNo]);
+
+            // 6️⃣ Auto-login candidate (if not already logged in)
+            auth('candidate')->login($candidate);
+
+            // 7️⃣ Redirect without ID in URL
+            return redirect()
+                ->route('profile.summary')
+                ->with('success', 'Application saved successfully.');
+
+        } catch (\Throwable $e) {
+            Log::error('Error inserting application: '.$e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'data'  => $request->all(),
+            ]);
+
+            $msg = str_contains($e->getMessage(), 'Duplicate entry')
+                ? 'Mobile number or email already exists for another candidate.'
+                : 'Could not save application: '.$e->getMessage();
+
+            return back()->withErrors(['db' => $msg])->withInput();
+        }
     }
 
-    public function summary($id)
+    public function profileSummary()
     {
-        $application = JetApplicationModel::findOrFail($id);
+        $candidate = auth('candidate')->user();
+
+        if (! $candidate) {
+            return redirect()->route('candidate.login');
+        }
+
+        $application = $candidate->applications()->latest()->first();
+
+        if (! $application) {
+            return redirect()->route('jet.application.form')
+                            ->withErrors(['db' => 'No application found for your account.']);
+        }
 
         $baseFee = 1000;
         $gst     = round($baseFee * 0.18, 2);
         $total   = $baseFee + $gst;
 
-        return view('summary', [
+        return view('application.profile_details', [
             'application' => $application,
             'baseFee'     => $baseFee,
             'gst'         => $gst,
@@ -278,69 +254,42 @@ public function sendOtp(Request $request)
         ]);
     }
 
-    public function profileSummary()
-{
-    $candidate = auth('candidate')->user();
 
-    if (! $candidate) {
-        return redirect()->route('candidate.login');
+    public function getProfileSummary(Request $request)
+    {
+        // Get logged-in candidate
+        $candidate = auth('candidate')->user();
+
+        if (! $candidate) {
+            return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
+        }
+
+        // Fetch the candidate's latest application
+        $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
+
+        if (! $application) {
+            return back()->withErrors(['db' => 'No application found for your profile.']);
+        }
+
+        if ($request->action === 'agree') {
+            return view('application.thankYou', [
+                'otr_number' => $application->application_no
+            ]);
+        } elseif ($request->action === 'update') {
+            return view('application.applications_edit', [
+                'application' => $application
+            ]);
+        }
+
+        return back()->withErrors(['action' => 'Invalid action provided.']);
     }
-
-    $application = $candidate->applications()->latest()->first();
-
-    if (! $application) {
-        return redirect()->route('jet.application.form')
-                         ->withErrors(['db' => 'No application found for your account.']);
-    }
-
-    $baseFee = 1000;
-    $gst     = round($baseFee * 0.18, 2);
-    $total   = $baseFee + $gst;
-
-    return view('profile_details', [
-        'application' => $application,
-        'baseFee'     => $baseFee,
-        'gst'         => $gst,
-        'total'       => $total,
-    ]);
-}
-
-
-    public function initiate(Request $request)
-{
-    // Get logged-in candidate
-    $candidate = auth('candidate')->user();
-
-    if (! $candidate) {
-        return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
-    }
-
-    // Fetch the candidate's latest application
-    $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
-
-    if (! $application) {
-        return back()->withErrors(['db' => 'No application found for your profile.']);
-    }
-
-    if ($request->action === 'agree') {
-        return view('thankYou', [
-            'otr_number' => $application->application_no
-        ]);
-    } elseif ($request->action === 'update') {
-        return view('applications_edit', [
-            'application' => $application
-        ]);
-    }
-
-    return back()->withErrors(['action' => 'Invalid action provided.']);
-}
 
 
     public function thankyou(){
         return view('thankYou');
     }
 
-    public function updateNew(Request $request, $id){
+    public function updateForm(Request $request, $id){
         Log::info('Incoming application payload', [
             'payload' => $request->all(),
             'ip'      => $request->ip(),
@@ -424,6 +373,6 @@ public function sendOtp(Request $request)
         if (! $application) {
             return back()->withErrors(['db' => 'No application found for your profile.']);
         }
-        return view('application', compact('application'));
+        return view('application.application', compact('application'));
     }
 }

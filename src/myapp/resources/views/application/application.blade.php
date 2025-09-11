@@ -92,15 +92,15 @@
         <div class="section-title">Candidate Details</div>
         <table class="table table-bordered">
           <tbody>
-            <tr><th style="width: 30%;">Full Name</th><td>BASANTA KUMAR SWAIN</td></tr>
-            <tr><th>Date of Birth</th><td>1994-01-01</td></tr>
-            <tr><th>Gender</th><td>Male</td></tr>
-            <tr><th>Father's Name</th><td>DEBENDRA</td></tr>
-            <tr><th>Mother's Name</th><td>SUKANTI</td></tr>
-            <tr><th>Mobile Number</th><td>9439971201</td></tr>
-            <tr><th>Email ID</th><td>arshad10@gmail.com</td></tr>
-            <tr><th>Aadhaar Number</th><td>899640301519</td></tr>
-            <tr><th>Roll Number</th><td>hjghjg5676</td></tr>
+            <tr><th style="width: 30%;">Full Name</th><td>{{ $application->full_name}}</td></tr>
+            <tr><th>Date of Birth</th><td>{{ $application->full_name}}</td></tr>
+            <tr><th>Gender</th><td>{{ $application->full_name}}</td></tr>
+            <tr><th>Father's Name</th><td>{{ $application->full_name}}</td></tr>
+            <tr><th>Mother's Name</th><td>{{ $application->full_name}}</td></tr>
+            <tr><th>Mobile Number</th><td>{{ $application->full_name}}</td></tr>
+            <tr><th>Email ID</th><td>{{ $application->full_name}}</td></tr>
+            <tr><th>Aadhaar Number</th><td>{{ $application->full_name}}</td></tr>
+            <tr><th>Roll Number</th><td>{{ $application->full_name}}</td></tr>
           </tbody>
         </table>
 
@@ -108,8 +108,8 @@
         <div class="section-title">Address</div>
         <table class="table table-bordered">
           <tbody>
-            <tr><th style="width: 30%;">Permanent Address</th><td>Village XYZ, Block ABC, Patna, Bihar</td></tr>
-            <tr><th>Correspondence Address</th><td>Same as above</td></tr>
+            <tr><th style="width: 30%;">Permanent Address</th><td>{{ $application->full_name}}</td></tr>
+            <tr><th>Correspondence Address</th><td>{{ $application->full_name}}</td></tr>
           </tbody>
         </table>
 
@@ -127,7 +127,7 @@
             <p>Place: ____________</p>
           </div>
           <div class="col-md-6 text-right">
-            <div class="signature-box">Candidate Signature</div>
+            <div class="signature-box">{{ $application->full_name}}</div>
           </div>
         </div>
 
