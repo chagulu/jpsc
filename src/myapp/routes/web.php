@@ -69,9 +69,19 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
             return view('candidate.dashboard');
         })->name('dashboard'); // candidate dashboard [6]
 
-         Route::get('/profile', function () {
-            return view('candidate.candidate_form_tab');
-        })->name('profile'); // candidate dashboard [6]
+         Route::get('/profile', [JetApplicationController::class, 'applicationProfile'])->name('profile'); // candidate dashboard [6]
+         Route::get('/upload-documents/{application_id}', [JetApplicationController::class, 'uploadDocuments'])->name('uploadDocuments'); // candidate dashboard [6]
+         Route::post('/upload-documents/{application_id}', [JetApplicationController::class, 'uploadDocumentsStore'])->name('uploadDocumentsStore'); // candidate dashboard [6]
+         Route::get('/other-details/{application_id}', [JetApplicationController::class, 'otherDetails'])->name('otherDetails'); // candidate dashboard [6]
+         Route::post('/other-details/{application_id}', [JetApplicationController::class, 'otherDetailsStore'])->name('otherDetailsStore'); // candidate dashboard [6]
+         Route::get('/education/{application_id}', [JetApplicationController::class, 'education'])->name('education'); // candidate dashboard [6]
+         Route::post('/education/{application_id}', [JetApplicationController::class, 'educationStore'])->name('educationStore'); // candidate dashboard [6]
+
+         Route::get('/preview/{application_id}', [JetApplicationController::class, 'preview'])->name('preview'); // candidate dashboard [6]
+         Route::post('/preview/{application_id}', [JetApplicationController::class, 'previewStore'])->name('previewStore'); // candidate dashboard [6]
+
+         Route::get('/completed', [JetApplicationController::class, 'completed'])->name('completed'); // candidate dashboard [6]
+         Route::post('/completed/{application_id}', [JetApplicationController::class, 'completedStore'])->name('completedStore'); // candidate dashboard [6]
 
        
 

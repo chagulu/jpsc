@@ -290,6 +290,7 @@ public function sendOtp(Request $request)
     }
 
     public function updateForm(Request $request, $id){
+        // return $request->all();
         Log::info('Incoming application payload', [
             'payload' => $request->all(),
             'ip'      => $request->ip(),
@@ -341,6 +342,11 @@ public function sendOtp(Request $request)
                 'user_agent'            => $request->userAgent(),
             ]);
 
+            if(isset($request->internal_profile) && $request->internal_profile === "internal_profile"){
+                return redirect()
+                    ->route('candidate.uploadDocuments', $application->id)
+                    ->with('success', 'Application saved successfully.');
+            }
             return redirect()
                 ->route('profile.summary', $application->id)
                 ->with('success', 'Application saved successfully.');
@@ -374,5 +380,191 @@ public function sendOtp(Request $request)
             return back()->withErrors(['db' => 'No application found for your profile.']);
         }
         return view('application.application', compact('application'));
+    }
+
+    public function applicationProfile(){
+        $candidate = auth('candidate')->user();
+
+        if (! $candidate) {
+            return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
+        }
+
+        // Fetch the candidate's latest application
+        $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
+
+        if (! $application) {
+            return back()->withErrors(['db' => 'No application found for your profile.']);
+        }
+        return view('candidate.candidate_form_tab', [
+                'application' => $application
+        ]);
+    }
+
+    public function uploadDocuments(){
+        $candidate = auth('candidate')->user();
+
+        if (! $candidate) {
+            return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
+        }
+
+        // Fetch the candidate's latest application
+        $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
+
+        if (! $application) {
+            return back()->withErrors(['db' => 'No application found for your profile.']);
+        }
+        return view('candidate.upload_document', [
+                'application' => $application
+        ]);
+    }
+
+    public function uploadDocumentsStore(){
+        $candidate = auth('candidate')->user();
+
+        if (! $candidate) {
+            return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
+        }
+
+        // Fetch the candidate's latest application
+        $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
+
+        if (! $application) {
+            return back()->withErrors(['db' => 'No application found for your profile.']);
+        }
+        return redirect()
+                    ->route('candidate.otherDetails', $application->id)
+                    ->with('success', 'Application saved successfully.');
+    }
+
+    public function otherDetails(){
+        $candidate = auth('candidate')->user();
+
+        if (! $candidate) {
+            return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
+        }
+
+        // Fetch the candidate's latest application
+        $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
+
+        if (! $application) {
+            return back()->withErrors(['db' => 'No application found for your profile.']);
+        }
+        return view('candidate.other_details', [
+                'application' => $application
+        ]);
+        
+    }
+
+    public function otherDetailsStore(){
+        $candidate = auth('candidate')->user();
+
+        if (! $candidate) {
+            return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
+        }
+
+        // Fetch the candidate's latest application
+        $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
+
+        if (! $application) {
+            return back()->withErrors(['db' => 'No application found for your profile.']);
+        }
+        
+        return redirect()
+            ->route('candidate.education', $application->id)
+            ->with('success', 'Application saved successfully.');
+        
+    }
+
+    public function education(){
+        $candidate = auth('candidate')->user();
+        // dd($candidate);
+        if (! $candidate) {
+            return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
+        }
+
+        // Fetch the candidate's latest application
+        $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
+
+        if (! $application) {
+            return back()->withErrors(['db' => 'No application found for your profile.']);
+        }
+
+        return view('candidate.education', [
+                'application' => $application
+        ]);
+    }
+
+    public function educationStore(){
+        $candidate = auth('candidate')->user();
+
+        if (! $candidate) {
+            return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
+        }
+
+        // Fetch the candidate's latest application
+        $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
+
+        if (! $application) {
+            return back()->withErrors(['db' => 'No application found for your profile.']);
+        }
+        return redirect()
+                    ->route('candidate.preview', $application->id)
+                    ->with('success', 'Application saved successfully.');
+    }
+
+    public function preview(){
+        $candidate = auth('candidate')->user();
+        // dd($candidate);
+        if (! $candidate) {
+            return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
+        }
+
+        // Fetch the candidate's latest application
+        $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
+
+        if (! $application) {
+            return back()->withErrors(['db' => 'No application found for your profile.']);
+        }
+
+        return view('candidate.preview', [
+                'application' => $application
+        ]);
+    }
+
+    public function previewStore(){
+        $candidate = auth('candidate')->user();
+
+        if (! $candidate) {
+            return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
+        }
+
+        // Fetch the candidate's latest application
+        $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
+
+        if (! $application) {
+            return back()->withErrors(['db' => 'No application found for your profile.']);
+        }
+        return redirect()
+                    ->route('candidate.completed', $application->id)
+                    ->with('success', 'Application saved successfully.');
+    }
+
+    public function completed(){
+        $candidate = auth('candidate')->user();
+        // dd($candidate);
+        if (! $candidate) {
+            return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
+        }
+
+        // Fetch the candidate's latest application
+        $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
+
+        if (! $application) {
+            return back()->withErrors(['db' => 'No application found for your profile.']);
+        }
+
+        return view('candidate.completed', [
+                'application' => $application
+        ]);
     }
 }
