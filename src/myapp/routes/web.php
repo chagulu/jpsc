@@ -69,6 +69,12 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
             return view('candidate.dashboard');
         })->name('dashboard'); // candidate dashboard [6]
 
+         Route::get('/profile', function () {
+            return view('candidate.candidate_form_tab');
+        })->name('profile'); // candidate dashboard [6]
+
+       
+
         Route::post('/logout', [CandidateAuthController::class, 'logout'])
             ->name('logout'); // logout [6]
     });
@@ -94,6 +100,8 @@ Route::get('/get-profile-summary', [JetApplicationController::class, 'getProfile
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard'); // admin dashboard [1][13]
+
+
 
 Route::middleware('auth')->group(function () {
     // admin profile maintenance
