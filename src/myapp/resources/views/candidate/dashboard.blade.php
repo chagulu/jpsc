@@ -3,139 +3,239 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Candidate Dashboard - JPSC</title>
-
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-
+  <title>Candidate Dashboard</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f6f9;
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
     }
-    .progressbar {
-      counter-reset: step;
+    .wrapper {
       display: flex;
-      justify-content: space-between;
-      margin: 30px 0;
-      padding: 0;
-      list-style-type: none;
+      width: 100%;
     }
-    .progressbar li {
-      position: relative;
-      flex: 1;
-      text-align: center;
-      font-size: 14px;
-      cursor: pointer;
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background: #343a40;
+      color: #fff;
+      min-height: 100vh;
+      padding-top: 20px;
+      position: fixed;
     }
-    .progressbar li a {
+    .sidebar a {
+      color: #ddd;
       display: block;
-      color: #6c757d;
+      padding: 12px 20px;
       text-decoration: none;
-      font-weight: 500;
+      font-size: 14px;
     }
-    .progressbar li.active a {
-      color: #1abc9c;
-      font-weight: 600;
-    }
-    .progressbar li::before {
-      counter-increment: step;
-      content: counter(step);
-      width: 35px;
-      height: 35px;
-      line-height: 35px;
-      border: 2px solid #6c757d;
-      display: block;
-      text-align: center;
-      margin: 0 auto 10px auto;
-      border-radius: 50%;
-      background-color: #fff;
-      color: #6c757d;
-      transition: 0.3s;
-    }
-    .progressbar li.active::before {
-      border-color: #1abc9c;
-      background-color: #1abc9c;
+    .sidebar a:hover, .sidebar a.active {
+      background: #495057;
       color: #fff;
     }
-    .progressbar li::after {
-      content: '';
-      position: absolute;
+    /* Header */
+    .header {
       width: 100%;
-      height: 2px;
-      background-color: #6c757d;
-      top: 18px;
-      left: -50%;
-      z-index: -1;
+      background: #007bff;
+      color: #fff;
+      padding: 12px 20px;
+      position: fixed;
+      top: 0;
+      left: 220px;
+      z-index: 1000;
     }
-    .progressbar li:first-child::after {
-      content: none;
+    .header h4 {
+      margin: 0;
     }
-    .progressbar li.active::after {
-      background-color: #1abc9c;
+    /* Main content */
+    .content {
+      margin-left: 220px;
+      margin-top: 70px;
+      padding: 20px;
     }
-    .footer {
-      background: #f8f9fa;
-      padding: 12px;
-      text-align: center;
+    /* Dashboard cards */
+    .dashboardmaindiv {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      grid-gap: 20px;
+    }
+    .card {
+      border-radius: 10px;
+      box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
+    }
+    .mobilediv, .mobiledivinnerbg {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
       font-size: 14px;
-      color: #666;
-      border-top: 1px solid #eaeaea;
+    }
+    .mobiledivinnerbg {
+      background-color: #f1f1f1;
+    }
+    .tickmarkstyle {
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .crossmarkstyle {
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .profilemaindiv {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .profileimg {
+      margin: 0 10px;
+    }
+    .profileimg img {
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+    .textdeatils {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #eaeaea;
+      padding: 5px 0;
+    }
+    .nametext {
+      margin: 0;
+      font-weight: 600;
+      color: #333;
+    }
+    .newPageOpenUpdater {
+      display: block;
+      font-size: 12px;
+      margin-top: 5px;
+      color: #007bff;
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
 
-<div class="d-flex" id="wrapper">
+<div class="wrapper">
   <!-- Sidebar -->
-  <div class="sidebar bg-dark text-white p-3" style="min-width:220px;">
-    <div class="text-center mb-4">
-      <img src="https://www.jpscexam.com/otr_new/img/logo/jpscImage.png" alt="Logo" class="img-fluid" style="max-height:65px;">
-      <h6 class="mt-2">Candidate Dashboard</h6>
-    </div>
-    <a href="/candidate/profile" class="d-block text-light mb-2"><i class="fas fa-user mr-2"></i> Profile</a>
-    <a href="#" class="d-block text-light mb-2"><i class="fas fa-file-alt mr-2"></i> Application</a>
-    <a href="#" class="d-block text-light mb-2"><i class="fas fa-id-card mr-2"></i> Admit Card</a>
-    <a href="#" class="d-block text-light mb-2"><i class="fas fa-poll mr-2"></i> Results</a>
-    <a href="#" class="d-block text-light mb-2"><i class="fas fa-bell mr-2"></i> Notifications</a>
-    <a href="#" class="d-block text-danger"><i class="fas fa-sign-out-alt mr-2"></i> Logout</a>
+  <div class="sidebar">
+    <h5 class="text-center text-light">Menu</h5>
+    <a href="dashboard.html" class="active">Dashboard</a>
+    <a href="profile.html">Profile</a>
+    <a href="sign-photo.html">Sign & Photo</a>
+    <a href="other-details.html">Other Details</a>
+    <a href="education.html">Education & Experience</a>
+    <a href="preview.html">Preview</a>
+    <a href="#">Completed</a>
   </div>
 
-  <!-- Main Page -->
-  <div class="flex-grow-1 d-flex flex-column">
-    <!-- Topbar -->
-    <nav class="navbar navbar-expand topbar bg-success text-white">
-      <a class="navbar-brand text-white font-weight-bold" href="#">
-        <img src="https://www.jpscexam.com/otr_new/img/logo/jpscImage.png" alt="JPSC Logo" style="height:40px;" class="mr-2">
-        Jharkhand Public Service Commission
-      </a>
-      <div class="ml-auto d-flex align-items-center">
-        <span class="mr-3">Welcome, Candidate</span>
-        <img src="https://via.placeholder.com/40" class="rounded-circle border" alt="Profile">
-      </div>
-    </nav>
+  <!-- Header -->
+  <div class="header">
+    <h4>Candidate Dashboard</h4>
+  </div>
 
-   
-    <!-- Footer -->
-    <footer class="footer">
-      © 2025 JHARKHAND PUBLIC SERVICE COMMISSION | All Rights Reserved
-    </footer>
+  <!-- Content -->
+  <div class="content">
+    <div class="dashboardmaindiv">
+
+      <!-- OTR Status Card -->
+      <div class="card otrsegment">
+        <div class="card-header text-center">
+          <h6 class="m-0 font-weight-bold text-dark">OTR Status</h6>
+        </div>
+        <div class="card-body">
+
+          <div class="mobilediv">
+            <p>Email Verified</p>
+            <span style="color:green" class="tickmarkstyle">✔</span>
+          </div>
+
+          <div class="mobiledivinnerbg">
+            <p>Mobile Verified</p>
+            <span style="color:green" class="tickmarkstyle">✔</span>
+          </div>
+
+          <div class="mobilediv">
+            <p>Profile Details Updated</p>
+            <span style="color:green" class="tickmarkstyle">✔</span>
+          </div>
+
+          <div class="mobiledivinnerbg">
+            <p>Photo Uploaded</p>
+            <span style="color:red" class="crossmarkstyle">✖</span>
+            <a class="newPageOpenUpdater" href="/otr/sign-photo/open-sign-photo-page?mode=edit">Click Here To Add</a>
+          </div>
+
+          <div class="mobilediv">
+            <p>Signature Uploaded</p>
+            <span style="color:red" class="crossmarkstyle">✖</span>
+          </div>
+
+          <div class="mobiledivinnerbg">
+            <p>Other Details Updated</p>
+            <span style="color:red" class="crossmarkstyle">✖</span>
+          </div>
+
+          <div class="mobilediv">
+            <p>Education &amp; Experience Details Updated</p>
+            <span style="color:red" class="crossmarkstyle">✖</span>
+          </div>
+
+          <div class="mobiledivinnerbg">
+            <p>Finally Submitted</p>
+            <span style="color:red" class="crossmarkstyle">✖</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Candidate Details Card -->
+      <div class="card photosection">
+        <div class="card-header text-center">
+          <h6 class="m-0 font-weight-bold text-dark">Candidate Details</h6>
+        </div>
+        <div class="card-body">
+
+          <div class="profilemaindiv">
+            <div class="profileimg">
+              <img id="photoimage" src="/otr/pngtree-user-vector-avatar-png-image_1541962.jpg"
+                   height="130" width="130" alt="profile"
+                   onerror="this.onerror=null; this.src='/otr/pngtree-user-vector-avatar-png-image_1541962.jpg';">
+            </div>
+            <div class="profileimg">
+              <img id="signimage" src="/otr/Dummy Signature (1).PNG"
+                   height="130" width="130" alt="Signature"
+                   onerror="this.onerror=null; this.src='/otr/Dummy Signature (1).PNG';">
+            </div>
+          </div>
+
+          <div class="textdeatils">
+            <p class="nametext"><b>Name</b></p>
+            <p>MOHD ARSHAD</p>
+          </div>
+          <div class="textdeatils">
+            <p class="nametext"><b>Date of Birth</b></p>
+            <p>01-01-2001</p>
+          </div>
+          <div class="textdeatils">
+            <p class="nametext"><b>Gender</b></p>
+            <p>Male</p>
+          </div>
+          <div class="textdeatils">
+            <p class="nametext"><b>Category</b></p>
+            <p>---</p>
+          </div>
+          <div class="textdeatils">
+            <p class="nametext"><b>OTR No.</b></p>
+            <p>20250117170</p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
-
-<!-- Scripts -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-  // Highlight progress bar based on active tab
-  $('#formTabs a').on('shown.bs.tab', function (e) {
-    $('.progressbar li').removeClass('active');
-    $(e.target).parent().addClass('active');
-    $(e.target).parent().prevAll().addClass('active'); // highlight previous steps
-  });
-</script>
 
 </body>
 </html>

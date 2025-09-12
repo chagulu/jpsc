@@ -395,7 +395,7 @@ public function sendOtp(Request $request)
         if (! $application) {
             return back()->withErrors(['db' => 'No application found for your profile.']);
         }
-        return view('candidate.candidate_form_tab', [
+        return view('candidate.candidate_profile', [
                 'application' => $application
         ]);
     }
