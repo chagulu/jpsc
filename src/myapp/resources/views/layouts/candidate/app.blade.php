@@ -26,7 +26,13 @@
     <a href="" class="d-block text-light mb-2"><i class="fas fa-id-card mr-2"></i> Admit Card</a>
     <a href="" class="d-block text-light mb-2"><i class="fas fa-poll mr-2"></i> Results</a>
     <a href="" class="d-block text-light mb-2"><i class="fas fa-bell mr-2"></i> Notifications</a>
-    <a href="" class="d-block text-danger"><i class="fas fa-sign-out-alt mr-2"></i> Logout</a>
+   <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-inline">
+    @csrf
+    <button type="submit" class="d-block text-danger btn btn-link p-0">
+        <i class="fas fa-sign-out-alt mr-2"></i> Logout
+    </button>
+</form>
+
   </div>
 
   {{-- Main --}}

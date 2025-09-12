@@ -8,5 +8,5 @@
   <a href="{{ url('admit') }}" class="d-block text-light mb-2"><i class="fas fa-id-card mr-2"></i> Admit Card</a>
   <a href="{{ url('results') }}" class="d-block text-light mb-2"><i class="fas fa-poll mr-2"></i> Results</a>
   <a href="{{ url('notifications') }}" class="d-block text-light mb-2"><i class="fas fa-bell mr-2"></i> Notifications</a>
-  <a href="{{ url('logout') }}" class="d-block text-danger"><i class="fas fa-sign-out-alt mr-2"></i> Logout</a>
+  <a href="{{ route('logout') }}" class="d-block text-danger"><i class="fas fa-sign-out-alt mr-2"></i> Logout</a>
 </div>
