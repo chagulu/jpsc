@@ -98,7 +98,7 @@
                                     </tr>
                                     <tr>
                                         <th scope="row">OTR No.</th>
-                                        <td><span class="badge bg-info">{{ $application->otr_no ?? '---' }}</span></td>
+                                        <td><span class="badge bg-info">{{ $application->application_no ?? '---' }}</span></td>
                                     </tr>
                                 </tbody>
                             </table>

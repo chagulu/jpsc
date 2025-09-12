@@ -402,7 +402,6 @@ public function sendOtp(Request $request)
         if (! $application) {
             return back()->withErrors(['db' => 'No application found for your profile.']);
         }
-
         // Prepare OTR status dynamically
         $statusChecks = [
             'Email Verified'          => !empty($application->email_verified_at),

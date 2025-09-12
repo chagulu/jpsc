@@ -17,6 +17,7 @@ class JetApplicationModel extends Model
         'confirm_name',
         'roll_number',
         'rd_is_changed_name',
+        'otr_no',
         'have_you_ever_changed_name',
         'changed_name',
         'verify_changed_name',
