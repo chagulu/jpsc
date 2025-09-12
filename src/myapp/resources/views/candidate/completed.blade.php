@@ -9,15 +9,28 @@
 
         <!-- Progress Bar -->
         <div class="container-fluid">
-            <ul class="progressbar">
-                <li><a href="">Profile</a></li>
-                <li><a href="">Sign & Photo</a></li>
-                <li><a href="">Other Details</a></li>
-                <li><a href="">Education</a></li>
-                <li><a href="">Preview</a></li>
-                <li class="active"><a href="">Completed</a></li>
-            </ul>
-        </div>
+    <ul class="progressbar">
+        <li>
+            <a href="{{ route('candidate.profile') }}">Profile</a>
+        </li>
+        <li>
+            <a href="{{ route('candidate.uploadDocuments', $application->id) }}">Sign & Photo</a>
+        </li>
+        <li>
+            <a href="{{ route('candidate.otherDetails', $application->id) }}">Other Details</a>
+        </li>
+        <li>
+            <a href="{{ route('candidate.education', $application->id) }}">Education</a>
+        </li>
+        <li>
+            <a href="{{ route('candidate.preview', $application->id) }}">Preview</a>
+        </li>
+        <li class="active">
+            <a href="{{ route('candidate.completed') }}">Completed</a>
+        </li>
+    </ul>
+</div>
+
 
         <!-- Page Content -->
         <div class="container p-4 flex-grow-1">
