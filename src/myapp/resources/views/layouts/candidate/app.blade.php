@@ -185,7 +185,11 @@
     <div class="ml-auto dropdown">
         <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="mr-2">Welcome, Candidate</span>
-            <img src="https://via.placeholder.com/40" class="rounded-circle border" alt="User">
+            <img src="{{ asset('candidate/photos/profile.png') }}" 
+     class="rounded-circle border" 
+     alt="User" 
+     style="width:32px; height:32px; object-fit:cover;">
+
         </a>
         <div class="dropdown-menu dropdown-menu-right shadow" aria-labelledby="profileDropdown">
             <a class="dropdown-item" href="{{ route('candidate.profile') }}">
