@@ -569,23 +569,26 @@ public function uploadDocumentsStore(Request $request, $applicationId)
 
 
     public function education(){
-        $candidate = auth('candidate')->user();
-        // dd($candidate);
-        if (! $candidate) {
-            return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
-        }
-
-        // Fetch the candidate's latest application
-        $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
-
-        if (! $application) {
-            return back()->withErrors(['db' => 'No application found for your profile.']);
-        }
-
-        return view('candidate.education', [
-                'application' => $application
-        ]);
+    $candidate = auth('candidate')->user();
+    if (! $candidate) {
+        return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
     }
+
+    $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
+
+    if (! $application) {
+        return back()->withErrors(['db' => 'No application found for your profile.']);
+    }
+
+    // Fetch existing education records
+    $educations = $application->education()->get();
+
+    return view('candidate.education', [
+        'application' => $application,
+        'educations'  => $educations
+    ]);
+}
+
 
     public function educationStore(Request $request)
     {
