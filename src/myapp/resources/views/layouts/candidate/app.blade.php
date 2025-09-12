@@ -25,7 +25,7 @@
       <i class="fas fa-user mr-2"></i> Profile
   </a>
 
-    <a href="" class="d-block text-light mb-2"><i class="fas fa-file-alt mr-2"></i> Application</a>
+    <a href="{{ route('candidate.profile') }}" class="d-block text-light mb-2"><i class="fas fa-file-alt mr-2"></i> Application</a>
     <a href="" class="d-block text-light mb-2"><i class="fas fa-id-card mr-2"></i> Admit Card</a>
     <a href="" class="d-block text-light mb-2"><i class="fas fa-poll mr-2"></i> Results</a>
     <a href="" class="d-block text-light mb-2"><i class="fas fa-bell mr-2"></i> Notifications</a>
