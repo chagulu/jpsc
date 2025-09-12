@@ -260,19 +260,22 @@
                   </div>
 
                   <!-- Gender -->
-                  <!-- <div class="form-group row">
-                    <label for="gender" class="col-sm-3 col-form-label">Gender<span class="required">*</span></label>
-                    <div class="col-sm-4">
-                      <select class="form-control" id="gender" name="gender">
+              <div class="form-group row">
+                <label for="gender" class="col-sm-3 col-form-label">
+                    Gender <span class="required">*</span>
+                </label>
+                <div class="col-sm-4">
+                    <select class="form-control" id="gender" name="gender">
                         <option value="">Select</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Third Gender">Third Gender</option>
-                      </select>
-                    </div>
-                  </div> -->
+                        <option value="Male" {{ old('gender', $genderOld ?? '') == 'Male' ? 'selected' : '' }}>Male</option>
+                        <option value="Female" {{ old('gender', $genderOld ?? '') == 'Female' ? 'selected' : '' }}>Female</option>
+                        <option value="Third Gender" {{ old('gender', $genderOld ?? '') == 'Third Gender' ? 'selected' : '' }}>Third Gender</option>
+                    </select>
+                </div>
+            </div>
 
-                  <div class="form-group">
+
+                  {{-- <div class="form-group">
                   <label>Gender *</label><br>
                   @php $genderOld = old('gender'); @endphp
                   <label><input type="radio" name="gender" value="Male" {{ $genderOld == 'Male' ? 'checked' : '' }}> Male</label>
@@ -281,7 +284,7 @@
                   @error('gender')
                       <div class="text-danger">{{ $message }}</div>
                   @enderror
-              </div>
+              </div> --}}
 
                   <div class="form-group row">
                     <label for="confirmGender" class="col-sm-3 col-form-label">Confirm Gender<span class="required">*</span></label>
