@@ -33,8 +33,6 @@
                 <i class="fas fa-user-circle fa-3x text-muted mb-2"></i>
                 <p class="mb-1">Drag & drop or click to upload</p>
                 <input type="file" class="form-control-file d-none" id="photoInput" name="photo" accept="image/*">
-                <img id="photoPreview" src="{{ asset('candidate/photos/profile.png') }}" 
-                     class="mt-2 img-thumbnail d-none" width="120" height="120">
               </div>
               <small class="form-text text-muted">Allowed formats: JPG, PNG. Max size: 200KB</small>
             </div>
@@ -48,14 +46,13 @@
                 <i class="fas fa-signature fa-3x text-muted mb-2"></i>
                 <p class="mb-1">Drag & drop or click to upload</p>
                 <input type="file" class="form-control-file d-none" id="signInput" name="signature" accept="image/*">
-                <img id="signPreview" src="{{ asset('candidate/signatures/signature.jpg') }}" 
-                     class="mt-2 img-thumbnail d-none" width="120" height="80">
               </div>
               <small class="form-text text-muted">Allowed formats: JPG, PNG. Max size: 100KB</small>
             </div>
           </div>
+
           @if ($errors->any())
-          <div class="alert alert-danger">
+          <div class="alert alert-danger mt-3">
               <ul class="mb-0">
                   @foreach ($errors->all() as $error)
                       <li>{{ $error }}</li>
@@ -64,6 +61,28 @@
           </div>
          @endif
 
+          <!-- Preview Section -->
+          <div class="container mt-4">
+            <div class="row">
+                <!-- Photo Preview -->
+                <div class="col-md-6 text-center">
+                    <h6>Photo Preview</h6>
+                    <div class="border rounded p-2">
+                        <img id="photoPreviewDiv" src="{{ asset('candidate/photos/profile.png') }}" 
+                             class="img-fluid" style="max-width: 200px; max-height: 200px;">
+                    </div>
+                </div>
+
+                <!-- Signature Preview -->
+                <div class="col-md-6 text-center">
+                    <h6>Signature Preview</h6>
+                    <div class="border rounded p-2">
+                        <img id="signPreviewDiv" src="{{ asset('candidate/signatures/signature.jpg') }}" 
+                             class="img-fluid" style="max-width: 200px; max-height: 100px;">
+                    </div>
+                </div>
+            </div>
+          </div>
 
           <!-- Action Buttons -->
           <div class="form-group row mt-4">
@@ -120,18 +139,19 @@
   </style>
 
   <script>
-    function previewImage(input, previewId) {
+    function previewImage(input, previewDivId) {
       const file = input.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = e => {
-          document.getElementById(previewId).src = e.target.result;
-          document.getElementById(previewId).classList.remove('d-none');
+          const preview = document.getElementById(previewDivId);
+          preview.src = e.target.result;
         };
         reader.readAsDataURL(file);
       }
     }
 
+    // Click triggers file input
     document.getElementById('photoUpload').addEventListener('click', () => {
       document.getElementById('photoInput').click();
     });
@@ -139,11 +159,12 @@
       document.getElementById('signInput').click();
     });
 
+    // Preview images
     document.getElementById('photoInput').addEventListener('change', function () {
-      previewImage(this, 'photoPreview');
+      previewImage(this, 'photoPreviewDiv');
     });
     document.getElementById('signInput').addEventListener('change', function () {
-      previewImage(this, 'signPreview');
+      previewImage(this, 'signPreviewDiv');
     });
   </script>
 @endsection
