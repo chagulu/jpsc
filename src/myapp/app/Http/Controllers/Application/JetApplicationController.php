@@ -488,8 +488,8 @@ public function uploadDocumentsStore(Request $request, $applicationId)
 
     // Validate uploaded files
     $request->validate([
-        'photo'     => 'nullable|image|mimes:jpg,jpeg,png|max:200',   // 200 KB
-        'signature' => 'nullable|image|mimes:jpg,jpeg,png|max:100',   // 100 KB
+        'photo'     => 'nullable|image|mimes:jpg,jpeg,png|max:200000',   // 200 KB
+        'signature' => 'nullable|image|mimes:jpg,jpeg,png|max:100000',   // 100 KB
     ]);
 
     // Fetch existing document or create new
