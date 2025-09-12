@@ -33,7 +33,8 @@
                             <i class="fas fa-birthday-cake text-primary mr-2"></i>Date of Birth
                         </label>
                         <div class="col-md-6">
-                            <input type="date" name="dob" class="form-control" required>
+                            <input type="date" name="dob" class="form-control" required
+                                   value="{{ old('dob', optional($application->date_of_birth)?->format('Y-m-d')) }}">
                         </div>
                     </div>
 
@@ -45,9 +46,12 @@
                         <div class="col-md-6">
                             <select name="gender" class="form-control" required>
                                 <option value="">-- Select --</option>
-                                <option>Male</option>
-                                <option>Female</option>
-                                <option>Other</option>
+                                @foreach(['Male','Female','Transgender'] as $gender)
+                                    <option value="{{ $gender }}" 
+                                        {{ old('gender', $application->gender) === $gender ? 'selected' : '' }}>
+                                        {{ $gender }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -60,51 +64,62 @@
                         <div class="col-md-6">
                             <select name="category" class="form-control" required>
                                 <option value="">-- Select Category --</option>
-                                <option>General</option>
-                                <option>OBC</option>
-                                <option>SC</option>
-                                <option>ST</option>
+                                @foreach(['UR','OBC','SC','ST','EBC','BC','EWS'] as $cat)
+                                    <option value="{{ $cat }}" 
+                                        {{ old('category', $application->category) === $cat ? 'selected' : '' }}>
+                                        {{ $cat }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
 
-                    <!-- Address -->
                     <!-- Address -->
                     <div class="form-group row">
                         <label class="col-md-3 col-form-label font-weight-bold">
                             <i class="fas fa-map-marker-alt text-primary mr-2"></i>Address
                         </label>
                         <div class="col-md-6">
-                            <input type="text" name="address_line1" class="form-control mb-2" placeholder="Address Line 1" required>
-                            <input type="text" name="address_line2" class="form-control mb-2" placeholder="Address Line 2 (Optional)">
+                            <input type="text" name="address_line1" class="form-control mb-2" 
+                                   placeholder="Address Line 1" 
+                                   value="{{ old('address_line1', optional($application->addresses->first())->address_line1) }}" required>
+                            <input type="text" name="address_line2" class="form-control mb-2" 
+                                   placeholder="Address Line 2 (Optional)" 
+                                   value="{{ old('address_line2', optional($application->addresses->first())->address_line2) }}">
                             <div class="row">
                                 <div class="col-md-6 mb-2">
-                                    <input type="text" name="city" class="form-control" placeholder="City" required>
+                                    <input type="text" name="city" class="form-control" placeholder="City" required
+                                           value="{{ old('city', optional($application->addresses->first())->city) }}">
                                 </div>
                                 <div class="col-md-6 mb-2">
-                                    <input type="text" name="district" class="form-control" placeholder="District">
+                                    <input type="text" name="district" class="form-control" placeholder="District"
+                                           value="{{ old('district', optional($application->addresses->first())->district) }}">
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-2">
-                                    <input type="text" name="state" class="form-control" placeholder="State" required>
+                                    <input type="text" name="state" class="form-control" placeholder="State" required
+                                           value="{{ old('state', optional($application->addresses->first())->state) }}">
                                 </div>
                                 <div class="col-md-6 mb-2">
-                                    <input type="text" name="pincode" class="form-control" placeholder="Pincode" required>
+                                    <input type="text" name="pincode" class="form-control" placeholder="Pincode" required
+                                           value="{{ old('pincode', optional($application->addresses->first())->pincode) }}">
                                 </div>
                             </div>
-                            <input type="text" name="country" class="form-control" placeholder="Country" value="India" required>
+                            <input type="text" name="country" class="form-control" placeholder="Country" required
+                                   value="{{ old('country', optional($application->addresses->first())->country ?? 'India') }}">
                         </div>
                     </div>
+
                     @if ($errors->any())
-                            <div class="alert alert-danger">
-                                <ul class="mb-0">
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                            @endif
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
                     <!-- Action Buttons -->
                     <div class="form-group row mt-4">
@@ -118,37 +133,4 @@
             </div>
         </div>
     </div>
-
-    <style>
-        .progressbar {
-            display: flex;
-            justify-content: space-between;
-            padding: 0;
-            margin-bottom: 20px;
-            list-style: none;
-        }
-        .progressbar li {
-            flex: 1;
-            text-align: center;
-            position: relative;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        .progressbar li.active a {
-            font-weight: bold;
-            color: #007bff;
-        }
-        .progressbar li:before {
-            content: '';
-            display: block;
-            height: 10px;
-            width: 10px;
-            background: #ccc;
-            border-radius: 50%;
-            margin: 0 auto 8px;
-        }
-        .progressbar li.active:before {
-            background: #007bff;
-        }
-    </style>
 @endsection

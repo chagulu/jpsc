@@ -532,7 +532,7 @@ public function uploadDocumentsStore(Request $request, $applicationId)
     }
 
     public function otherDetailsStore(Request $request)
-{
+    {
     $candidate = auth('candidate')->user();
 
     if (! $candidate) {
@@ -565,7 +565,7 @@ public function uploadDocumentsStore(Request $request, $applicationId)
     return redirect()
         ->route('candidate.education', $application->id)
         ->with('success', 'Other details saved successfully.');
-}
+    }
 
 
     public function education(){
