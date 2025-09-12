@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationDocument;
+use App\Models\ApplicationEducation;
 
 class JetApplicationController extends Controller
 {

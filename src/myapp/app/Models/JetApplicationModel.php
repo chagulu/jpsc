@@ -90,7 +90,7 @@ class JetApplicationModel extends Model
 
     public function education()
     {
-        return $this->hasMany(ApplicantEducation::class, 'application_id');
+        return $this->hasMany(ApplicationEducation::class, 'application_id');
     }
 
 }
