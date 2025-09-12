@@ -10,123 +10,96 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| 1) Open routes
+| 1) Open / public routes
 |--------------------------------------------------------------------------
-| Public pages and generic auth entry points not bound to a specific guard.
 */
-Route::get('/', function () {
-    return redirect()->route('candidate.login');
-}); // redirect to candidate login [2][8]
+Route::get('/', fn() => redirect()->route('candidate.login'));
 
-/** 2FA (generic admin login flow entry) */
-Route::get('/2fa', [TwoFactorController::class, 'showForm'])->name('2fa.verify.form'); // 2FA form [13]
-Route::post('/2fa', [TwoFactorController::class, 'verifyOtp'])->name('2fa.verify'); // 2FA verify [13]
+// 2FA (admin login flow)
+Route::get('/2fa', [TwoFactorController::class, 'showForm'])->name('2fa.verify.form');
+Route::post('/2fa', [TwoFactorController::class, 'verifyOtp'])->name('2fa.verify');
 
-/** JET application public-facing endpoints (public form + callbacks) */
+// JET public application routes
 Route::get('/jet-application', [JetApplicationController::class, 'showForm'])
-    ->name('jet.application.form'); // public form GET [2]
-    
+    ->name('jet.application.form');
 Route::post('/jet-application', [JetApplicationController::class, 'submitForm'])
     ->middleware('throttle:5,1')
-    ->name('jet.application.submit'); // submit with rate limit [7]
+    ->name('jet.application.submit');
+Route::put('/jet-application/{application}', [JetApplicationController::class, 'updateForm'])
+    ->name('jet.application.update');
 
-Route::put('jet-application/{application}', [JetApplicationController::class, 'updateForm'])
-    ->name('jet.application.update'); // update (kept as-is) [2]
+// Payment endpoints
+Route::get('/payment/summary/{application}', [PaymentController::class, 'summary'])->name('payment.summary');
+Route::post('/payment/initiate/{application}', [PaymentController::class, 'initiate'])->name('payment.initiate');
+Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 
-/** Payment (kept open as originally) */
-Route::get('payment/summary/{application}', [PaymentController::class, 'summary'])
-    ->name('payment.summary'); // summary [2]
-Route::post('payment/initiate/{application}', [PaymentController::class, 'initiate'])
-    ->name('payment.initiate'); // initiate [2]
-Route::post('payment/callback', [PaymentController::class, 'callback'])
-    ->name('payment.callback'); // gateway callback [2]
-
-/** OTP endpoints (used by front-end for email/mobile verification on form) */
-Route::post('/send-otp', [JetApplicationController::class, 'sendOtp'])->name('otp.send'); // send OTP [2]
-Route::post('/verify-otp', [JetApplicationController::class, 'verifyOtp'])->name('otp.verify'); // verify OTP [2]
+// OTP endpoints
+Route::post('/send-otp', [JetApplicationController::class, 'sendOtp'])->name('otp.send');
+Route::post('/verify-otp', [JetApplicationController::class, 'verifyOtp'])->name('otp.verify');
 
 /*
 |--------------------------------------------------------------------------
-| 2) Candidate auth routes
+| 2) Candidate authentication routes
 |--------------------------------------------------------------------------
-| Candidate login + OTP login and protected candidate pages under guard.
 */
 Route::prefix('candidate')->name('candidate.')->group(function () {
-    // login UI
-    Route::get('/login', function () {
-        return view('candidate.login');
-    })->name('login'); // candidate login form [12]
 
-    // OTP login flow
-    Route::post('/request-otp', [CandidateAuthController::class, 'requestOtp'])
-        ->name('requestOtp'); // request candidate OTP [12]
-    Route::post('/verify-otp', [CandidateAuthController::class, 'verifyOtp'])
-        ->name('verifyOtp'); // verify OTP & login [12]
+    // Login page
+    Route::get('/login', fn() => view('candidate.login'))->name('login');
 
-    // protected candidate pages
-    Route::middleware('auth:candidate')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('candidate.dashboard');
-        })->name('dashboard'); // candidate dashboard [6]
+    // OTP login
+    Route::post('/request-otp', [CandidateAuthController::class, 'requestOtp'])->name('requestOtp');
+    Route::post('/verify-otp', [CandidateAuthController::class, 'verifyOtp'])->name('verifyOtp');
 
-         Route::get('/profile', [JetApplicationController::class, 'applicationProfile'])->name('profile'); // candidate dashboard [6]
-         Route::get('/upload-documents/{application_id}', [JetApplicationController::class, 'uploadDocuments'])->name('uploadDocuments'); // candidate dashboard [6]
-         Route::post('/upload-documents/{application_id}', [JetApplicationController::class, 'uploadDocumentsStore'])->name('uploadDocumentsStore'); // candidate dashboard [6]
-         Route::get('/other-details/{application_id}', [JetApplicationController::class, 'otherDetails'])->name('otherDetails'); // candidate dashboard [6]
-         Route::post('/other-details/{application_id}', [JetApplicationController::class, 'otherDetailsStore'])->name('otherDetailsStore'); // candidate dashboard [6]
-         Route::get('/education/{application_id}', [JetApplicationController::class, 'education'])->name('education'); // candidate dashboard [6]
-         Route::post('/education/{application_id}', [JetApplicationController::class, 'educationStore'])->name('educationStore'); // candidate dashboard [6]
+    // Protected candidate routes using auth.candidate middleware
+    Route::middleware(['auth.candidate'])->group(function () {
 
-         Route::get('/preview/{application_id}', [JetApplicationController::class, 'preview'])->name('preview'); // candidate dashboard [6]
-         Route::post('/preview/{application_id}', [JetApplicationController::class, 'previewStore'])->name('previewStore'); // candidate dashboard [6]
+        Route::get('/dashboard', fn() => view('candidate.dashboard'))->name('dashboard');
+        Route::get('/profile', [JetApplicationController::class, 'applicationProfile'])->name('profile');
+        Route::get('/upload-documents/{application_id}', [JetApplicationController::class, 'uploadDocuments'])->name('uploadDocuments');
+        Route::post('/upload-documents/{application_id}', [JetApplicationController::class, 'uploadDocumentsStore'])->name('uploadDocumentsStore');
+        Route::get('/other-details/{application_id}', [JetApplicationController::class, 'otherDetails'])->name('otherDetails');
+        Route::post('/other-details/{application_id}', [JetApplicationController::class, 'otherDetailsStore'])->name('otherDetailsStore');
+        Route::get('/education/{application_id}', [JetApplicationController::class, 'education'])->name('education');
+        Route::post('/education/{application_id}', [JetApplicationController::class, 'educationStore'])->name('educationStore');
+        Route::get('/preview/{application_id}', [JetApplicationController::class, 'preview'])->name('preview');
+        Route::post('/preview/{application_id}', [JetApplicationController::class, 'previewStore'])->name('previewStore');
+        Route::get('/completed', [JetApplicationController::class, 'completed'])->name('completed');
+        Route::post('/completed/{application_id}', [JetApplicationController::class, 'completedStore'])->name('completedStore');
 
-         Route::get('/completed', [JetApplicationController::class, 'completed'])->name('completed'); // candidate dashboard [6]
-         Route::post('/completed/{application_id}', [JetApplicationController::class, 'completedStore'])->name('completedStore'); // candidate dashboard [6]
-
-       
-
-        Route::post('/logout', [CandidateAuthController::class, 'logout'])
-            ->name('logout'); // logout [6]
+        // Candidate logout
+        Route::post('/logout', [CandidateAuthController::class, 'logout'])->name('logout');
     });
 });
 
-// candidate-protected application pages (outside /candidate, but guard-bound)
-Route::get('/profile-summary', [JetApplicationController::class, 'profileSummary'])
-    ->middleware('auth:candidate')
-    ->name('profile.summary'); // profile summary [6]
-Route::get('/candidate-application', [JetApplicationController::class, 'candidatedDashboardApplication'])
-    ->middleware('auth:candidate')
-    ->name('application'); // application dashboard [6]
-Route::get('/get-profile-summary', [JetApplicationController::class, 'getProfileSummary'])
-    ->middleware('auth:candidate')
-    ->name('profile.summary.save'); // save summary action [6]
-
-/*
-|--------------------------------------------------------------------------
-| 3) Admin auth routes
-|--------------------------------------------------------------------------
-| Admin-only routes guarded by default 'auth' middleware (session guard).
-*/
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard'); // admin dashboard [1][13]
-
-
-
-Route::middleware('auth')->group(function () {
-    // admin profile maintenance
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit'); // edit [1]
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update'); // update [1]
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy'); // delete [1]
-
-    // admin application listing
-    Route::get('/admin/applications', [ApplicationSearchController::class, 'index'])
-        ->name('admin.applications.index'); // listing [8]
+// Candidate-protected routes outside /candidate
+Route::middleware(['auth.candidate'])->group(function () {
+    Route::get('/profile-summary', [JetApplicationController::class, 'profileSummary'])->name('profile.summary');
+    Route::get('/candidate-application', [JetApplicationController::class, 'candidatedDashboardApplication'])->name('application');
+    Route::get('/get-profile-summary', [JetApplicationController::class, 'getProfileSummary'])->name('profile.summary.save');
 });
 
 /*
 |--------------------------------------------------------------------------
-| Breeze / Jetstream default auth (Admin login, etc.)
+| 3) Admin authentication routes
+|--------------------------------------------------------------------------
+| Uses default 'web' guard and verified middleware
+*/
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
+
+    // Admin profile
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Admin application listing
+    Route::get('/admin/applications', [ApplicationSearchController::class, 'index'])->name('admin.applications.index');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Breeze / Jetstream default auth
 |--------------------------------------------------------------------------
 */
 require __DIR__ . '/auth.php';

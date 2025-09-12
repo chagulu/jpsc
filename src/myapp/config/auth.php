@@ -6,9 +6,11 @@ return [
     |--------------------------------------------------------------------------
     | Authentication Defaults
     |--------------------------------------------------------------------------
+    |
+    | Keep web (admin) as default. Candidate uses its own guard explicitly.
+    |
     */
     'defaults' => [
-        // keep web (admin) as default
         'guard'     => env('AUTH_GUARD', 'web'),
         'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
     ],
@@ -24,9 +26,9 @@ return [
             'provider' => 'users',
         ],
 
-        // NEW: candidate guard
+        // Candidate guard (session-based)
         'candidate' => [
-            'driver'   => 'session',        // still session based, just uses a different provider
+            'driver'   => 'session',
             'provider' => 'candidates',
         ],
     ],
@@ -42,7 +44,7 @@ return [
             'model'  => env('AUTH_MODEL', App\Models\User::class),
         ],
 
-        // NEW: candidate provider
+        // Candidate provider
         'candidates' => [
             'driver' => 'eloquent',
             'model'  => App\Models\Candidate::class,
@@ -62,14 +64,13 @@ return [
             'throttle' => 60,
         ],
 
-        // Candidate password reset is usually not needed for OTP-only login,
-        // but you can add if you ever decide to allow password-based candidate login:
-        // 'candidates' => [
-        //     'provider' => 'candidates',
-        //     'table'    => 'password_reset_tokens',
-        //     'expire'   => 60,
-        //     'throttle' => 60,
-        // ],
+        // Optional: Candidate password reset
+        'candidates' => [
+            'provider' => 'candidates',
+            'table'    => 'password_reset_tokens',
+            'expire'   => 60,
+            'throttle' => 60,
+        ],
     ],
 
     /*
