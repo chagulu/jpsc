@@ -135,7 +135,7 @@
                       <input type="text" class="form-control" id="mobileNumberOtp" name="mobileNumberOtp" placeholder="Enter OTP.." maxlength="6">
                     </div>
                     <div class="col-sm-2">
-                      <input type="button" class="btn btn-primary" id="sendOtpMobile" value="Send OTP">
+                      <input type="button" class="btn btn-primary" id="sendOtpMobile" value="Send Mobile OTP">
                     </div>
                     <div id="verifyOtpMobileDiv" style="display:none;">
                       <input type="button" class="btn btn-primary" id="verifyOtpMobile" value="Verify">
@@ -162,7 +162,7 @@
                       <input type="text" class="form-control" id="otpInput" name="otp" placeholder="OTP" maxlength="6">
                     </div>
                     <div class="col-sm-2">
-                      <input type="button" class="btn btn-primary" id="sendOtpButton" value="Send OTP">
+                      <input type="button" class="btn btn-primary" id="sendOtpButton" value="Send Email OTP">
                     </div>
                     <div id="verifyOtpEmail" style="display:none;">
                       <input type="button" class="btn btn-primary" id="verifyOtpEmailBtn" value="Verify">
