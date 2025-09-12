@@ -21,104 +21,115 @@
       <div class="card-header bg-primary text-white">Education Details</div>
       <div class="card-body" id="educationContainer">
         <form id="candidateForm" action="{{ route('candidate.educationStore', $application->id) }}" method="POST" enctype="multipart/form-data">
-          @csrf
+        @csrf
 
-          <!-- One Education Block -->
-          <div class="education-block mb-4 p-3 border rounded">
+        <!-- One Education Block -->
+        <div class="education-block mb-4 p-3 border rounded">
             <div class="form-row">
-              <div class="form-group col-md-4">
-                <label class="subheading">Exam Passed<span>*</span></label>
-                <select class="form-control">
-                  <option value="">Select</option>
-                  <option value="1">10th</option>
-                  <option value="2">12th/Diploma</option>
-                  <option value="3">Graduation</option>
-                  <option value="4">Post-Graduation</option>
-                  <option value="5">PH.D.</option>
-                </select>
-              </div>
-              <div class="form-group col-md-4">
-                <label class="subheading">Degree<span>*</span></label>
-                <input type="text" class="form-control" placeholder="Enter Degree">
-              </div>
-              <div class="form-group col-md-4">
-                <label class="subheading">Subject/Stream<span>*</span></label>
-                <input type="text" class="form-control" placeholder="Enter Subject">
-              </div>
+                <div class="form-group col-md-4">
+                    <label class="subheading">Exam Passed<span>*</span></label>
+                    <select class="form-control" name="education[0][exam_name]" required>
+                        <option value="">Select</option>
+                        <option value="10th">10th</option>
+                        <option value="12th/Diploma">12th/Diploma</option>
+                        <option value="Graduation">Graduation</option>
+                        <option value="Post-Graduation">Post-Graduation</option>
+                        <option value="PhD">Ph.D.</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-4">
+                    <label class="subheading">Degree<span>*</span></label>
+                    <input type="text" class="form-control" name="education[0][degree]" placeholder="Enter Degree" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label class="subheading">Subject/Stream<span>*</span></label>
+                    <input type="text" class="form-control" name="education[0][subject]" placeholder="Enter Subject" required>
+                </div>
             </div>
 
             <div class="form-row">
-              <div class="form-group col-md-4">
-                <label class="subheading">Institute/College<span>*</span></label>
-                <input type="text" class="form-control">
-              </div>
-              <div class="form-group col-md-4">
-                <label class="subheading">University/Board<span>*</span></label>
-                <input type="text" class="form-control">
-              </div>
-              <div class="form-group col-md-2">
-                <label class="subheading">Status</label>
-                <select class="form-control">
-                  <option value="">Select</option>
-                  <option>Completed</option>
-                  <option>Pursuing</option>
-                </select>
-              </div>
-              <div class="form-group col-md-2">
-                <label class="subheading">Month<span>*</span></label>
-                <select class="form-control">
-                  <option value="">Select</option>
-                  <option>January</option><option>February</option><option>March</option>
-                  <option>April</option><option>May</option><option>June</option>
-                  <option>July</option><option>August</option><option>September</option>
-                  <option>October</option><option>November</option><option>December</option>
-                </select>
-              </div>
+                <div class="form-group col-md-4">
+                    <label class="subheading">Institute/College<span>*</span></label>
+                    <input type="text" class="form-control" name="education[0][school_college]" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label class="subheading">University/Board<span>*</span></label>
+                    <input type="text" class="form-control" name="education[0][board_university]" required>
+                </div>
+                <div class="form-group col-md-2">
+                    <label class="subheading">Status</label>
+                    <select class="form-control" name="education[0][status]">
+                        <option value="">Select</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Pursuing">Pursuing</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-2">
+                    <label class="subheading">Month<span>*</span></label>
+                    <select class="form-control" name="education[0][passing_month]" required>
+                        <option value="">Select</option>
+                        @foreach ([
+                            'January','February','March','April','May','June',
+                            'July','August','September','October','November','December'
+                        ] as $month)
+                            <option value="{{ $month }}">{{ $month }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
 
             <div class="form-row">
-              <div class="form-group col-md-2">
-                <label class="subheading">Year<span>*</span></label>
-                <select class="form-control">
-                  <option value="">Select</option>
-                  <option>2025</option><option>2024</option><option>2023</option><option>2022</option>
-                  <option>2021</option><option>2020</option><option>2019</option><option>2018</option>
-                  <option>2017</option><option>2016</option><option>2015</option><option>2014</option>
-                  <option>2013</option><option>2012</option><option>2011</option><option>2010</option>
-                </select>
-              </div>
-              <div class="form-group col-md-2">
-                <label class="subheading">% Marks<span>*</span></label>
-                <input type="text" class="form-control">
-              </div>
-              <div class="form-group col-md-2">
-                <label class="subheading">Class/Grade</label>
-                <select class="form-control">
-                  <option value="">Select</option>
-                  <option>First</option>
-                  <option>Second</option>
-                  <option>Third</option>
-                </select>
-              </div>
-              <div class="form-group col-md-4">
-                <label class="subheading">Certificate Number<span>*</span></label>
-                <input type="text" class="form-control">
-              </div>
-              <div class="form-group col-md-2 d-flex align-items-end">
-                <button type="button" class="btn btn-danger btn-sm removeBlock">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
+                <div class="form-group col-md-2">
+                    <label class="subheading">Year<span>*</span></label>
+                    <select class="form-control" name="education[0][passing_year]" required>
+                        <option value="">Select</option>
+                        @for ($y = date('Y'); $y >= 2000; $y--)
+                            <option value="{{ $y }}">{{ $y }}</option>
+                        @endfor
+                    </select>
+                </div>
+                <div class="form-group col-md-2">
+                    <label class="subheading">% Marks<span>*</span></label>
+                    <input type="text" class="form-control" name="education[0][marks_obtained]" required>
+                </div>
+                <div class="form-group col-md-2">
+                    <label class="subheading">Class/Grade</label>
+                    <select class="form-control" name="education[0][division]">
+                        <option value="">Select</option>
+                        <option value="First">First</option>
+                        <option value="Second">Second</option>
+                        <option value="Third">Third</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-4">
+                    <label class="subheading">Certificate Number<span>*</span></label>
+                    <input type="text" class="form-control" name="education[0][certificate_number]" required>
+                </div>
+                <div class="form-group col-md-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-danger btn-sm removeBlock">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
             </div>
+        </div>
+
+      @if ($errors->any())
+          <div class="alert alert-danger">
+              <ul class="mb-0">
+                  @foreach ($errors->all() as $error)
+                      <li>{{ $error }}</li>
+                  @endforeach
+              </ul>
           </div>
+      @endif
 
-          <!-- Add Button -->
-          <button type="button" id="addBlock" class="btn btn-success mt-2">
-            <i class="fas fa-plus"></i> Add More
-          </button>
-          <input type="submit" class="btn btn-primary mr-2 mt-2" value="Save & Next">
+      <!-- Add Button -->
+      <button type="button" id="addBlock" class="btn btn-success mt-2">
+          <i class="fas fa-plus"></i> Add More
+      </button>
+      <input type="submit" class="btn btn-primary mr-2 mt-2" value="Save & Next">
+  </form>
 
-        </form>
       </div>
     </div>
   </div>

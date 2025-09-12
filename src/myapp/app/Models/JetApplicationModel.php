@@ -88,4 +88,9 @@ class JetApplicationModel extends Model
         return $this->hasMany(ApplicantAddress::class, 'application_id');
     }
 
+    public function education()
+    {
+        return $this->hasMany(ApplicantEducation::class, 'application_id');
+    }
+
 }

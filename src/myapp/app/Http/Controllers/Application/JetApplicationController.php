@@ -541,23 +541,51 @@ public function uploadDocumentsStore(Request $request, $applicationId)
         ]);
     }
 
-    public function educationStore(){
+    public function educationStore(Request $request)
+    {
         $candidate = auth('candidate')->user();
 
         if (! $candidate) {
-            return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
+            return redirect()->route('candidate.login')
+                ->withErrors(['auth' => 'Please log in first.']);
         }
 
-        // Fetch the candidate's latest application
-        $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
+        // Fetch candidate's latest application
+        $application = JetApplicationModel::where('candidate_id', $candidate->id)
+            ->latest()
+            ->first();
 
         if (! $application) {
             return back()->withErrors(['db' => 'No application found for your profile.']);
         }
+        // dd($request->all());
+        // Validate array of educations
+        $validated = $request->validate([
+            'education'                       => 'required|array',
+            'education.*.exam_name'           => 'required|string|max:150',
+            'education.*.degree'              => 'required|string|max:150',
+            'education.*.subject'             => 'required|string|max:150',
+            'education.*.school_college'      => 'required|string|max:200',
+            'education.*.board_university'    => 'required|string|max:200',
+            'education.*.status'              => 'nullable|in:Completed,Pursuing',
+            'education.*.passing_month'       => 'required|string|max:20',
+            'education.*.passing_year'        => 'required|digits:4',
+            'education.*.marks_obtained'      => 'required|numeric|min:0',
+            'education.*.division'            => 'nullable|in:First,Second,Third',
+            'education.*.certificate_number'  => 'required|string|max:100',
+        ]);
+
+        foreach ($validated['education'] as $edu) {
+            $edu['application_id'] = $application->id;
+            \App\Models\ApplicationEducation::create($edu);
+        }
+
         return redirect()
-                    ->route('candidate.preview', $application->id)
-                    ->with('success', 'Application saved successfully.');
+            ->route('candidate.preview', $application->id)
+            ->with('success', 'Education details saved successfully.');
     }
+
+
 
     public function preview(){
         $candidate = auth('candidate')->user();
