@@ -82,4 +82,10 @@ class JetApplicationModel extends Model
     {
         return $this->hasOne(ApplicationDocument::class, 'application_id');
     }
+
+    public function addresses()
+    {
+        return $this->hasMany(ApplicantAddress::class, 'application_id');
+    }
+
 }

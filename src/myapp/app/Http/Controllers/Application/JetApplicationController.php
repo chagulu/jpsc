@@ -485,25 +485,42 @@ public function uploadDocumentsStore(Request $request, $applicationId)
         
     }
 
-    public function otherDetailsStore(){
-        $candidate = auth('candidate')->user();
+    public function otherDetailsStore(Request $request)
+{
+    $candidate = auth('candidate')->user();
 
-        if (! $candidate) {
-            return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
-        }
-
-        // Fetch the candidate's latest application
-        $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
-
-        if (! $application) {
-            return back()->withErrors(['db' => 'No application found for your profile.']);
-        }
-        
-        return redirect()
-            ->route('candidate.education', $application->id)
-            ->with('success', 'Application saved successfully.');
-        
+    if (! $candidate) {
+        return redirect()->route('candidate.login')
+            ->withErrors(['auth' => 'Please log in first.']);
     }
+
+    // Validate input
+    $validated = $request->validate([
+        'dob'      => ['required', 'date'],
+        'gender'   => ['required', 'in:Male,Female,Transgender'],
+        'category' => ['required', 'in:UR,SC,ST,EBC,BC,EWS,OBC'],
+    ]);
+
+    // Fetch the candidate's latest application
+    $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
+
+    if (! $application) {
+        return back()->withErrors(['db' => 'No application found for your profile.']);
+    }
+
+    // Update application with other details
+    $application->update([
+        'date_of_birth' => $validated['dob'],
+        'gender'        => $validated['gender'],
+        'category'      => $validated['category'],
+        'last_edit_at'  => now(),
+    ]);
+
+    return redirect()
+        ->route('candidate.education', $application->id)
+        ->with('success', 'Other details saved successfully.');
+}
+
 
     public function education(){
         $candidate = auth('candidate')->user();

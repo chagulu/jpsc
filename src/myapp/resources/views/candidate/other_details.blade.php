@@ -69,14 +69,42 @@
                     </div>
 
                     <!-- Address -->
+                    <!-- Address -->
                     <div class="form-group row">
                         <label class="col-md-3 col-form-label font-weight-bold">
                             <i class="fas fa-map-marker-alt text-primary mr-2"></i>Address
                         </label>
                         <div class="col-md-6">
-                            <textarea name="address" class="form-control" rows="3" placeholder="Enter full address" required></textarea>
+                            <input type="text" name="address_line1" class="form-control mb-2" placeholder="Address Line 1" required>
+                            <input type="text" name="address_line2" class="form-control mb-2" placeholder="Address Line 2 (Optional)">
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <input type="text" name="city" class="form-control" placeholder="City" required>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <input type="text" name="district" class="form-control" placeholder="District">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <input type="text" name="state" class="form-control" placeholder="State" required>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <input type="text" name="pincode" class="form-control" placeholder="Pincode" required>
+                                </div>
+                            </div>
+                            <input type="text" name="country" class="form-control" placeholder="Country" value="India" required>
                         </div>
                     </div>
+                    @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul class="mb-0">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                            @endif
 
                     <!-- Action Buttons -->
                     <div class="form-group row mt-4">
