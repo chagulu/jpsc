@@ -74,7 +74,7 @@
 
             <!-- Action Buttons -->
             <div class="text-right mt-4">
-                <a href="#" class="btn btn-warning">
+                <a href="{{ route('candidate.profile') }}" class="btn btn-warning">
                     <i class="fas fa-edit"></i> Edit
                 </a>
                 <a href="{{ route('candidate.completed') }}" class="btn btn-success">
