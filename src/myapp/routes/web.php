@@ -45,7 +45,14 @@ Route::post('/verify-otp', [JetApplicationController::class, 'verifyOtp'])->name
 Route::prefix('candidate')->name('candidate.')->group(function () {
 
     // Login page
-    Route::get('/login', fn() => view('candidate.login'))->name('login');
+Route::get('/login', function () {
+    if (Auth::guard('candidate')->check()) {
+        // Candidate is already logged in → redirect to dashboard
+        return redirect()->route('candidate.dashboard');
+    }
+    // Otherwise, show login page
+        return view('candidate.login');
+    })->name('login');
 
     // OTP login
     Route::post('/request-otp', [CandidateAuthController::class, 'requestOtp'])->name('requestOtp');
