@@ -366,23 +366,68 @@ public function sendOtp(Request $request)
         }
     }
 
-      public function candidatedDashboardApplication(Request $request)
-      {
-        // Get logged-in candidate
+    //   public function candidatedDashboardApplication(Request $request)
+    //   {
+    //     // Get logged-in candidate
+    //     $candidate = auth('candidate')->user();
+
+    //     if (! $candidate) {
+    //         return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
+    //     }
+
+    //     // Fetch the candidate's latest application
+    //     $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
+
+    //     if (! $application) {
+    //         return back()->withErrors(['db' => 'No application found for your profile.']);
+    //     }
+    //     return view('application.application', compact('application'));
+    // }
+
+    public function dashboard()
+    {
         $candidate = auth('candidate')->user();
 
         if (! $candidate) {
-            return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
+            return redirect()->route('candidate.login')
+                ->withErrors(['auth' => 'Please log in first.']);
         }
 
         // Fetch the candidate's latest application
-        $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
+        $application = JetApplicationModel::with('documents')
+            ->where('candidate_id', $candidate->id)
+            ->latest()
+            ->first();
 
         if (! $application) {
             return back()->withErrors(['db' => 'No application found for your profile.']);
         }
-        return view('application.application', compact('application'));
-    }
+
+        // Prepare OTR status dynamically
+        $statusChecks = [
+            'Email Verified'              => !empty($candidate->email_verified_at),
+            'Mobile Verified'             => !empty($candidate->mobile_verified_at),
+            'Profile Details Updated'     => !empty($application->full_name),
+            'Photo Uploaded'              => optional($application->documents)->photo ? true : false,
+            'Signature Uploaded'          => optional($application->documents)->signature ? true : false,
+            'Other Details Updated'       => !empty($application->category),
+            'Education & Experience'      => $application->education()->exists(),
+            'Finally Submitted'           => $application->status === 'Submitted',
+        ];
+
+        // Calculate completion percentage
+        $completedCount = collect($statusChecks)->filter()->count();
+        $totalSteps     = count($statusChecks);
+        $percentage     = round(($completedCount / $totalSteps) * 100);
+
+        return view('candidate.dashboard', [
+            'candidate'     => $candidate,
+            'application'   => $application,
+            'statusChecks'  => $statusChecks,
+            'percentage'    => $percentage,
+        ]);
+}
+
 
     public function applicationProfile(){
         $candidate = auth('candidate')->user();

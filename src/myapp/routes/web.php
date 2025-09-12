@@ -54,7 +54,7 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
     // Protected candidate routes using auth.candidate middleware
     Route::middleware(['auth.candidate'])->group(function () {
 
-        Route::get('/dashboard', fn() => view('candidate.dashboard'))->name('dashboard');
+       Route::get('/dashboard', [JetApplicationController::class, 'dashboard'])->name('dashboard');
         Route::get('/profile', [JetApplicationController::class, 'applicationProfile'])->name('profile');
         Route::get('/upload-documents/{application_id}', [JetApplicationController::class, 'uploadDocuments'])->name('uploadDocuments');
         Route::post('/upload-documents/{application_id}', [JetApplicationController::class, 'uploadDocumentsStore'])->name('uploadDocumentsStore');
