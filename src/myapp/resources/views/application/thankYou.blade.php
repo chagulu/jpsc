@@ -79,7 +79,7 @@
         <p class="p2">
             An ORT number has been generated but your profile is incomplete. To complete your profile, please login to OTR
         </p>
-        <a href="{{ route('candidate.login') }}" class="btn btn-primary">Click Here To Login</a>
+        <a href="{{ route('candidate.dashboard') }}" class="btn btn-primary">Go TO Dashboard</a>
 
         <div class="info-text mt-3">
             <p>If you have any questions or need support, please contact <a href="mailto:support@bssc.gov.in">support@bssc.gov.in</a>.</p>

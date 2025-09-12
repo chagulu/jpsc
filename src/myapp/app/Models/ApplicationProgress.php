@@ -5,11 +5,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class ApplicationProgress extends Model
 {
-    protected $table = 'application_progress';
+    protected $table = 'progress_status';
 
     protected $fillable = [
         'application_id',
-        'step',
+        'step_name',
         'status',
         'percentage',
     ];

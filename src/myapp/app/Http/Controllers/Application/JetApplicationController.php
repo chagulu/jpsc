@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use App\Models\ApplicationDocument;
 use App\Models\ApplicationEducation;
+use App\Models\ApplicationProgress;
 
 class JetApplicationController extends Controller
 {
@@ -217,6 +218,14 @@ public function sendOtp(Request $request)
 
             // 6️⃣ Auto-login candidate (if not already logged in)
             auth('candidate')->login($candidate);
+            
+            $this->updateProgressBar($applicationNo->id, 'profile');
+
+            //profile 40
+            //photo 10
+            //other_details 10
+            // education 40
+
 
             // 7️⃣ Redirect without ID in URL
             return redirect()
@@ -281,13 +290,15 @@ public function sendOtp(Request $request)
             return back()->withErrors(['db' => 'No application found for your profile.']);
         }
 
+        $progress_status = $this->showStep($application->id,'profile');
         if ($request->action === 'agree') {
             return view('application.thankYou', [
                 'otr_number' => $application->application_no
             ]);
         } elseif ($request->action === 'update') {
             return view('application.applications_edit', [
-                'application' => $application
+                'application' => $application,
+                'progress_status' => $progress_status['status']
             ]);
         }
 
@@ -351,6 +362,7 @@ public function sendOtp(Request $request)
                 'ip_address'            => $request->ip(),
                 'user_agent'            => $request->userAgent(),
             ]);
+            $this->updateProgressBar($application->id, 'profile');
 
             if(isset($request->internal_profile) && $request->internal_profile === "internal_profile"){
                 return redirect()
@@ -450,8 +462,10 @@ public function sendOtp(Request $request)
         if (! $application) {
             return back()->withErrors(['db' => 'No application found for your profile.']);
         }
+        $progress_status = $this->showStep($application->id,'profile');
         return view('candidate.candidate_profile', [
-                'application' => $application
+                'application' => $application,
+                'progress_status' => $progress_status['status']
         ]);
     }
 
@@ -468,8 +482,11 @@ public function sendOtp(Request $request)
         if (! $application) {
             return back()->withErrors(['db' => 'No application found for your profile.']);
         }
+
+        $progress_status = $this->showStep($application->id,'profile');
         return view('candidate.upload_document', [
-                'application' => $application
+                'application' => $application,
+                'progress_status' => $progress_status['status']
         ]);
     }
 
@@ -522,6 +539,7 @@ public function uploadDocumentsStore(Request $request, $applicationId)
     }
 
     $document->save();
+    $this->updateProgressBar($application->id, 'photo');
 
     return redirect()
         ->route('candidate.otherDetails', $application->id)
@@ -544,8 +562,12 @@ public function uploadDocumentsStore(Request $request, $applicationId)
         if (! $application) {
             return back()->withErrors(['db' => 'No application found for your profile.']);
         }
+        
+
+        $progress_status = $this->showStep($application->id,'profile');
         return view('candidate.other_details', [
-                'application' => $application
+                'application' => $application,
+                'progress_status' => $progress_status['status']
         ]);
         
     }
@@ -599,6 +621,7 @@ public function uploadDocumentsStore(Request $request, $applicationId)
         'pincode'       => $validated['pincode'],
         'country'       => $validated['country'],
     ]);
+    $this->updateProgressBar($application->id, 'other_details');
 
     return redirect()
         ->route('candidate.education', $application->id)
@@ -621,11 +644,12 @@ public function uploadDocumentsStore(Request $request, $applicationId)
 
     // Fetch existing education records
     $educations = $application->education()->get();
-
-    return view('candidate.education', [
-        'application' => $application,
-        'educations'  => $educations
-    ]);
+    $progress_status = $this->showStep($application->id,'profile');
+        return view('candidate.education', [
+                'application' => $application,
+                'educations'  => $educations,
+                'progress_status' => $progress_status['status']
+        ]);
 }
 
 
@@ -687,7 +711,7 @@ public function uploadDocumentsStore(Request $request, $applicationId)
             \App\Models\ApplicationEducation::create($edu);
         }
     }
-
+    $this->updateProgressBar($application->id, 'education');
     return redirect()
         ->route('candidate.preview', $application->id)
         ->with('success', 'Education details updated successfully.');
@@ -751,5 +775,41 @@ public function uploadDocumentsStore(Request $request, $applicationId)
         return view('candidate.completed', [
                 'application' => $application
         ]);
+    }
+
+    public function updateProgressBar($application_id, $type){
+        $percentage = match ($type) {
+            'profile'       => 40,
+            'photo'         => 10,
+            'other_details' => 10,
+            'education'     => 40,
+            default         => 0, // fallback if $type doesn’t match
+        };
+        ApplicationProgress::updateOrCreate(
+            // 🔍 Match conditions
+            [
+                'application_id' => $application_id,
+                'step_name'           => $type,
+            ],
+            // ✏️ Fields to update if found, or create if not
+            [
+                'status'     => 'Completed',
+                'percentage' => $percentage,
+            ]
+        );
+    }
+
+    public function showStep($applicationId, $type)
+    {
+        $progress = ApplicationProgress::where('application_id', $applicationId)
+                    ->where('step_name', $type)
+                    ->first();
+
+        $isCompleted['step_name'] = $progress->step_name;
+        $isCompleted['status'] = $progress->status;
+        $isCompleted['percentage'] = $progress->percentage;
+        $isCompleted['created_at'] = $progress->created_at;
+        return $isCompleted;
+        
     }
 }

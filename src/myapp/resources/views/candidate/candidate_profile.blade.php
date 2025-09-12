@@ -7,12 +7,12 @@
 <!-- Step Progress Bar -->
 <div class="container-fluid mb-4">
   <ul class="progressbar d-flex justify-content-between">
-    <li class="active"><a href="{{ url('candidate/profile') }}">Profile</a></li>
-    <li><a href="{{ url('candidate/sign-photo') }}">Sign & Photo</a></li>
-    <li><a href="{{ url('candidate/other-details') }}">Other Details</a></li>
-    <li><a href="{{ url('candidate/education') }}">Education & Experience</a></li>
-    <li><a href="{{ url('candidate/preview') }}">Preview</a></li>
-    <li><a href="{{ url('candidate/completed') }}">Completed</a></li>
+        <li class="active"><a href="javascript:void(0)">Profile</a></li>
+        <li><a href="{{ route('candidate.uploadDocuments', $application->id) }}">Sign & Photo</a></li>
+        <li><a href="{{ route('candidate.otherDetails', $application->id) }}">Other Details</a></li>
+        <li><a href="{{ route('candidate.education', $application->id) }}">Education</a></li>
+        <li><a href="{{ route('candidate.preview', $application->id) }}">Preview</a></li>
+        <li><a href="{{ route('candidate.completed', $application->id) }}">Completed</a></li>
   </ul>
 </div>
 
@@ -173,9 +173,17 @@
         <!-- Buttons -->
         <div class="form-group row mt-4">
           <div class="col-sm-7 offset-sm-3">
-            <button type="submit" class="btn btn-primary">
-              <i class="fas fa-save mr-1"></i> Save & Next
-            </button>
+        <!-- <a href="{{ route('profile.summary')  }}" class="btn btn-success">
+                <i class="fas fa-arrow-left mr-1"></i>  Back
+        </a> -->
+          @if($progress_status != 'Completed')
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save mr-1"></i> Save & Next
+              </button>
+          @else
+            <a href="{{ route('candidate.uploadDocuments', $application->id) }}" class="btn btn-primary mr-2">Next </a>
+          @endif
+            
             <a href="{{ url('candidate/dashboard') }}" class="btn btn-secondary">
               <i class="fas fa-arrow-left mr-1"></i> Cancel
             </a>

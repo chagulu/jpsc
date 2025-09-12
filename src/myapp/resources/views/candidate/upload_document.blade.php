@@ -6,12 +6,12 @@
 <!-- Progress Bar -->
 <div class="container-fluid mb-4">
     <ul class="progressbar">
-        <li><a href="{{ route('candidate.profile') }}">Profile</a></li>
+        <li class="active"><a href="{{ route('candidate.profile') }}">Profile</a></li>
         <li class="active"><a href="javascript:void(0)">Sign & Photo</a></li>
-        <li><a href="#">Other Details</a></li>
-        <li><a href="#">Education</a></li>
-        <li><a href="#">Preview</a></li>
-        <li><a href="#">Completed</a></li>
+        <li><a href="{{ route('candidate.otherDetails', $application->id) }}">Other Details</a></li>
+        <li><a href="{{ route('candidate.education', $application->id) }}">Education</a></li>
+        <li><a href="{{ route('candidate.preview', $application->id) }}">Preview</a></li>
+        <li><a href="{{ route('candidate.completed', $application->id) }}">Completed</a></li>
     </ul>
 </div>
 
@@ -82,9 +82,20 @@
                 <!-- Action Buttons -->
                 <div class="form-group row mt-4">
                     <div class="col-md-9 offset-md-3">
-                        <button type="submit" class="btn btn-primary btn-lg px-4">
+                        <a href="{{ route('candidate.profile')  }}" class="btn btn-success">
+                                <i class="fas fa-arrow-left mr-1"></i>  Back
+                        </a>
+                        <!-- <button type="submit" class="btn btn-primary btn-lg px-4">
                             Save & Next <i class="fas fa-arrow-right ml-2"></i>
-                        </button>
+                        </button> -->
+
+                        @if($progress_status != 'Completed')
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-arrow-right mr-1"></i> Save & Next
+                            </button>
+                        @else
+                            <a href="{{ route('candidate.otherDetails', $application->id) }}" class="btn btn-primary mr-2">Next </a>
+                        @endif
                     </div>
                 </div>
             </form>
@@ -101,36 +112,7 @@
         border: 2px dashed #007bff;
         background: #f9f9f9;
     }
-    .progressbar {
-        display: flex;
-        justify-content: space-between;
-        padding: 0;
-        margin-bottom: 20px;
-        list-style: none;
-    }
-    .progressbar li {
-        flex: 1;
-        text-align: center;
-        position: relative;
-        font-size: 14px;
-        font-weight: 500;
-    }
-    .progressbar li.active a {
-        font-weight: bold;
-        color: #007bff;
-    }
-    .progressbar li:before {
-        content: '';
-        display: block;
-        height: 10px;
-        width: 10px;
-        background: #ccc;
-        border-radius: 50%;
-        margin: 0 auto 8px;
-    }
-    .progressbar li.active:before {
-        background: #007bff;
-    }
+
 </style>
 
 <script>

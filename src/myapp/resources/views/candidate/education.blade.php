@@ -5,12 +5,13 @@
 @section('content')
 <div class="container-fluid mb-4">
     <ul class="progressbar">
-        <li><a href="#">Profile</a></li>
-        <li><a href="#">Sign & Photo</a></li>
-        <li><a href="#">Other Details</a></li>
-        <li class="active"><a href="#">Education</a></li>
-        <li><a href="#">Preview</a></li>
-        <li><a href="#">Completed</a></li>
+
+        <li class="active"><a href="{{ route('candidate.profile', $application->id) }}">Profile</a></li>
+        <li class="active"><a href="{{ route('candidate.uploadDocuments', $application->id) }}">Sign & Photo</a></li>
+        <li class="active"><a href="{{ route('candidate.otherDetails', $application->id) }}">Other Details</a></li>
+        <li class="active"><a href="javascript:void(0)">Education</a></li>
+        <li><a href="{{ route('candidate.preview', $application->id) }}">Preview</a></li>
+        <li><a href="{{ route('candidate.completed', $application->id) }}">Completed</a></li>
     </ul>
 </div>
 
@@ -117,10 +118,22 @@
                     @endforeach
                 </div>
 
-                <button type="button" id="addBlock" class="btn btn-success mt-2">
+               
+                <a href="{{ route('candidate.otherDetails',$application->id)  }}" class="btn btn-success">
+                    <i class="fas fa-arrow-left mr-1"></i>  Back
+                </a>
+                @if($progress_status != 'Completed')
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-arrow-right mr-1"></i> Save & Next
+                </button>
+                @else
+                    <a href="{{ route('candidate.preview', $application->id) }}" class="btn btn-primary mr-2">Next </a>
+                @endif
+                
+
+                 <button type="button" id="addBlock" class="btn btn-success mt-2">
                     <i class="fas fa-plus"></i> Add More
                 </button>
-                <input type="submit" class="btn btn-primary mt-2" value="Save & Next">
             </form>
         </div>
     </div>

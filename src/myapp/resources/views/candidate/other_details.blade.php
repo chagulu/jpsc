@@ -6,12 +6,12 @@
     <!-- Progress Bar -->
     <div class="container-fluid mb-4">
         <ul class="progressbar">
-            <li><a href="#">Profile</a></li>
-            <li><a href="#">Sign & Photo</a></li>
-            <li class="active"><a href="javascript:void(0)">Other Details</a></li>
-            <li><a href="#">Education</a></li>
-            <li><a href="#">Preview</a></li>
-            <li><a href="#">Completed</a></li>
+        <li  class="active"><a href="{{ route('candidate.profile', $application->id) }}">Profile</a></li>
+        <li class="active"><a href="{{ route('candidate.uploadDocuments', $application->id) }}">Sign & Photo</a></li>
+        <li class="active"><a href="javascript:void(0)">Other Details</a></li>
+        <li><a href="{{ route('candidate.education', $application->id) }}">Education</a></li>
+        <li><a href="{{ route('candidate.preview', $application->id) }}">Preview</a></li>
+        <li><a href="{{ route('candidate.completed', $application->id) }}">Completed</a></li>
         </ul>
     </div>
 
@@ -124,9 +124,20 @@
                     <!-- Action Buttons -->
                     <div class="form-group row mt-4">
                         <div class="col-md-9 offset-md-3">
-                            <button type="submit" class="btn btn-primary btn-lg px-4">
+                            <!-- <button type="submit" class="btn btn-primary btn-lg px-4">
                                 Save & Next <i class="fas fa-arrow-right ml-2"></i>
+                            </button> -->
+
+                            <a href="{{ route('candidate.uploadDocuments',$application->id)  }}" class="btn btn-success">
+                                <i class="fas fa-arrow-left mr-1"></i>  Back
+                            </a>
+                            @if($progress_status != 'Completed')
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-arrow-right mr-1"></i> Save & Next
                             </button>
+                            @else
+                                <a href="{{ route('candidate.education', $application->id) }}" class="btn btn-primary mr-2">Next </a>
+                            @endif
                         </div>
                     </div>
                 </form>

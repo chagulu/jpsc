@@ -10,24 +10,12 @@
         <!-- Progress Bar -->
         <div class="container-fluid">
     <ul class="progressbar">
-        <li>
-            <a href="{{ route('candidate.profile') }}">Profile</a>
-        </li>
-        <li>
-            <a href="{{ route('candidate.uploadDocuments', $application->id) }}">Sign & Photo</a>
-        </li>
-        <li>
-            <a href="{{ route('candidate.otherDetails', $application->id) }}">Other Details</a>
-        </li>
-        <li>
-            <a href="{{ route('candidate.education', $application->id) }}">Education</a>
-        </li>
-        <li>
-            <a href="{{ route('candidate.preview', $application->id) }}">Preview</a>
-        </li>
-        <li class="active">
-            <a href="{{ route('candidate.completed') }}">Completed</a>
-        </li>
+        <li class="active"><a href="{{ route('candidate.profile', $application->id) }}">Profile</a></li>
+        <li class="active"><a href="{{ route('candidate.uploadDocuments', $application->id) }}">Sign & Photo</a></li>
+        <li class="active"><a href="{{ route('candidate.otherDetails', $application->id) }}">Other Details</a></li>
+        <li class="active"><a href="{{ route('candidate.education', $application->id) }}">Education</a></li>
+        <li class="active"><a href="{{ route('candidate.preview', $application->id) }}">Preview</a></li>
+        <li class="active"><a href="javascript:void(0)">Completed</a></li>
     </ul>
 </div>
 

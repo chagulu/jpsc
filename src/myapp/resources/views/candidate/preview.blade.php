@@ -6,12 +6,14 @@
 <div class="container-fluid">
     <!-- Progress Bar -->
     <ul class="progressbar">
-        <li><a href="">Profile</a></li>
-        <li><a href="">Sign & Photo</a></li>
-        <li><a href="">Other Details</a></li>
-        <li><a href="">Education</a></li>
-        <li class="active"><a href="">Preview</a></li>
-        <li><a href="">Completed</a></li>
+       
+
+        <li class="active"><a href="{{ route('candidate.profile', $application->id) }}">Profile</a></li>
+        <li class="active"><a href="{{ route('candidate.uploadDocuments', $application->id) }}">Sign & Photo</a></li>
+        <li class="active"><a href="{{ route('candidate.otherDetails', $application->id) }}">Other Details</a></li>
+        <li class="active"><a href="{{ route('candidate.education', $application->id) }}">Education</a></li>
+        <li class="active"><a href="javascript:void(0)">Preview</a></li>
+        <li><a href="{{ route('candidate.completed', $application->id) }}">Completed</a></li>
     </ul>
 </div>
 
@@ -74,9 +76,12 @@
 
             <!-- Action Buttons -->
             <div class="text-right mt-4">
-                <a href="{{ route('candidate.profile') }}" class="btn btn-warning">
-                    <i class="fas fa-edit"></i> Edit
+                <a href="{{ route('candidate.education',$application->id)  }}" class="btn btn-success">
+                    <i class="fas fa-arrow-left mr-1"></i>  Back
                 </a>
+                <!-- <a href="{{ route('candidate.profile') }}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Edit
+                </a> -->
                 <a href="{{ route('candidate.completed') }}" class="btn btn-success">
                     <i class="fas fa-check-circle"></i> Submit
                 </a>

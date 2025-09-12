@@ -282,7 +282,12 @@
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label"></label>
                         <div class="col-sm-6">
-                        <input type="submit" class="btn btn-primary mr-2" value="Save & Next">
+                            @if($progress_status != 'Completed')
+                                    <input type="submit" class="btn btn-primary mr-2" value="Save & Next">
+                            @else
+                            <a href="{{ route('candidate.uploadDocuments', $application->id) }}" class="btn btn-primary mr-2">Next </a>
+                            @endif
+                        
                         
                         </div>
                     </div>
