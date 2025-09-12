@@ -543,10 +543,10 @@ public function uploadDocumentsStore(Request $request, $applicationId)
     }
 
     public function otherDetailsStore(Request $request)
-    {
+{
     $candidate = auth('candidate')->user();
 
-    if (! $candidate) {
+    if (!$candidate) {
         return redirect()->route('candidate.login')
             ->withErrors(['auth' => 'Please log in first.']);
     }
@@ -556,16 +556,23 @@ public function uploadDocumentsStore(Request $request, $applicationId)
         'dob'      => ['required', 'date'],
         'gender'   => ['required', 'in:Male,Female,Transgender'],
         'category' => ['required', 'in:UR,SC,ST,EBC,BC,EWS,OBC'],
+        'address_line1' => 'required|string|max:255',
+        'address_line2' => 'nullable|string|max:255',
+        'city'          => 'required|string|max:100',
+        'district'      => 'nullable|string|max:100',
+        'state'         => 'required|string|max:100',
+        'pincode'       => 'required|string|max:10',
+        'country'       => 'required|string|max:100',
     ]);
 
-    // Fetch the candidate's latest application
+    // Fetch candidate's latest application
     $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
 
-    if (! $application) {
+    if (!$application) {
         return back()->withErrors(['db' => 'No application found for your profile.']);
     }
 
-    // Update application with other details
+    // Update application details
     $application->update([
         'date_of_birth' => $validated['dob'],
         'gender'        => $validated['gender'],
@@ -573,10 +580,23 @@ public function uploadDocumentsStore(Request $request, $applicationId)
         'last_edit_at'  => now(),
     ]);
 
+    // Update or create address
+    $address = $application->addresses()->first() ?: $application->addresses()->create([]);
+    $address->update([
+        'address_line1' => $validated['address_line1'],
+        'address_line2' => $validated['address_line2'] ?? null,
+        'city'          => $validated['city'],
+        'district'      => $validated['district'] ?? null,
+        'state'         => $validated['state'],
+        'pincode'       => $validated['pincode'],
+        'country'       => $validated['country'],
+    ]);
+
     return redirect()
         ->route('candidate.education', $application->id)
         ->with('success', 'Other details saved successfully.');
-    }
+}
+
 
 
     public function education(){
