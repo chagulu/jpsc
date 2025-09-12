@@ -470,7 +470,6 @@ public function sendOtp(Request $request)
 
 public function uploadDocumentsStore(Request $request, $applicationId)
 {
-   
     $candidate = auth('candidate')->user();
 
     if (!$candidate) {
@@ -487,19 +486,30 @@ public function uploadDocumentsStore(Request $request, $applicationId)
         return back()->withErrors(['db' => 'No application found for your profile.']);
     }
 
+    // Validate uploaded files
     $request->validate([
-        'photo'     => 'nullable|image|mimes:jpg,jpeg,png|max:20000',   // 200 KB
-        'signature' => 'nullable|image|mimes:jpg,jpeg,png|max:10000',   // 100 KB
+        'photo'     => 'nullable|image|mimes:jpg,jpeg,png|max:200',   // 200 KB
+        'signature' => 'nullable|image|mimes:jpg,jpeg,png|max:100',   // 100 KB
     ]);
 
-    // Fetch or create related documents
+    // Fetch existing document or create new
     $document = $application->documents ?: new ApplicationDocument(['application_id' => $application->id]);
 
+    // Handle photo upload
     if ($request->hasFile('photo')) {
+        // Optionally delete old file
+        if ($document->photo && \Storage::disk('public')->exists($document->photo)) {
+            \Storage::disk('public')->delete($document->photo);
+        }
         $document->photo = $request->file('photo')->store("candidate/{$candidate->id}", 'public');
     }
 
+    // Handle signature upload
     if ($request->hasFile('signature')) {
+        // Optionally delete old file
+        if ($document->signature && \Storage::disk('public')->exists($document->signature)) {
+            \Storage::disk('public')->delete($document->signature);
+        }
         $document->signature = $request->file('signature')->store("candidate/{$candidate->id}", 'public');
     }
 
@@ -509,6 +519,7 @@ public function uploadDocumentsStore(Request $request, $applicationId)
         ->route('candidate.otherDetails', $application->id)
         ->with('success', 'Documents uploaded successfully.');
 }
+
 
 
 
