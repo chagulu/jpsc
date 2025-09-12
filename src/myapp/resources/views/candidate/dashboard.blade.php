@@ -198,14 +198,18 @@
 
           <div class="profilemaindiv">
             <div class="profileimg">
-              <img id="photoimage" src="/otr/pngtree-user-vector-avatar-png-image_1541962.jpg"
-                   height="130" width="130" alt="profile"
-                   onerror="this.onerror=null; this.src='/otr/pngtree-user-vector-avatar-png-image_1541962.jpg';">
+              <img id="photoimage" 
+              src="{{ asset('candidate/photos/profile.png') }}" 
+              height="130" 
+              width="130" 
+              alt="profile"
+              onerror="this.onerror=null; this.src='{{ asset('candidate/photos/profile.png') }}';">
+
             </div>
             <div class="profileimg">
-              <img id="signimage" src="/otr/Dummy Signature (1).PNG"
+              <img id="signimage" src="{{ asset('candidate/signatures/signature.jpg') }}"
                    height="130" width="130" alt="Signature"
-                   onerror="this.onerror=null; this.src='/otr/Dummy Signature (1).PNG';">
+                   onerror="this.onerror=null; this.src='{{ asset('candidate/signatures/signature.jpg') }}';">
             </div>
           </div>
 
