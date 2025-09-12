@@ -219,7 +219,7 @@ public function sendOtp(Request $request)
             // 6️⃣ Auto-login candidate (if not already logged in)
             auth('candidate')->login($candidate);
             
-            $this->updateProgressBar($applicationNo->id, 'profile');
+            $this->updateProgressBar($application->id, 'profile');
 
             //profile 40
             //photo 10
