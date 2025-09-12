@@ -153,6 +153,14 @@ public function sendOtp(Request $request)
             return back()->withErrors($validator)->withInput();
         }
 
+        if (! session()->has("otp_verified.mobile") || session("otp_verified.mobile") !== $request->mobileNumber) {
+                return back()->withErrors(['db' => 'Mobile number is not verified'])->withInput();
+            }
+ 
+        if (! session()->has("otp_verified.email") || session("otp_verified.email") !== $request->emailId) {
+            return back()->withErrors(['db' => 'Email Id is not verified'])->withInput();
+        }
+
         try {
             $applicationNo = 'APP-' . time() . '-' . rand(1000, 9999);
 
