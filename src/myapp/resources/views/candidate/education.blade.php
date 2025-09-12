@@ -28,6 +28,9 @@
                 <div id="educationContainer">
                     @foreach($educations as $index => $edu)
                     <div class="education-block mb-4 p-3 border rounded">
+                        <input type="hidden" name="education[0][id]" value="1">
+                        <input type="hidden" name="education[0][deleted]" value="0" class="deletedFlag">
+
                         <input type="hidden" name="education[{{ $index }}][deleted]" value="0" class="deletedFlag">
                         <div class="form-row">
                             <div class="form-group col-md-4">

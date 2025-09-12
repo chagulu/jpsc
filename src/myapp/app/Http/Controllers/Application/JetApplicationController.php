@@ -591,48 +591,70 @@ public function uploadDocumentsStore(Request $request, $applicationId)
 
 
     public function educationStore(Request $request)
-    {
-        $candidate = auth('candidate')->user();
+{
+    $candidate = auth('candidate')->user();
 
-        if (! $candidate) {
-            return redirect()->route('candidate.login')
-                ->withErrors(['auth' => 'Please log in first.']);
-        }
+    if (! $candidate) {
+        return redirect()->route('candidate.login')
+            ->withErrors(['auth' => 'Please log in first.']);
+    }
 
-        // Fetch candidate's latest application
-        $application = JetApplicationModel::where('candidate_id', $candidate->id)
-            ->latest()
-            ->first();
+    // Fetch candidate's latest application
+    $application = JetApplicationModel::where('candidate_id', $candidate->id)
+        ->latest()
+        ->first();
 
-        if (! $application) {
-            return back()->withErrors(['db' => 'No application found for your profile.']);
-        }
-        // dd($request->all());
-        // Validate array of educations
-        $validated = $request->validate([
-            'education'                       => 'required|array',
-            'education.*.exam_name'           => 'required|string|max:150',
-            'education.*.degree'              => 'required|string|max:150',
-            'education.*.subject'             => 'required|string|max:150',
-            'education.*.school_college'      => 'required|string|max:200',
-            'education.*.board_university'    => 'required|string|max:200',
-            'education.*.status'              => 'nullable|in:Completed,Pursuing',
-            'education.*.passing_month'       => 'required|string|max:20',
-            'education.*.passing_year'        => 'required|digits:4',
-            'education.*.marks_obtained'      => 'required|numeric|min:0',
-            'education.*.division'            => 'nullable|in:First,Second,Third',
-            'education.*.certificate_number'  => 'required|string|max:100',
-        ]);
+    if (! $application) {
+        return back()->withErrors(['db' => 'No application found for your profile.']);
+    }
 
-        foreach ($validated['education'] as $edu) {
+    // Validate array of educations
+    $validated = $request->validate([
+        'education'                       => 'required|array',
+        'education.*.id'                  => 'nullable|exists:application_educations,id',
+        'education.*.exam_name'           => 'required|string|max:150',
+        'education.*.degree'              => 'required|string|max:150',
+        'education.*.subject'             => 'required|string|max:150',
+        'education.*.school_college'     => 'required|string|max:200',
+        'education.*.board_university'   => 'required|string|max:200',
+        'education.*.status'              => 'nullable|in:Completed,Pursuing',
+        'education.*.passing_month'       => 'required|string|max:20',
+        'education.*.passing_year'        => 'required|digits:4',
+        'education.*.marks_obtained'      => 'required|numeric|min:0',
+        'education.*.division'            => 'nullable|in:First,Second,Third',
+        'education.*.certificate_number'  => 'required|string|max:100',
+    ]);
+
+    // Get all existing educations for this application
+    $existingEducationIds = $application->education()->pluck('id')->toArray();
+
+    // Collect submitted IDs
+    $submittedIds = collect($validated['education'])->pluck('id')->filter()->toArray();
+
+    // Delete the records that are in DB but not in submitted request
+    $idsToDelete = array_diff($existingEducationIds, $submittedIds);
+    if (!empty($idsToDelete)) {
+        \App\Models\ApplicationEducation::whereIn('id', $idsToDelete)->delete();
+    }
+
+    // Update existing or create new
+    foreach ($validated['education'] as $edu) {
+        if (!empty($edu['id'])) {
+            // Update existing
+            \App\Models\ApplicationEducation::find($edu['id'])->update($edu);
+        } else {
+            // Create new
             $edu['application_id'] = $application->id;
             \App\Models\ApplicationEducation::create($edu);
         }
-
-        return redirect()
-            ->route('candidate.preview', $application->id)
-            ->with('success', 'Education details saved successfully.');
     }
+
+    return redirect()
+        ->route('candidate.preview', $application->id)
+        ->with('success', 'Education details updated successfully.');
+}
+
+
 
 
 
