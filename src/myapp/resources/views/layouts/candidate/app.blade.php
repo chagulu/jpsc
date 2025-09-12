@@ -184,7 +184,11 @@
 
     <div class="ml-auto dropdown">
         <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <span class="mr-2">Welcome, Candidate</span>
+            <span class="mr-2">
+                Welcome, {{ auth('candidate')->check() ? auth('candidate')->user()->email : 'Candidate' }}
+            </span>
+
+
             <img src="{{ asset('candidate/photos/profile.png') }}" 
      class="rounded-circle border" 
      alt="User" 
