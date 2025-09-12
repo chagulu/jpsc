@@ -59,3 +59,29 @@
 .progressbar li.active::after {
     background-color: #1abc9c;
 }
+
+/* Dashboard cards wrapper */
+.dashboardmaindiv {
+    display: flex; /* Use flex instead of grid for simple side-by-side */
+    gap: 20px;     /* Space between the two cards */
+    flex-wrap: wrap; /* Wrap on smaller screens */
+}
+
+/* Each card takes proportionate width */
+.otrsegment {
+    flex: 2; /* Takes 2 parts */
+    min-width: 300px; /* Optional: responsive */
+}
+
+.photosection {
+    flex: 1; /* Takes 1 part */
+    min-width: 250px; /* Optional: responsive */
+}
+
+/* Optional: make cards full width on mobile */
+@media (max-width: 768px) {
+    .dashboardmaindiv {
+        flex-direction: column;
+    }
+}
+
