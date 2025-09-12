@@ -18,8 +18,10 @@
   {{-- Sidebar --}}
   <div class="sidebar bg-dark text-white p-3" style="min-width:220px;">
     <div class="text-center mb-4">
-      <img src="https://www.jpscexam.com/otr_new/img/logo/jpscImage.png" class="img-fluid" style="max-height:65px;">
-      <h6 class="mt-2">Candidate Dashboard</h6>
+        <a href="{{ url('/candidate/dashboard') }}">
+            <img src="https://www.jpscexam.com/otr_new/img/logo/jpscImage.png" class="img-fluid" style="max-height:65px;">
+        </a>
+        <h6 class="mt-2">Candidate Dashboard</h6>
     </div>
    <a href="{{ route('candidate.profile') }}" class="d-block text-light mb-2">
       <i class="fas fa-user mr-2"></i> Profile
