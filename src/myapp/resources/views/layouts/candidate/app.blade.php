@@ -21,7 +21,10 @@
       <img src="https://www.jpscexam.com/otr_new/img/logo/jpscImage.png" class="img-fluid" style="max-height:65px;">
       <h6 class="mt-2">Candidate Dashboard</h6>
     </div>
-    <a href="" class="d-block text-light mb-2"><i class="fas fa-user mr-2"></i> Profile</a>
+   <a href="{{ route('candidate.profile') }}" class="d-block text-light mb-2">
+      <i class="fas fa-user mr-2"></i> Profile
+  </a>
+
     <a href="" class="d-block text-light mb-2"><i class="fas fa-file-alt mr-2"></i> Application</a>
     <a href="" class="d-block text-light mb-2"><i class="fas fa-id-card mr-2"></i> Admit Card</a>
     <a href="" class="d-block text-light mb-2"><i class="fas fa-poll mr-2"></i> Results</a>
