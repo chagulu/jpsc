@@ -54,6 +54,16 @@
               <small class="form-text text-muted">Allowed formats: JPG, PNG. Max size: 100KB</small>
             </div>
           </div>
+          @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 
           <!-- Action Buttons -->
           <div class="form-group row mt-4">

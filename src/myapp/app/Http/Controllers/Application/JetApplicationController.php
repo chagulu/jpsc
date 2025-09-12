@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
+use App\Models\ApplicationDocument;
 
 class JetApplicationController extends Controller
 {
@@ -418,23 +419,52 @@ public function sendOtp(Request $request)
         ]);
     }
 
-    public function uploadDocumentsStore(){
-        $candidate = auth('candidate')->user();
+    
 
-        if (! $candidate) {
-            return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
-        }
 
-        // Fetch the candidate's latest application
-        $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
+public function uploadDocumentsStore(Request $request, $applicationId)
+{
+   
+    $candidate = auth('candidate')->user();
 
-        if (! $application) {
-            return back()->withErrors(['db' => 'No application found for your profile.']);
-        }
+    if (!$candidate) {
         return redirect()
-                    ->route('candidate.otherDetails', $application->id)
-                    ->with('success', 'Application saved successfully.');
+            ->route('candidate.login')
+            ->withErrors(['auth' => 'Please log in first.']);
     }
+
+    $application = JetApplicationModel::where('id', $applicationId)
+        ->where('candidate_id', $candidate->id)
+        ->first();
+
+    if (!$application) {
+        return back()->withErrors(['db' => 'No application found for your profile.']);
+    }
+
+    $request->validate([
+        'photo'     => 'nullable|image|mimes:jpg,jpeg,png|max:20000',   // 200 KB
+        'signature' => 'nullable|image|mimes:jpg,jpeg,png|max:10000',   // 100 KB
+    ]);
+
+    // Fetch or create related documents
+    $document = $application->documents ?: new ApplicationDocument(['application_id' => $application->id]);
+
+    if ($request->hasFile('photo')) {
+        $document->photo = $request->file('photo')->store("candidate/{$candidate->id}", 'public');
+    }
+
+    if ($request->hasFile('signature')) {
+        $document->signature = $request->file('signature')->store("candidate/{$candidate->id}", 'public');
+    }
+
+    $document->save();
+
+    return redirect()
+        ->route('candidate.otherDetails', $application->id)
+        ->with('success', 'Documents uploaded successfully.');
+}
+
+
 
     public function otherDetails(){
         $candidate = auth('candidate')->user();
