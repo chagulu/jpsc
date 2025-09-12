@@ -101,14 +101,14 @@
                   <div class="form-group row">
                     <label for="aadhaarCardNumber" class="col-sm-3 col-form-label">Aadhaar Card Number</label>
                     <div class="col-sm-4">
-                      <input type="text" class="form-control" id="aadhaarCardNumber" name="aadhaarCardNumber" onchange="validateAadhaar()" oninput="this.value=this.value.replace(/[^0-9]/g,'')" placeholder="Aadhaar Card Number" maxlength="12">
+                      <input type="text" class="form-control" value="{{ old('aadhaarCardNumber') }}" id="aadhaarCardNumber" name="aadhaarCardNumber" onchange="validateAadhaar()" oninput="this.value=this.value.replace(/[^0-9]/g,'')" placeholder="Aadhaar Card Number" maxlength="12">
                     </div>
                   </div>
 
                   <div class="form-group row">
                     <label for="confirmAadhaarCardNumber" class="col-sm-3 col-form-label">Confirm Aadhaar Card Number</label>
                     <div class="col-sm-4">
-                      <input type="text" class="form-control" id="confirmAadhaarCardNumber" name="confirmAadhaarCardNumber" placeholder="Confirm Aadhaar Card Number" maxlength="12" oncopy="return false;" oncut="return false;" onpaste="return false;" onchange="validateConfirmAadhaar()" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+                      <input type="text" class="form-control" value="{{ old('confirmAadhaarCardNumber') }}" id="confirmAadhaarCardNumber" name="confirmAadhaarCardNumber" placeholder="Confirm Aadhaar Card Number" maxlength="12" oncopy="return false;" oncut="return false;" onpaste="return false;" onchange="validateConfirmAadhaar()" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
                     </div>
                   </div>
 
@@ -116,7 +116,7 @@
                   <div class="form-group row">
                     <label for="mobileNumber" class="col-sm-3 col-form-label">Mobile Number <span class="required">*</span></label>
                     <div class="col-sm-4">
-                     <input type="text" class="form-control" name ="mobileNumber" id="mobileNumber" onchange="validateMobile(this)" />
+                     <input type="text" class="form-control" value="{{ old('mobileNumber') }}" name ="mobileNumber" id="mobileNumber" onchange="validateMobile(this)" />
                     </div>
                   </div>
 
@@ -124,7 +124,7 @@
                   <div class="form-group row">
                     <label class="col-sm-3 col-form-label">Confirm Mobile Number<span class="required">*</span></label>
                     <div class="col-sm-4">
-                    <input type="text" class="form-control" id="confirmMobileNumber" onchange="validateMobile(this)" />
+                    <input type="text" class="form-control" value="{{ old('confirmMobileNumber') }}" id="confirmMobileNumber" onchange="validateMobile(this)" />
 
 
                   </div>
@@ -146,14 +146,14 @@
                   <div class="form-group row">
                     <label for="emailId" class="col-sm-3 col-form-label">Email ID<span class="required">*</span></label>
                     <div class="col-sm-4">
-                      <input type="email" class="form-control" id="emailId" name="emailId" onchange="validateEmail()" placeholder="Email ID">
+                      <input type="email" class="form-control" value="{{ old('emailId') }}" id="emailId" name="emailId" onchange="validateEmail()" placeholder="Email ID">
                     </div>
                   </div>
 
                   <div class="form-group row">
                     <label for="confirmEmailId" class="col-sm-3 col-form-label">Confirm Email ID<span class="required">*</span></label>
                     <div class="col-sm-4">
-                      <input type="email" class="form-control" id="confirmEmailId" name="confirmEmailId" onchange="checkEmail()" placeholder="Confirm Email ID" oncopy="return false;" oncut="return false;" onpaste="return false;">
+                      <input type="email" class="form-control" value="{{ old('confirmEmailId') }}" id="confirmEmailId" name="confirmEmailId" onchange="checkEmail()" placeholder="Confirm Email ID" oncopy="return false;" oncut="return false;" onpaste="return false;">
                     </div>
                     <div class="col-sm-2" id="verifiedTickEmail" style="display:none;">
                       <h2 style="color:green">✔</h2>
@@ -173,14 +173,14 @@
                   <div class="form-group row">
                     <label for="name" class="col-sm-3 col-form-label">Name (as per Class 10th Certificate)<span class="required">*</span></label>
                     <div class="col-sm-4">
-                      <input type="text" class="form-control" id="name" name="name" oninput="formatFatherName(this)" placeholder="Name...">
+                      <input type="text" class="form-control" value="{{ old('name') }}" id="name" name="name" oninput="formatFatherName(this)" placeholder="Name...">
                     </div>
                   </div>
 
                   <div class="form-group row">
                     <label for="confirmName" class="col-sm-3 col-form-label">Confirm Name<span class="required">*</span></label>
                     <div class="col-sm-4">
-                      <input type="text" class="form-control" id="confirmName" name="confirmName" onchange="validateConfirmName()" oninput="formatFatherName(this)" placeholder="Confirm Name..." oncopy="return false;" oncut="return false;" onpaste="return false;">
+                      <input type="text" class="form-control" value="{{ old('confirmName') }}" id="confirmName" name="confirmName" onchange="validateConfirmName()" oninput="formatFatherName(this)" placeholder="Confirm Name..." oncopy="return false;" oncut="return false;" onpaste="return false;">
                     </div>
                   </div>
 
@@ -188,7 +188,7 @@
                   <div class="form-group row">
                     <label for="rollNumber" class="col-sm-3 col-form-label">Class 10th Roll Number<span class="required">*</span></label>
                     <div class="col-sm-4">
-                      <input type="text" class="form-control" id="rollNumber" name="rollNumber" maxlength="15" placeholder="Class 10th Roll Number">
+                      <input type="text" class="form-control" value="{{ old('rollNumber') }}" id="rollNumber" name="rollNumber" maxlength="15" placeholder="Class 10th Roll Number">
                     </div>
                   </div>
 
@@ -220,7 +220,7 @@
                     <div class="form-group row">
                       <label for="verifyChangedName" class="col-sm-3 col-form-label">Confirm changed name<span class="required">*</span></label>
                       <div class="col-sm-4">
-                        <input type="text" class="form-control" id="verifyChangedName" name="verifyChangedName" onchange="validateChangedName()" placeholder="Confirm changed name" oninput="this.value=this.value.replace(/[^a-zA-Z\s]/g,'')">
+                        <input type="text" class="form-control" value="{{ old('confirmAadhaarCardNumber') }}" id="verifyChangedName" name="verifyChangedName" onchange="validateChangedName()" placeholder="Confirm changed name" oninput="this.value=this.value.replace(/[^a-zA-Z\s]/g,'')">
                       </div>
                     </div>
                     <div class="form-group row">
@@ -244,7 +244,7 @@
                     <div class="col-sm-4">
                       <div class="input-group date">
                         <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-calendar"></i></span></div>
-                        <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" max="2007-09-07" onkeydown="return false">
+                        <input type="date" class="form-control" value="{{ old('dateOfBirth') }}" id="dateOfBirth" name="dateOfBirth" max="2007-09-07" onkeydown="return false">
                       </div>
                     </div>
                   </div>
@@ -254,13 +254,13 @@
                     <div class="col-sm-4">
                       <div class="input-group date">
                         <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-calendar"></i></span></div>
-                        <input type="date" class="form-control" id="confirmDateOfBirth" name="confirmDateOfBirth" max="2007-09-07" onchange="validateConfirmDateOfBirth()" onkeydown="return false">
+                        <input type="date" class="form-control" value="{{ old('confirmDateOfBirth') }}" id="confirmDateOfBirth" name="confirmDateOfBirth" max="2007-09-07" onchange="validateConfirmDateOfBirth()" onkeydown="return false">
                       </div>
                     </div>
                   </div>
 
                   <!-- Gender -->
-                  <div class="form-group row">
+                  <!-- <div class="form-group row">
                     <label for="gender" class="col-sm-3 col-form-label">Gender<span class="required">*</span></label>
                     <div class="col-sm-4">
                       <select class="form-control" id="gender" name="gender">
@@ -270,7 +270,18 @@
                         <option value="Third Gender">Third Gender</option>
                       </select>
                     </div>
-                  </div>
+                  </div> -->
+
+                  <div class="form-group">
+                  <label>Gender *</label><br>
+                  @php $genderOld = old('gender'); @endphp
+                  <label><input type="radio" name="gender" value="Male" {{ $genderOld == 'Male' ? 'checked' : '' }}> Male</label>
+                  <label><input type="radio" name="gender" value="Female" {{ $genderOld == 'Female' ? 'checked' : '' }}> Female</label>
+                  <label><input type="radio" name="gender" value="Third Gender" {{ $genderOld == 'Third Gender' ? 'checked' : '' }}> Third Gender</label>
+                  @error('gender')
+                      <div class="text-danger">{{ $message }}</div>
+                  @enderror
+              </div>
 
                   <div class="form-group row">
                     <label for="confirmGender" class="col-sm-3 col-form-label">Confirm Gender<span class="required">*</span></label>
@@ -288,28 +299,28 @@
                   <div class="form-group row">
                     <label for="fatherName" class="col-sm-3 col-form-label">Father's Name<span class="required">*</span></label>
                     <div class="col-sm-4">
-                      <input type="text" class="form-control" id="fatherName" name="fatherName" placeholder="Father's Name" oninput="formatFatherName(this)">
+                      <input type="text" class="form-control" id="fatherName" value="{{ old('fatherName') }}" name="fatherName" placeholder="Father's Name" oninput="formatFatherName(this)">
                     </div>
                   </div>
 
                   <div class="form-group row">
                     <label for="confirmFatherName" class="col-sm-3 col-form-label">Confirm Father's Name<span class="required">*</span></label>
                     <div class="col-sm-4">
-                      <input type="text" class="form-control" id="confirmFatherName" name="confirmFatherName" onchange="validateFatherName()" placeholder="Confirm Father's Name" oninput="formatFatherName(this)" oncopy="return false;" oncut="return false;" onpaste="return false;">
+                      <input type="text" class="form-control" id="confirmFatherName" value="{{ old('confirmFatherName') }}" name="confirmFatherName" onchange="validateFatherName()" placeholder="Confirm Father's Name" oninput="formatFatherName(this)" oncopy="return false;" oncut="return false;" onpaste="return false;">
                     </div>
                   </div>
 
                   <div class="form-group row">
                     <label for="motherName" class="col-sm-3 col-form-label">Mother's Name<span class="required">*</span></label>
                     <div class="col-sm-4">
-                      <input type="text" class="form-control" id="motherName" name="motherName" placeholder="Mother's Name" oninput="formatFatherName(this)">
+                      <input type="text" class="form-control" id="motherName" value="{{ old('motherName') }}" name="motherName" placeholder="Mother's Name" oninput="formatFatherName(this)">
                     </div>
                   </div>
 
                   <div class="form-group row">
                     <label for="confirmMotherName" class="col-sm-3 col-form-label">Confirm Mother's Name<span class="required">*</span></label>
                     <div class="col-sm-4">
-                      <input type="text" class="form-control" id="confirmMotherName" name="confirmMotherName" onchange="validateMotherName()" placeholder="Confirm Mother's Name" oninput="formatFatherName(this)" oncopy="return false;" oncut="return false;" onpaste="return false;">
+                      <input type="text" class="form-control" id="confirmMotherName" value="{{ old('confirmMotherName') }}" name="confirmMotherName" onchange="validateMotherName()" placeholder="Confirm Mother's Name" oninput="formatFatherName(this)" oncopy="return false;" oncut="return false;" onpaste="return false;">
                     </div>
                   </div>
 
@@ -317,7 +328,7 @@
                   <div class="form-group row">
                     <label for="alternateNumber" class="col-sm-3 col-form-label">Alternate Mobile Number</label>
                     <div class="col-sm-4">
-                      <input type="text" class="form-control" id="alternateNumber" name="alternateNumber" placeholder="Alternate Mobile Number" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'')" onchange="isValidMobileNumber(this.value)">
+                      <input type="text" class="form-control" id="alternateNumber" value="{{ old('alternateNumber') }}" name="alternateNumber" placeholder="Alternate Mobile Number" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'')" onchange="isValidMobileNumber(this.value)">
                     </div>
                   </div>
 
@@ -399,7 +410,7 @@
     function validateAadhaar() {
         const aadhaar = document.getElementById("aadhaarCardNumber").value;
         if (!/^\d{12}$/.test(aadhaar)) {
-            alert("Aadhaar number must be exactly 12 digits.");
+            showError("Aadhaar number must be exactly 12 digits.");
             document.getElementById("aadhaarCardNumber").value = "";
             document.getElementById("aadhaarCardNumber").focus();
             return false;
@@ -411,13 +422,13 @@
         const aadhaar = document.getElementById("aadhaarCardNumber").value;
         const confirm = document.getElementById("confirmAadhaarCardNumber").value;
         if (!/^\d{12}$/.test(confirm)) {
-            alert("Confirm Aadhaar number must be exactly 12 digits.");
+            showError("Confirm Aadhaar number must be exactly 12 digits..");
             document.getElementById("confirmAadhaarCardNumber").value = "";
             document.getElementById("confirmAadhaarCardNumber").focus();
             return false;
         }
         if (aadhaar !== confirm) {
-            alert("Aadhaar numbers do not match.");
+            showError("Aadhaar numbers do not match.");
             document.getElementById("confirmAadhaarCardNumber").value = "";
             document.getElementById("confirmAadhaarCardNumber").focus();
             return false;
@@ -430,9 +441,9 @@
         const email = document.getElementById("emailId").value;
         const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!pattern.test(email)) {
-            alert("Enter a valid email address.");
+            showError("Enter a valid email address.");
             document.getElementById("emailId").value = "";
-            document.getElementById("confirmAadhaarCardNumber").focus();
+            document.getElementById("emailId").focus();
             return false;
         }
         return true;
@@ -442,13 +453,13 @@
         const email = document.getElementById("emailId").value;
         const confirm = document.getElementById("confirmEmailId").value;
         if (confirm === "") {
-          alert("Enter a valid confirm email address.");
+          showError("Enter a valid confirm email address.");
           document.getElementById("confirmEmailId").value = "";
           document.getElementById("confirmEmailId").focus();
           return;
       }
         if (email !== confirm) {
-            alert("Email IDs do not match.");
+            showError("Email IDs do not match.");
             document.getElementById("confirmEmailId").value = "";
             document.getElementById("confirmAadhaarCardNumber").focus();
             return false;
@@ -461,7 +472,7 @@
         const name = document.getElementById("name").value.trim();
         const confirm = document.getElementById("confirmName").value.trim();
         if (name !== confirm) {
-            alert("Names do not match.");
+            showError("Names do not match.");
             document.getElementById("confirmName").value = "";
             document.getElementById("confirmName").focus();
             return false;
@@ -473,8 +484,9 @@
         const name = document.getElementById("fatherName").value.trim();
         const confirm = document.getElementById("confirmFatherName").value.trim();
         if (name !== confirm) {
-            alert("Father's names do not match.");
+            showError("Father's names do not match.");
             document.getElementById("confirmFatherName").value = "";
+            document.getElementById("confirmFatherName").focus();
             return false;
         }
         return true;
@@ -484,8 +496,9 @@
         const name = document.getElementById("motherName").value.trim();
         const confirm = document.getElementById("confirmMotherName").value.trim();
         if (name !== confirm) {
-            alert("Mother's names do not match.");
+            showError("Mother's names do not match.");
             document.getElementById("confirmMotherName").value = "";
+            document.getElementById("confirmMotherName").focus();
             return false;
         }
         return true;
@@ -496,8 +509,9 @@
         const dob = document.getElementById("dateOfBirth").value;
         const confirm = document.getElementById("confirmDateOfBirth").value;
         if (dob !== confirm) {
-            alert("Date of Birth values do not match.");
+            showError("Date of Birth values do not match.");
             document.getElementById("confirmDateOfBirth").value = "";
+            document.getElementById("confirmDateOfBirth").focus();
             return false;
         }
         return true;
@@ -508,7 +522,7 @@
         const gender = document.getElementById("gender").value;
         const confirm = document.getElementById("confirmGender").value;
         if (gender !== confirm) {
-            alert("Gender values do not match.");
+            showError("Gender values do not match.");
             document.getElementById("confirmGender").value = "";
             return false;
         }
@@ -526,7 +540,7 @@
         const name = document.getElementById("changedName").value.trim();
         const confirm = document.getElementById("verifyChangedName").value.trim();
         if (name !== confirm) {
-            alert("Changed names do not match.");
+            showError("Changed names do not match.");
             document.getElementById("verifyChangedName").value = "";
             return false;
         }
@@ -543,7 +557,7 @@
         if (action === "send") {
             
         } else if (action === "verify") {
-            alert("OTP verified for " + type);
+            showError("OTP verified for " + type);
         }
     }
     function loadDefaultData() {
@@ -601,12 +615,12 @@
             const minSizeInBytes = 50 * 1024;
             const maxSizeInBytes = 300 * 1024;
             if (file.size < minSizeInBytes || file.size > maxSizeInBytes) {
-            alert("File size should be between 50 KB and 300 KB.");
+            showError("File size should be between 50 KB and 300 KB.");
             input.value = "";
             return false;
             }
             if (!validExtensions.includes(fileType)) {
-            alert("Unsupported file format. Please upload only pdf file.");
+            showError("Unsupported file format. Please upload only pdf file.");
             input.value = "";
             return false;
             }
@@ -622,7 +636,7 @@
         let mobile = $("#confirmMobileNumber").val().trim();
 
         if (!/^[6-9]\d{9}$/.test(mobile)) {
-            alert("Please enter a valid 10-digit mobile number starting with 6-9.");
+            showError("Please enter a valid 10-digit mobile number starting with 6-9.");
             return;
         }
 
@@ -666,13 +680,13 @@
       // Name validation (required)
       const nameField = document.getElementById("name").value.trim();
       if (nameField === "") {
-          alert("Please enter your Name as per Class 10th Certificate.");
+          showError("Please enter your Name as per Class 10th Certificate.");
           document.getElementById("name").focus();
           return;
       }
         const confirmName = document.getElementById("confirmName").value.trim();
         if (confirmName === "") {
-            alert("Please enter your Confirm Name as per Class 10th Certificate.");
+            showError("Please enter your Confirm Name as per Class 10th Certificate.");
             document.getElementById("confirmName").focus();
             return;
         }
@@ -680,7 +694,7 @@
 
         const rollNumber = document.getElementById("rollNumber").value.trim();
         if (rollNumber === "") {
-            alert("Please enter your rollNumber as per Class 10th Certificate.");
+            showError("Please enter your rollNumber as per Class 10th Certificate.");
             document.getElementById("rollNumber").focus();
             return;
         }
@@ -689,14 +703,14 @@
 
         const dateOfBirth = document.getElementById("dateOfBirth").value.trim();
         if (dateOfBirth === "") {
-            alert("Please enter your dateOfBirth as per Class 10th Certificate.");
+            showError("Please enter your dateOfBirth as per Class 10th Certificate.");
             document.getElementById("dateOfBirth").focus();
             return;
         }
 
         const confirmDateOfBirth = document.getElementById("confirmDateOfBirth").value.trim();
         if (confirmDateOfBirth === "") {
-            alert("Please enter your confirm date Of Birth as per Class 10th Certificate.");
+            showError("Please enter your confirm date Of Birth as per Class 10th Certificate.");
             document.getElementById("confirmDateOfBirth").focus();
             return;
         }
@@ -704,14 +718,14 @@
 
         const gender = document.getElementById("gender").value.trim();
         if (gender === "") {
-            alert("Please select your gender.");
+            showError("Please select your gender.");
             document.getElementById("gender").focus();
             return;
         }
 
         const confirmGender = document.getElementById("confirmGender").value.trim();
         if (confirmGender === "") {
-            alert("Please select your confirm gender.");
+            showError("Please select your confirm gender.");
             document.getElementById("confirmGender").focus();
             return;
         }
@@ -719,28 +733,28 @@
 
         const fatherName = document.getElementById("fatherName").value.trim();
         if (fatherName === "") {
-            alert("Father's name can not be blank");
+            showError("Father's name can not be blank");
             document.getElementById("fatherName").focus();
             return;
         }
 
         const confirmFatherName = document.getElementById("confirmFatherName").value.trim();
         if (confirmFatherName === "") {
-            alert("Confirm Father's name can not be blank");
+            showError("Confirm Father's name can not be blank");
             document.getElementById("confirmFatherName").focus();
             return;
         }
         if (!validateFatherName()) return;
         const motherName = document.getElementById("motherName").value.trim();
         if (motherName === "") {
-            alert("Mother's name can not be blank");
+            showError("Mother's name can not be blank");
             document.getElementById("motherName").focus();
             return;
         }
 
         const confirmMotherName = document.getElementById("confirmMotherName").value.trim();
         if (confirmMotherName === "") {
-            alert("Confirm Mother's name can not be blank");
+            showError("Confirm Mother's name can not be blank");
             document.getElementById("confirmMotherName").focus();
             return;
         }
@@ -756,11 +770,11 @@
 
       // Check that OTPs are verified
       // if ($("#verifiedTickMobile").css("display") === "none") {
-      //     alert("Please verify your mobile number before submitting.");
+      //     showError("Please verify your mobile number before submitting.");
       //     return;
       // }
       // if ($("#verifiedTickEmail").css("display") === "none") {
-      //     alert("Please verify your email before submitting.");
+      //     showError("Please verify your email before submitting.");
       //     return;
       // }
 
@@ -873,7 +887,7 @@ window.validateMobile = function (input) {
     const regex = /^[6-9]\d{9}$/;
 
     if (!regex.test(value)) {
-        alert("Please enter a valid 10-digit mobile number starting with 6-9.");
+        showError("Please enter a valid 10-digit mobile number starting with 6-9.");
         field.value = "";
         field.focus();
         return false;
@@ -887,7 +901,7 @@ window.validateConfirmMobileNumber = function () {
     const confirm = document.getElementById("confirmMobileNumber").value.trim();
 
     if (mobile !== confirm) {
-        alert("Mobile numbers do not match.");
+        showError("Mobile numbers do not match.");
         document.getElementById("confirmMobileNumber").value = "";
         document.getElementById("confirmMobileNumber").focus();
         return false;
@@ -1068,7 +1082,7 @@ $("#verifyOtpEmailBtn").on("click", function () {
 function isValidMobileNumber(number) {
     // Check if number is exactly 10 digits
     if (!/^\d{10}$/.test(number)) {
-        alert("Please enter a valid 10-digit mobile number");
+        showError("Please enter a valid 10-digit mobile number");
         return false;
     }
     return true;
@@ -1079,7 +1093,7 @@ function isValidMobileNumber(number) {
     $("#errorMessage").hide();
 
     // Auto-hide after 10 seconds
-    setTimeout(() => { $("#successMessage").fadeOut(); }, 10000);
+    setTimeout(() => { $("#successMessage").fadeOut(); }, 5000);
 }
 
 function showError(msg) {
@@ -1087,7 +1101,7 @@ function showError(msg) {
     $("#successMessage").hide();
 
     // Auto-hide after 10 seconds
-    setTimeout(() => { $("#errorMessage").fadeOut(); }, 10000);
+    setTimeout(() => { $("#errorMessage").fadeOut(); }, 5000);
 }
 
 

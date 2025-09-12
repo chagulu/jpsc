@@ -66,7 +66,7 @@
         <li>Register using your valid email, mobile number, or OTR number.</li>
         <li>Fill the online form, upload photo & signature.</li>
         <li>Pay the application fee online and save the receipt.</li>
-        <li>Keep a copy of the application for future reference.</li>
+        <li>Click here to register <a href="{{ route('jet.application.form') }}"> Register</a></li>
       </ol>
     </div>
 
