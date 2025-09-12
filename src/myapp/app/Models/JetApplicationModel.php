@@ -54,23 +54,30 @@ class JetApplicationModel extends Model
         'last_edit_at',
         'ip_address',
         'user_agent',
+        'email_verified_at',
+        'mobile_verified_at',
     ];
 
     protected $casts = [
-        'form_json'         => 'array',
-        'date_of_birth'     => 'date',
-        'submitted_at'      => 'datetime',
-        'last_edit_at'      => 'datetime',
-        'domicile_bihar'    => 'boolean',
-        'non_creamy_layer'  => 'boolean',
-        'is_pwd'            => 'boolean',
-        'pwd_40_percent'    => 'boolean',
-        'ex_serviceman'     => 'boolean',
-        'worked_after_ncc'  => 'boolean',
-        'bihar_govt_employee'=> 'boolean',
-        'govt_service_years'=> 'decimal:1',
-        'age'               => 'integer',
+        'form_json'             => 'array',
+        'date_of_birth'         => 'date',
+        'submitted_at'          => 'datetime',
+        'last_edit_at'          => 'datetime',
+        'email_verified_at'     => 'datetime',
+        'mobile_verified_at'    => 'datetime',
+        'domicile_bihar'        => 'boolean',
+        'non_creamy_layer'      => 'boolean',
+        'is_pwd'                => 'boolean',
+        'pwd_40_percent'        => 'boolean',
+        'ex_serviceman'         => 'boolean',
+        'worked_after_ncc'      => 'boolean',
+        'bihar_govt_employee'   => 'boolean',
+        'govt_service_years'    => 'decimal:1',
+        'age'                   => 'integer',
+        'email_verified_at'  => 'datetime',
+        'mobile_verified_at' => 'datetime',
     ];
+
 
     // Relationship: each application belongs to a candidate
     public function candidate()

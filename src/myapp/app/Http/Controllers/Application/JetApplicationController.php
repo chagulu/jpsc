@@ -405,15 +405,16 @@ public function sendOtp(Request $request)
 
         // Prepare OTR status dynamically
         $statusChecks = [
-            'Email Verified'              => !empty($candidate->email_verified_at),
-            'Mobile Verified'             => !empty($candidate->mobile_verified_at),
-            'Profile Details Updated'     => !empty($application->full_name),
-            'Photo Uploaded'              => optional($application->documents)->photo ? true : false,
-            'Signature Uploaded'          => optional($application->documents)->signature ? true : false,
-            'Other Details Updated'       => !empty($application->category),
-            'Education & Experience'      => $application->education()->exists(),
-            'Finally Submitted'           => $application->status === 'Submitted',
+            'Email Verified'          => !empty($application->email_verified_at),
+            'Mobile Verified'         => !empty($application->mobile_verified_at),
+            'Profile Details Updated' => !empty($application->full_name),
+            'Photo Uploaded'          => optional($application->documents)->photo ? true : false,
+            'Signature Uploaded'      => optional($application->documents)->signature ? true : false,
+            'Other Details Updated'   => !empty($application->category),
+            'Education & Experience'  => $application->education()->exists(),
+            'Finally Submitted'       => $application->status === 'Submitted',
         ];
+
 
         // Calculate completion percentage
         $completedCount = collect($statusChecks)->filter()->count();
