@@ -11,6 +11,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
  <style>
+   @keyframes marquee {0% {transform:translate(0,0);} 100% {transform:translate(-100%,0);}}
     .p-custom-align {
       margin-left: 30px;
       font-size: 10pt;
@@ -90,14 +91,13 @@
       </div>
   </div>
   {{-- Notice --}}
-  <div class="notice-board">
+  <!-- Container Fluid-->
+      <div class="container-fluid" id="container-wrapper">
+        <div class="notice-board">
     <div class="marquee">
       <span>सभी आवेदकों को सूचित किया जाता है कि ऑनलाइन आवेदन प्रक्रिया 5 अक्टूबर 2025 तक खुली रहेगी | कृपया आगे की सूचना एवं अपडेट्स के लिए इस नोटिस बोर्ड पर ध्यान दें | For assistance, contact support@bssc.gov.in.</span>
     </div>
   </div>
-
-      <!-- Container Fluid-->
-      <div class="container-fluid" id="container-wrapper">
         <div class="row">
           <div class="col-lg-8">
              @if ($errors->any())
@@ -1134,7 +1134,22 @@ function showError(msg) {
     // Auto-hide after 10 seconds
     setTimeout(() => { $("#errorMessage").fadeOut(); }, 5000);
 }
+document.addEventListener("DOMContentLoaded", function () {
+  const marquee = document.querySelector(".notice-board .marquee");
+  let speed = 1; // pixels per frame
+  let position = marquee.parentElement.offsetWidth;
 
+  function animate() {
+    position -= speed;
+    if (position < -marquee.offsetWidth) {
+      position = marquee.parentElement.offsetWidth;
+    }
+    marquee.style.transform = `translateX(${position}px)`;
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+});
 
 </script>
 
