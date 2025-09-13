@@ -380,32 +380,98 @@
           </div>
 
           <!-- Instructions -->
-          <div class="col-lg-4">
-            <div class="card mb-6">
-              <div class="card-body">
-                <div class="form-group row custom-margin">
-                  <label class="col-sm-5 col-form-label label-custom-align"><b>Candidate Name:</b></label>
-                  <label class="col-sm-12">
-                    <p class="p-custom-align"><b>1:</b> Do not use any prefixes such as Shri, Dr., Mr., Mrs. etc.</p>
-                    <p class="p-custom-align"><b>2:</b> Enter your name exactly as it appears on your Matriculation/Secondary Examination Certificate.</p>
-                  </label>
-                </div>
-                <div class="form-group row custom-margin">
-                  <label class="col-sm-4 col-form-label label-custom-align"><b>Date of Birth:</b></label>
-                  <label class="col-sm-12">
-                    <p class="p-custom-align"><b>1:</b> Enter your date of birth as recorded in your Matriculation/Secondary Examination Certificate.</p>
-                  </label>
-                </div>
-                <div class="form-group row custom-margin">
-                  <label class="col-sm-9 col-form-label label-custom-align"><b>Father’s Name and Mother’s Name:</b></label>
-                  <label class="col-sm-12">
-                    <p class="p-custom-align"><b>1:</b> Do not use any prefixes such as Shri, Dr., Mr., Mrs. etc.</p>
-                    <p class="p-custom-align"><b>2:</b> Enter your father’s and mother’s names exactly as in your Matriculation/Secondary Examination Certificate.</p>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
+          <!-- Instructions -->
+<div class="col-lg-4">
+  <div class="card mb-6">
+    <div class="card-body">
+
+      <!-- Candidate Name -->
+      <div class="form-group row custom-margin">
+        <label class="col-sm-5 col-form-label label-custom-align"><b>Candidate Name:</b></label>
+        <label class="col-sm-12">
+          <p class="p-custom-align"><b>1:</b> Do not use any prefixes such as Shri, Dr., Mr., Mrs. etc.</p>
+          <p class="p-custom-align"><b>2:</b> Enter your name exactly as it appears on your Matriculation/Secondary Examination Certificate.</p>
+          <p class="p-custom-align"><b>3:</b> Only alphabets and spaces are allowed (max 150 characters).</p>
+        </label>
+      </div>
+
+      <!-- Date of Birth -->
+      <div class="form-group row custom-margin">
+        <label class="col-sm-4 col-form-label label-custom-align"><b>Date of Birth:</b></label>
+        <label class="col-sm-12">
+          <p class="p-custom-align"><b>1:</b> Enter your date of birth as recorded in your Matriculation/Secondary Examination Certificate.</p>
+          <p class="p-custom-align"><b>2:</b> Candidate must be at least 18 years old.</p>
+        </label>
+      </div>
+
+      <!-- Parents' Name -->
+      <div class="form-group row custom-margin">
+        <label class="col-sm-9 col-form-label label-custom-align"><b>Father’s Name and Mother’s Name:</b></label>
+        <label class="col-sm-12">
+          <p class="p-custom-align"><b>1:</b> Do not use any prefixes such as Shri, Dr., Mr., Mrs. etc.</p>
+          <p class="p-custom-align"><b>2:</b> Enter your father’s and mother’s names exactly as in your Matriculation/Secondary Examination Certificate.</p>
+          <p class="p-custom-align"><b>3:</b> Only alphabets and spaces are allowed (max 50 characters each).</p>
+        </label>
+      </div>
+
+      <!-- Aadhaar Number -->
+      <div class="form-group row custom-margin">
+        <label class="col-sm-6 col-form-label label-custom-align"><b>Aadhaar Number:</b></label>
+        <label class="col-sm-12">
+          <p class="p-custom-align"><b>1:</b> Must be exactly 12 digits.</p>
+          <p class="p-custom-align"><b>2:</b> Only numeric values allowed.</p>
+        </label>
+      </div>
+
+      <!-- Mobile Number -->
+      <div class="form-group row custom-margin">
+        <label class="col-sm-6 col-form-label label-custom-align"><b>Mobile Number:</b></label>
+        <label class="col-sm-12">
+          <p class="p-custom-align"><b>1:</b> Must be exactly 10 digits starting with 6, 7, 8, or 9.</p>
+          <p class="p-custom-align"><b>2:</b> This number will be used for OTP verification and future communication.</p>
+        </label>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group row custom-margin">
+        <label class="col-sm-4 col-form-label label-custom-align"><b>Email ID:</b></label>
+        <label class="col-sm-12">
+          <p class="p-custom-align"><b>1:</b> Provide a valid email ID (e.g., name@example.com).</p>
+          <p class="p-custom-align"><b>2:</b> Ensure this email is active and accessible for communication.</p>
+        </label>
+      </div>
+
+      <!-- Roll Number -->
+      <div class="form-group row custom-margin">
+        <label class="col-sm-4 col-form-label label-custom-align"><b>Roll Number:</b></label>
+        <label class="col-sm-12">
+          <p class="p-custom-align"><b>1:</b> Roll number must be alphanumeric (letters & numbers only).</p>
+          <p class="p-custom-align"><b>2:</b> Maximum 10 characters allowed.</p>
+        </label>
+      </div>
+
+      <!-- Gender -->
+      <div class="form-group row custom-margin">
+        <label class="col-sm-4 col-form-label label-custom-align"><b>Gender:</b></label>
+        <label class="col-sm-12">
+          <p class="p-custom-align"><b>1:</b> Select only from the available options (Male, Female, Third Gender).</p>
+        </label>
+      </div>
+
+      <!-- Uploads -->
+      <div class="form-group row custom-margin">
+        <label class="col-sm-6 col-form-label label-custom-align"><b>Photo & Documents:</b></label>
+        <label class="col-sm-12">
+          <p class="p-custom-align"><b>1:</b> Upload passport-size photo and signature in JPG/JPEG/PNG format.</p>
+          <p class="p-custom-align"><b>2:</b> Maximum size: 2MB for photo, 1MB for signature.</p>
+          <p class="p-custom-align"><b>3:</b> Supporting documents may also be uploaded in PDF format.</p>
+        </label>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 
         </div><!-- row end -->
       </div><!-- container-fluid end -->
