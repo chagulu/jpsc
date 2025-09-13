@@ -716,23 +716,35 @@ public function uploadDocumentsStore(Request $request, $applicationId)
         ->route('candidate.preview', $application->id)
         ->with('success', 'Education details updated successfully.');
 }
-public function previewStore(){
-        $candidate = auth('candidate')->user();
+ 
 
-        if (! $candidate) {
-            return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
-        }
+public function previewStore()
+    {
+    $candidate = auth('candidate')->user();
 
-        // Fetch the candidate's latest application
-        $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
-
-        if (! $application) {
-            return back()->withErrors(['db' => 'No application found for your profile.']);
-        }
-        return redirect()
-                    ->route('candidate.completed', $application->id)
-                    ->with('success', 'Application saved successfully.');
+    if (! $candidate) {
+        return redirect()->route('candidate.login')
+            ->withErrors(['auth' => 'Please log in first.']);
     }
+
+    // Fetch the candidate's latest application
+    $application = JetApplicationModel::where('candidate_id', $candidate->id)
+        ->latest()
+        ->first();
+
+    if (! $application) {
+        return back()->withErrors(['db' => 'No application found for your profile.']);
+    }
+
+    // ✅ Update status to Submitted
+    $application->status = 'Submitted';
+    $application->save();
+
+    return redirect()
+        ->route('candidate.completed', $application->id)
+        ->with('success', 'Application submitted successfully.');
+}
+
 
     public function completed(){
         $candidate = auth('candidate')->user();
