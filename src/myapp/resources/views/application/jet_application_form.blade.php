@@ -19,6 +19,8 @@ body {
   font-family: 'Roboto', sans-serif;
   background-color: #f9fafc;
   color: #333;
+  margin: 0;
+  padding: 0;
 }
 
 /* Card */
@@ -100,6 +102,8 @@ body {
   box-shadow: 0 2px 10px rgba(44,104,162,0.11);
   padding: 14px 20px;
   margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
 }
 .bssc-header img {
   height: 100px;
@@ -118,9 +122,10 @@ body {
   font-size: 1.05rem;
   border-bottom: 2px solid #0d2d53;
   margin-bottom: 0.7rem;
+}
 
-  
-  .custom-alert {
+/* Custom Alert */
+.custom-alert {
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
@@ -130,12 +135,10 @@ body {
   display: none;
   animation: slideDown 0.4s ease;
 }
-
 .custom-alert i {
   margin-right: 8px;
   font-size: 16px;
 }
-
 .close-btn {
   position: absolute;
   right: 12px;
@@ -145,17 +148,100 @@ body {
   font-size: 18px;
   color: inherit;
 }
-
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-15px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-
 /* Marquee Animation */
 @keyframes marquee {
   0% { transform: translate(0, 0); }
   100% { transform: translate(-100%, 0); }
+}
+
+/* ---------------- Mobile Responsive ---------------- */
+@media (max-width: 768px) {
+  /* Card responsiveness */
+  .card {
+    padding: 10px;
+    margin: 8px 0;
+  }
+
+  /* Labels and instructions */
+  .col-form-label,
+  .label-custom-align {
+    font-size: 9pt;
+    margin-left: 5px;
+  }
+  .p-custom-align {
+    font-size: 9pt;
+    margin-left: 10px;
+  }
+
+  /* OTP container: full width on small screens */
+  .otp-container {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* Header */
+  .bssc-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 10px;
+  }
+  .bssc-header img {
+    height: 70px;
+    width: 70px;
+    margin: 0 0 10px 0;
+  }
+
+  /* Notice Board */
+  .notice-board {
+    font-size: 0.9rem;
+    padding: 10px;
+    text-align: center;
+  }
+
+  /* Custom alert box */
+  .custom-alert {
+    font-size: 12px;
+    padding: 10px;
+  }
+  .custom-alert i {
+    font-size: 14px;
+  }
+
+  /* Reduce box shadow on small devices */
+  .card,
+  .bssc-header,
+  .custom-alert {
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+}
+
+@media (max-width: 480px) {
+  /* Labels smaller */
+  .col-form-label,
+  .label-custom-align {
+    font-size: 8pt;
+  }
+  .p-custom-align {
+    font-size: 8pt;
+  }
+
+  /* Logo very small */
+  .bssc-header img {
+    height: 50px;
+    width: 50px;
+  }
+
+  /* Form fields full width */
+  input, select, textarea, button {
+    width: 100% !important;
+    font-size: 14px;
+  }
 }
 
   </style>
