@@ -53,4 +53,12 @@ class ApplicationSearchController extends Controller
 
         return view('admin.applications.applicant_list', compact('applications'));
     }
+
+    public function show($id)
+    {
+        $application = Application::with(['candidate', 'documents', 'addresses', 'education'])
+            ->findOrFail($id);
+
+        return view('admin.applications.show', compact('application'));
+    }
 }
