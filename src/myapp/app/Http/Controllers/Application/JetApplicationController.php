@@ -799,7 +799,7 @@ public function previewStore(){
         ->orderBy('created_at', 'asc')
         ->get();
 
-    $pdf = Pdf::loadView('candidate.preview', compact('application','progress'));
+    $pdf = Pdf::loadView('candidate.printPdf', compact('application','progress'));
     return $pdf->download("application_{$application->application_no}.pdf");
 }
 
@@ -812,7 +812,7 @@ public function printPdf($id)
         ->orderBy('created_at', 'asc')
         ->get();
 
-    $pdf = Pdf::loadView('candidate.preview', compact('application','progress'));
+    $pdf = Pdf::loadView('candidate.printPdf', compact('application','progress'));
     return $pdf->stream("application_{$application->application_no}.pdf");
 }
 
@@ -821,7 +821,7 @@ public function printPdf($id)
         {
             $application = JetApplicationModel::with(['education','documents'])->findOrFail($id);
 
-            $pdf = Pdf::loadView('candidate.preview', compact('application'));
+            $pdf = Pdf::loadView('candidate.printPdf', compact('application'));
             return $pdf->stream("application_{$application->application_no}.pdf");
         }
 
