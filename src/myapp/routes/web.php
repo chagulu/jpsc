@@ -102,6 +102,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Admin application listing
     Route::get('/admin/applications', [ApplicationSearchController::class, 'index'])->name('admin.applications.index');
+    Route::get('/applications/{id}', [App\Http\Controllers\Admin\ApplicationController::class, 'show'])->name('admin.applications.show');
+
 });
 
 /*

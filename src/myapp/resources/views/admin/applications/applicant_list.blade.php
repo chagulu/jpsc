@@ -14,7 +14,13 @@
                     <div class="col-md-6">
                         <div class="form-group form-group-default">
                             <label>Application ID</label>
-                            <input type="text" name="application_no" value="{{ request('application_no') }}" class="form-control" placeholder="Search ID">
+                            <input type="text" name="application_no" value="{{ request('application_no') }}" class="form-control" placeholder="Search Application ID">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group form-group-default">
+                            <label>OTR No</label>
+                            <input type="text" name="otr_no" value="{{ request('otr_no') }}" class="form-control" placeholder="Search OTR No">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -68,17 +74,24 @@
                             <th>Email</th>
                             <th>Submitted At</th>
                             <th>Status</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($applications as $app)
                         <tr>
-                            <td>{{ $app->application_no }}</td>
+                            <td>{{ $app->candidate->otr_no ?? '—' }}</td>
                             <td>{{ $app->full_name }}</td>
-                            <td>{{ $app->mobile_no }}</td>
-                            <td>{{ $app->email ?? '—' }}</td>
+                            <td>{{ $app->candidate->mobile_number ?? '—' }}</td>
+                            <td>{{ $app->candidate->email ?? '—' }}</td>
                             <td>{{ $app->created_at->format('Y-m-d') }}</td>
                             <td>{{ $app->status }}</td>
+                            <td>
+                                <a href="{{ route('admin.applications.show', $app->id) }}" 
+                                   class="btn btn-info btn-sm">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -98,7 +111,7 @@
     document.querySelectorAll('#filterForm input, #filterForm select').forEach(field => {
         field.addEventListener('change', () => document.getElementById('filterForm').submit());
         field.addEventListener('keyup', (e) => {
-            if(e.key === 'Enter') document.getElementById('filterForm').submit();
+            if (e.key === 'Enter') document.getElementById('filterForm').submit();
         });
     });
 </script>
