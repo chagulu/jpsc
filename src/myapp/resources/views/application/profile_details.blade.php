@@ -74,25 +74,7 @@
         <div class="col-6 text-end">{{ $application->mother_name }}</div>
       </div>
       <hr>
-      <!-- <div class="row mb-3">
-    <div class="col-6 row-label">Base Fee:</div>
-    <div class="col-6 text-end amount">₹{{ number_format($baseFee, 2) }}</div>
-    </div> -->
-<!-- <div class="row mb-3">
-    <div class="col-6 row-label">GST (18%):</div>
-    <div class="col-6 text-end amount">₹{{ number_format($gst, 2) }}</div>
-</div> -->
-<!-- <div class="row mb-3">
-    <div class="col-6 row-label">Total Payable:</div>
-    <div class="col-6 text-end amount fs-5">₹{{ number_format($total, 2) }}</div>
-</div> -->
-
-
-      <!-- <div class="alert alert-info mt-4">
-        Verify your details before proceeding. Once you proceed, you will be redirected to the secure Paytm payment page.
-      </div> -->
-
-      {{-- Centered Proceed Button --}}
+      
       <form action="{{ route('profile.summary.save', $application->id) }}" method="GET">
         @csrf
         <button type="submit" name="action" value="agree" class="btn btn-primary btn-lg">I Agree</button>

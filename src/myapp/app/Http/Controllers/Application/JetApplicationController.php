@@ -133,34 +133,35 @@ public function sendOtp(Request $request)
      */
  
     public function submitForm(Request $request)
-    {
-        // 1️⃣ Minimal logging
-        Log::info('Incoming application', [
-            'mobile' => $request->mobileNumber,
-            'email'  => $request->emailId,
-            'ip'     => $request->ip(),
-        ]);
+{
+    // 1️⃣ Minimal logging
+    Log::info('Incoming application', [
+        'mobile' => $request->mobileNumber,
+        'email'  => $request->emailId,
+        'ip'     => $request->ip(),
+    ]);
 
-        // 2️⃣ Validation
-        $validated = $request->validate([
-            'emailId'      => 'required|email|max:150|unique:candidates,email',
-            'name'         => 'required|string|max:150',
-            'rollNumber'   => 'required|string|max:10',
-            'gender'       => 'required|in:Male,Female,Third Gender',
-            'dateOfBirth'  => 'required|date',
-            'fatherName'   => 'required|string|max:20',
-            'motherName'   => 'required|string|max:20',
-            'mobileNumber' => 'required|digits:10|unique:candidates,mobile_number',
-        ]);
+    // 2️⃣ Validation
+    $validated = $request->validate([
+        'emailId'      => 'required|email|max:150|unique:candidates,email',
+        'name'         => 'required|string|max:150',
+        'rollNumber'   => 'required|string|max:10',
+        'gender'       => 'required|in:Male,Female,Third Gender',
+        'dateOfBirth'  => 'required|date',
+        'fatherName'   => 'required|string|max:20',
+        'motherName'   => 'required|string|max:20',
+        'mobileNumber' => 'required|digits:10|unique:candidates,mobile_number',
+    ]);
 
-        // 3️⃣ OTP checks
-        if (session('otp_verified.mobile') !== $request->mobileNumber) {
-            return back()->withErrors(['db' => 'Mobile number is not verified'])->withInput();
-        }
-        if (session('otp_verified.email') !== $request->emailId) {
-            return back()->withErrors(['db' => 'Email Id is not verified'])->withInput();
-        }
+    // 3️⃣ OTP verification
+    if (session('otp_verified.mobile') !== $request->mobileNumber) {
+        return back()->withErrors(['db' => 'Mobile number is not verified'])->withInput();
+    }
+    if (session('otp_verified.email') !== $request->emailId) {
+        return back()->withErrors(['db' => 'Email Id is not verified'])->withInput();
+    }
 
+    try {
         // 4️⃣ Candidate creation
         $applicationNo = 'APP-' . time() . '-' . rand(1000, 9999);
 
@@ -173,75 +174,84 @@ public function sendOtp(Request $request)
             return back()->withErrors(['db' => 'You have already submitted an application.'])->withInput();
         }
 
-        // 🔹 Prepare application data (no DB insert here)
-        $applicationData = [
-            'candidate_id'        => $candidate->id,
-            'application_no'      => $applicationNo,
-            'aadhaar_card_number' => $request->aadhaarCardNumber,
-            'mobile_no'           => $request->mobileNumber,
-            'email'               => $request->emailId,
-            'full_name'           => $request->name,
-            'confirm_name'        => $request->confirmName,
-            'roll_number'         => $request->rollNumber,
-            'rd_is_changed_name'  => $request->rdIsChangedName,
-            'have_you_ever_changed_name' => $request->haveYouEverChangedName,
-            'changed_name'        => $request->changedName,
-            'verify_changed_name' => $request->verifyChangedName,
-            'upload_supported_document' => $request->uploadSupportedDocument,
-            'date_of_birth'       => $request->dateOfBirth,
-            'gender'              => $request->gender,
-            'father_name'         => $request->fatherName,
-            'mother_name'         => $request->motherName,
-            'alternate_number'    => $request->alternateNumber,
-            'status'              => 'Draft',
-            'submission_stage'    => 'Draft',
-            'submitted_at'        => null,
-            'last_edit_at'        => now(),
-            'ip_address'          => $request->ip(),
-            'user_agent'          => $request->userAgent(),
-        ];
+        // 5️⃣ Prepare minimal session preview (for immediate summary)
+        session([
+            'application_preview' => [
+                'application_no'      => $applicationNo,
+                'aadhaar_card_number' => $request->aadhaarCardNumber,
+                'full_name'           => $request->name,
+                'mobile_no'           => $request->mobileNumber,
+                'email'               => $request->emailId,
+                'date_of_birth'       => $request->dateOfBirth,
+                'gender'              => $request->gender,
+                'father_name'         => $request->fatherName,
+                'mother_name'         => $request->motherName,
+            ]
+        ]);
 
-        // 🔹 Dispatch job (DB insert in background)
-        ProcessCandidateApplication::dispatch($candidate, $applicationData);
+        // 6️⃣ Dispatch queue for full DB insert
+        ProcessCandidateApplication::dispatch($candidate, $request->all());
 
-        // 🔹 Auto-login immediately
+        // 7️⃣ Auto-login candidate immediately
         auth('candidate')->login($candidate);
 
-        // 🔹 Redirect to summary page
+        // 8️⃣ Redirect to summary page
         return redirect()
             ->route('profile.summary')
             ->with('success', 'Application is being processed and you are logged in.');
+
+    } catch (\Throwable $e) {
+        Log::error('Application submission failed', [
+            'message' => $e->getMessage(),
+            'trace'   => $e->getTraceAsString(),
+            'request' => $request->only('emailId', 'mobileNumber'),
+        ]);
+
+        $msg = str_contains($e->getMessage(), 'Duplicate entry')
+            ? 'Mobile number or email already exists for another candidate.'
+            : 'Could not save application: '.$e->getMessage();
+
+        return back()->withErrors(['db' => $msg])->withInput();
     }
+}
+
 
 
 
 
     public function profileSummary()
-    {
-        $candidate = auth('candidate')->user();
+{
+    $candidate = auth('candidate')->user();
 
-        if (! $candidate) {
-            return redirect()->route('candidate.login');
-        }
-
-        $application = $candidate->applications()->latest()->first();
-
-        if (! $application) {
-            return redirect()->route('jet.application.form')
-                            ->withErrors(['db' => 'No application found for your account.']);
-        }
-
-        $baseFee = 1000;
-        $gst     = round($baseFee * 0.18, 2);
-        $total   = $baseFee + $gst;
-
-        return view('application.profile_details', [
-            'application' => $application,
-            'baseFee'     => $baseFee,
-            'gst'         => $gst,
-            'total'       => $total,
-        ]);
+    if (! $candidate) {
+        return redirect()->route('candidate.login');
     }
+
+    // 1️⃣ Try fetching application from DB
+    $application = $candidate->applications()->latest()->first();
+
+    // 2️⃣ If not inserted yet, fallback to session preview
+    if (! $application && session()->has('application_preview')) {
+        $application = (object) session('application_preview');
+    }
+
+    if (! $application) {
+        return redirect()->route('jet.application.form')
+                         ->withErrors(['db' => 'No application found for your account.']);
+    }
+
+    $baseFee = 1000;
+    $gst     = round($baseFee * 0.18, 2);
+    $total   = $baseFee + $gst;
+
+    return view('application.profile_details', [
+        'application' => $application,
+        'baseFee'     => $baseFee,
+        'gst'         => $gst,
+        'total'       => $total,
+    ]);
+}
+
 
 
     public function getProfileSummary(Request $request)
