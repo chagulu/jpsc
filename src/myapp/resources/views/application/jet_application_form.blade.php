@@ -11,60 +11,121 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
  <style>
-   @keyframes marquee {0% {transform:translate(0,0);} 100% {transform:translate(-100%,0);}}
-    .p-custom-align {
-      margin-left: 30px;
-      font-size: 10pt;
-    }
-    .label-custom-align {
-      margin-left: 10px;
-      font-size: 10pt;
-    }
-    .custom-margin {
-      margin-bottom: -15px;
-    }
-    .disabled {
-      opacity: 0.5;
-      pointer-events: none;
-    }
-    .hidden {
-      display: none;
-    }
-    .otp-container {
-      display: flex;
-      justify-content: flex-end;
-      width: 100%;
-    }
-    .required {
-      color: red;
-    }
-    .sidebar-brand-icon img {
-      max-height: 4.5rem;
-      height: 4.4rem;
-    }
-    .bssc-header {
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(44,104,162,0.11);
-      padding: 14px 20px;
-      margin-bottom: 1.5rem;
-    }
-    .bssc-header img {
-      height: 100px;
-      width: 100px;
-      object-fit: contain;
-      margin-right: 20px;
-    }
-     .notice-board {
-      background: #16467f;
-      color: #fff;
-      font-weight: bold;
-      padding: 12px 0;
-      letter-spacing: 1px;
-      font-size: 1.05rem;
-      border-bottom: 2px solid #0d2d53;
-      margin-bottom: 0.7rem;
-    }
+  /* Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+/* Base Styles */
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f9fafc;
+  color: #333;
+}
+
+/* Card */
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  background: #fff;
+  padding: 15px;
+  transition: transform 0.2s ease-in-out;
+}
+.card:hover {
+  transform: translateY(-4px);
+}
+
+/* Labels */
+.col-form-label,
+.label-custom-align {
+  font-weight: 600;
+  font-size: 10pt;
+  color: #2c3e50;
+  margin-bottom: 6px;
+  margin-left: 10px;
+}
+
+/* Paragraph Instructions */
+.p-custom-align {
+  font-size: 10pt;
+  line-height: 1.6;
+  margin: 4px 0 4px 30px;
+  color: #555;
+}
+.p-custom-align b {
+  background: #007bff;
+  color: #fff;
+  border-radius: 50%;
+  padding: 3px 8px;
+  font-size: 12px;
+  margin-right: 6px;
+}
+
+/* Custom spacing */
+.custom-margin {
+  margin: -15px 0 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #e0e0e0;
+}
+.custom-margin:last-child {
+  border-bottom: none;
+}
+
+/* Utility classes */
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.hidden {
+  display: none;
+}
+.required {
+  color: red;
+}
+
+/* OTP */
+.otp-container {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+/* Header */
+.sidebar-brand-icon img {
+  max-height: 4.5rem;
+  height: 4.4rem;
+}
+.bssc-header {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(44,104,162,0.11);
+  padding: 14px 20px;
+  margin-bottom: 1.5rem;
+}
+.bssc-header img {
+  height: 100px;
+  width: 100px;
+  object-fit: contain;
+  margin-right: 20px;
+}
+
+/* Notice Board */
+.notice-board {
+  background: #16467f;
+  color: #fff;
+  font-weight: bold;
+  padding: 12px 0;
+  letter-spacing: 1px;
+  font-size: 1.05rem;
+  border-bottom: 2px solid #0d2d53;
+  margin-bottom: 0.7rem;
+}
+
+/* Marquee Animation */
+@keyframes marquee {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(-100%, 0); }
+}
+
   </style>
 </head>
 <body class="someBlock" id="page-top" onload="setDefaultData(); loadDefaultData(); getSupportDocumentUploadData();">
