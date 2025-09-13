@@ -720,6 +720,7 @@ public function uploadDocumentsStore(Request $request, $applicationId)
 
 public function previewStore()
     {
+       
     $candidate = auth('candidate')->user();
 
     if (! $candidate) {
@@ -736,9 +737,7 @@ public function previewStore()
         return back()->withErrors(['db' => 'No application found for your profile.']);
     }
 
-    // ✅ Update status to Submitted
-    $application->status = 'Submitted';
-    $application->save();
+    
 
     return redirect()
         ->route('candidate.completed', $application->id)
@@ -759,6 +758,9 @@ public function previewStore()
         if (! $application) {
             return back()->withErrors(['db' => 'No application found for your profile.']);
         }
+         // ✅ Update status to Submitted
+            $application->status = 'Submitted';
+            $application->save();
 
         return view('candidate.completed', [
                 'application' => $application
