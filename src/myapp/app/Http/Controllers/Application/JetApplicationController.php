@@ -16,6 +16,7 @@ use App\Models\ApplicationDocument;
 use App\Models\ApplicationEducation;
 use App\Models\ApplicationProgress;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Jobs\ProcessCandidateApplication;
 
 class JetApplicationController extends Controller
 {
@@ -130,122 +131,90 @@ public function sendOtp(Request $request)
     /**
      * Handle POST of JET form
      */
+ 
     public function submitForm(Request $request)
     {
-        Log::info('Incoming application payload', [
-            'payload' => $request->all(),
-            'ip'      => $request->ip(),
-            'agent'   => $request->userAgent(),
+        // 1️⃣ Minimal logging
+        Log::info('Incoming application', [
+            'mobile' => $request->mobileNumber,
+            'email'  => $request->emailId,
+            'ip'     => $request->ip(),
         ]);
 
-        $rules = [
-            'emailId'         => 'required|email|max:150|unique:candidates,email',
-            'name'            => 'required|string|max:150',
-            'rollNumber'      => 'required|string|max:10',
-            'gender'          => 'required|in:Male,Female,Third Gender',
-            'dateOfBirth'     => 'required|date',
-            'fatherName'      => 'required|string|max:20',
-            'motherName'      => 'required|string|max:20',
-            'mobileNumber'    => 'required|digits:10|unique:candidates,mobile_number',
-        ];
+        // 2️⃣ Validation
+        $validated = $request->validate([
+            'emailId'      => 'required|email|max:150|unique:candidates,email',
+            'name'         => 'required|string|max:150',
+            'rollNumber'   => 'required|string|max:10',
+            'gender'       => 'required|in:Male,Female,Third Gender',
+            'dateOfBirth'  => 'required|date',
+            'fatherName'   => 'required|string|max:20',
+            'motherName'   => 'required|string|max:20',
+            'mobileNumber' => 'required|digits:10|unique:candidates,mobile_number',
+        ]);
 
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
+        // 3️⃣ OTP checks
+        if (session('otp_verified.mobile') !== $request->mobileNumber) {
+            return back()->withErrors(['db' => 'Mobile number is not verified'])->withInput();
         }
-
-        if (! session()->has("otp_verified.mobile") || session("otp_verified.mobile") !== $request->mobileNumber) {
-                return back()->withErrors(['db' => 'Mobile number is not verified'])->withInput();
-            }
- 
-        if (! session()->has("otp_verified.email") || session("otp_verified.email") !== $request->emailId) {
+        if (session('otp_verified.email') !== $request->emailId) {
             return back()->withErrors(['db' => 'Email Id is not verified'])->withInput();
         }
 
-        try {
-            $applicationNo = 'APP-' . time() . '-' . rand(1000, 9999);
+        // 4️⃣ Candidate creation
+        $applicationNo = 'APP-' . time() . '-' . rand(1000, 9999);
 
-            // 1️⃣ Find or create candidate
-            $candidate = Candidate::where('email', $request->emailId)
-                                ->orWhere('mobile_number', $request->mobileNumber)
-                                ->first();
+        $candidate = Candidate::firstOrCreate(
+            ['email' => $request->emailId, 'mobile_number' => $request->mobileNumber],
+            ['otr_no' => $applicationNo]
+        );
 
-            if (! $candidate) {
-                $candidate = Candidate::create([
-                    'email'         => $request->emailId,
-                    'mobile_number' => $request->mobileNumber,
-                ]);
-            }
-
-            // 2️⃣ Ensure candidate doesn’t already have an application
-            if (JetApplicationModel::where('candidate_id', $candidate->id)->exists()) {
-                return back()->withErrors(['db' => 'You have already submitted an application.'])->withInput();
-            }
-
-            // 3️⃣ Prepare attributes
-            $attributes = [
-                'candidate_id'        => $candidate->id,
-                'application_no'      => $applicationNo,
-                'aadhaar_card_number' => $request->aadhaarCardNumber,
-                'mobile_no'           => $request->mobileNumber,
-                'email'               => $request->emailId,
-                'full_name'           => $request->name,
-                'confirm_name'        => $request->confirmName,
-                'roll_number'         => $request->rollNumber,
-                'rd_is_changed_name'  => $request->rdIsChangedName,
-                'have_you_ever_changed_name' => $request->haveYouEverChangedName,
-                'changed_name'        => $request->changedName,
-                'verify_changed_name' => $request->verifyChangedName,
-                'upload_supported_document' => $request->uploadSupportedDocument,
-                'date_of_birth'       => $request->dateOfBirth,
-                'gender'              => $request->gender,
-                'father_name'         => $request->fatherName,
-                'mother_name'         => $request->motherName,
-                'alternate_number'    => $request->alternateNumber,
-                'status'              => 'Draft',
-                'submission_stage'    => 'Draft',
-                'submitted_at'        => null,
-                'last_edit_at'        => now(),
-                'ip_address'          => $request->ip(),
-                'user_agent'          => $request->userAgent(),
-            ];
-
-            // 4️⃣ Save application
-            $application = JetApplicationModel::create($attributes);
-
-            // 5️⃣ Update candidate with otr_no
-            $candidate->update(['otr_no' => $applicationNo]);
-
-            // 6️⃣ Auto-login candidate (if not already logged in)
-            auth('candidate')->login($candidate);
-            
-            // $this->updateProgressBar($application->id, 'profile');
-
-            //profile 40
-            //photo 10
-            //other_details 10
-            // education 40
-
-
-            // 7️⃣ Redirect without ID in URL
-            return redirect()
-                ->route('profile.summary')
-                ->with('success', 'Application saved successfully.');
-
-        } catch (\Throwable $e) {
-            Log::error('Error inserting application: '.$e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-                'data'  => $request->all(),
-            ]);
-
-            $msg = str_contains($e->getMessage(), 'Duplicate entry')
-                ? 'Mobile number or email already exists for another candidate.'
-                : 'Could not save application: '.$e->getMessage();
-
-            return back()->withErrors(['db' => $msg])->withInput();
+        if (JetApplicationModel::where('candidate_id', $candidate->id)->exists()) {
+            return back()->withErrors(['db' => 'You have already submitted an application.'])->withInput();
         }
+
+        // 🔹 Prepare application data (no DB insert here)
+        $applicationData = [
+            'candidate_id'        => $candidate->id,
+            'application_no'      => $applicationNo,
+            'aadhaar_card_number' => $request->aadhaarCardNumber,
+            'mobile_no'           => $request->mobileNumber,
+            'email'               => $request->emailId,
+            'full_name'           => $request->name,
+            'confirm_name'        => $request->confirmName,
+            'roll_number'         => $request->rollNumber,
+            'rd_is_changed_name'  => $request->rdIsChangedName,
+            'have_you_ever_changed_name' => $request->haveYouEverChangedName,
+            'changed_name'        => $request->changedName,
+            'verify_changed_name' => $request->verifyChangedName,
+            'upload_supported_document' => $request->uploadSupportedDocument,
+            'date_of_birth'       => $request->dateOfBirth,
+            'gender'              => $request->gender,
+            'father_name'         => $request->fatherName,
+            'mother_name'         => $request->motherName,
+            'alternate_number'    => $request->alternateNumber,
+            'status'              => 'Draft',
+            'submission_stage'    => 'Draft',
+            'submitted_at'        => null,
+            'last_edit_at'        => now(),
+            'ip_address'          => $request->ip(),
+            'user_agent'          => $request->userAgent(),
+        ];
+
+        // 🔹 Dispatch job (DB insert in background)
+        ProcessCandidateApplication::dispatch($candidate, $applicationData);
+
+        // 🔹 Auto-login immediately
+        auth('candidate')->login($candidate);
+
+        // 🔹 Redirect to summary page
+        return redirect()
+            ->route('profile.summary')
+            ->with('success', 'Application is being processed and you are logged in.');
     }
+
+
+
 
     public function profileSummary()
     {

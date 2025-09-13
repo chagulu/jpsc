@@ -124,7 +124,7 @@
                   <div class="form-group row">
                     <label class="col-sm-3 col-form-label">Confirm Mobile Number<span class="required">*</span></label>
                     <div class="col-sm-4">
-                    <input type="text" class="form-control" value="{{ old('confirmMobileNumber') }}" id="confirmMobileNumber" onchange="validateMobile(this)" />
+                    <input type="text" class="form-control" value="{{ old('confirmMobileNumber') }}" id="confirmMobileNumber" name ="confirmMobileNumber"  onchange="validateMobile(this)" />
 
 
                   </div>
@@ -291,9 +291,9 @@
                     <div class="col-sm-4">
                       <select class="form-control" id="confirmGender" name="confirmGender" onchange="validateConfirmGender()">
                         <option value="">Select</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Third Gender">Third Gender</option>
+                        <option value="Male"{{ old('confirmGender', $genderOld ?? '') == 'Male' ? 'selected' : '' }} >Male</option>
+                        <option value="Female" {{ old('confirmGender', $genderOld ?? '') == 'Female' ? 'selected' : '' }}>Female</option>
+                        <option value="Third Gender" {{ old('confirmGender', $genderOld ?? '') == 'Third Gender' ? 'selected' : '' }}>Third Gender</option>
                       </select>
                     </div>
                   </div>
