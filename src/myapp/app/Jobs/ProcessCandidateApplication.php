@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Session;
 
 class ProcessCandidateApplication implements ShouldQueue
 {
@@ -16,24 +17,36 @@ class ProcessCandidateApplication implements ShouldQueue
     public $candidate;
     public $applicationData;
 
+    /**
+     * Create a new job instance.
+     */
     public function __construct(Candidate $candidate, array $applicationData)
     {
         $this->candidate = $candidate;
         $this->applicationData = $applicationData;
     }
 
+    /**
+     * Execute the job.
+     */
     public function handle()
     {
-        // Create application
+        // 1️⃣ Insert application into DB
         $application = JetApplicationModel::create($this->applicationData);
 
-        // Update candidate OTR number
+        // 2️⃣ Update candidate OTR number
         $this->candidate->update(['otr_no' => $this->applicationData['application_no']]);
 
-        // Update progress bar (optional: queue this too)
+        // 3️⃣ Optional: Update progress bar
         if (method_exists($this, 'updateProgressBar')) {
-            // Call updateProgressBar if accessible
             $this->updateProgressBar($application->id, 'profile');
+        }
+
+        // 4️⃣ Clear session preview for this candidate
+        // Note: only clear if using session keys like 'preview_application_<candidate_id>'
+        $sessionKey = 'preview_application_' . $this->candidate->id;
+        if (Session::has($sessionKey)) {
+            Session::forget($sessionKey);
         }
     }
 }
