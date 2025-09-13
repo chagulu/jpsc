@@ -5,6 +5,7 @@
 @section('content')
 
 <!-- Step Progress Bar -->
+ 
 <div class="container-fluid mb-4">
   <ul class="progressbar d-flex justify-content-between">
         <li class="active"><a href="javascript:void(0)">Profile</a></li>
@@ -176,13 +177,19 @@
         <!-- <a href="{{ route('profile.summary')  }}" class="btn btn-success">
                 <i class="fas fa-arrow-left mr-1"></i>  Back
         </a> -->
-          @if($progress_status != 'Completed')
-              <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save mr-1"></i> Save & Next
-              </button>
-          @else
-            <a href="{{ route('candidate.uploadDocuments', $application->id) }}" class="btn btn-primary mr-2">Next </a>
-          @endif
+
+          @if(
+            ($progress_status['step_name'] === 'photo' && $progress_status['status'] !== 'Completed')
+            || empty($progress_status['step_name'])
+            )
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-arrow-right mr-1"></i> Save & Next
+            </button>
+        @else
+        <a href="{{ route('candidate.uploadDocuments', $application->id) }}" class="btn btn-primary mr-2">
+            Next
+        </a>
+        @endif
             
             <a href="{{ url('candidate/dashboard') }}" class="btn btn-secondary">
               <i class="fas fa-arrow-left mr-1"></i> Cancel

@@ -88,13 +88,18 @@
                         <!-- <button type="submit" class="btn btn-primary btn-lg px-4">
                             Save & Next <i class="fas fa-arrow-right ml-2"></i>
                         </button> -->
-
-                        @if($progress_status != 'Completed')
+                       
+                        @if(
+                            ($progress_status['step_name'] === 'photo' && $progress_status['status'] !== 'Completed')
+                            || empty($progress_status['step_name'])
+                            )
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-arrow-right mr-1"></i> Save & Next
                             </button>
                         @else
-                            <a href="{{ route('candidate.otherDetails', $application->id) }}" class="btn btn-primary mr-2">Next </a>
+                        <a href="{{ route('candidate.otherDetails', $application->id) }}" class="btn btn-primary mr-2">
+                            Next
+                        </a>
                         @endif
                     </div>
                 </div>

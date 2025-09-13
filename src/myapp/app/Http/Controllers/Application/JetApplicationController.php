@@ -220,7 +220,7 @@ public function sendOtp(Request $request)
             // 6️⃣ Auto-login candidate (if not already logged in)
             auth('candidate')->login($candidate);
             
-            $this->updateProgressBar($application->id, 'profile');
+            // $this->updateProgressBar($application->id, 'profile');
 
             //profile 40
             //photo 10
@@ -293,13 +293,14 @@ public function sendOtp(Request $request)
 
         $progress_status = $this->showStep($application->id,'profile');
         if ($request->action === 'agree') {
+            // $this->updateProgressBar($application->id, 'profile');
             return view('application.thankYou', [
                 'otr_number' => $application->application_no
             ]);
         } elseif ($request->action === 'update') {
             return view('application.applications_edit', [
                 'application' => $application,
-                'progress_status' => $progress_status['status']
+                'progress_status' => $progress_status
             ]);
         }
 
@@ -363,7 +364,7 @@ public function sendOtp(Request $request)
                 'ip_address'            => $request->ip(),
                 'user_agent'            => $request->userAgent(),
             ]);
-            $this->updateProgressBar($application->id, 'profile');
+            // $this->updateProgressBar($application->id, 'profile');
 
             if(isset($request->internal_profile) && $request->internal_profile === "internal_profile"){
                 return redirect()
@@ -466,7 +467,7 @@ public function sendOtp(Request $request)
         $progress_status = $this->showStep($application->id,'profile');
         return view('candidate.candidate_profile', [
                 'application' => $application,
-                'progress_status' => $progress_status['status']
+                'progress_status' => $progress_status
         ]);
     }
 
@@ -483,11 +484,11 @@ public function sendOtp(Request $request)
         if (! $application) {
             return back()->withErrors(['db' => 'No application found for your profile.']);
         }
-
-        $progress_status = $this->showStep($application->id,'profile');
+        $this->updateProgressBar($application->id, 'profile');
+        $progress_status = $this->showStep($application->id,'photo');
         return view('candidate.upload_document', [
                 'application' => $application,
-                'progress_status' => $progress_status['status']
+                'progress_status' => $progress_status ?? null
         ]);
     }
 
@@ -552,6 +553,8 @@ public function uploadDocumentsStore(Request $request, $applicationId)
 
     public function otherDetails(){
         $candidate = auth('candidate')->user();
+        
+
 
         if (! $candidate) {
             return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
@@ -563,12 +566,17 @@ public function uploadDocumentsStore(Request $request, $applicationId)
         if (! $application) {
             return back()->withErrors(['db' => 'No application found for your profile.']);
         }
-        
-
-        $progress_status = $this->showStep($application->id,'profile');
+        $progress_status = $this->showStep($application->id,'photo');
+        if(($progress_status['step_name'] === 'photo' && $progress_status['status'] !== 'Completed')
+                            || empty($progress_status['step_name'])
+        ){
+            return redirect()
+            ->route('candidate.uploadDocuments', $application->id);
+        }
+        $progress_status = $this->showStep($application->id,'other_details');
         return view('candidate.other_details', [
                 'application' => $application,
-                'progress_status' => $progress_status['status']
+                'progress_status' => $progress_status
         ]);
         
     }
@@ -612,16 +620,29 @@ public function uploadDocumentsStore(Request $request, $applicationId)
     ]);
 
     // Update or create address
-    $address = $application->addresses()->first() ?: $application->addresses()->create([]);
-    $address->update([
-        'address_line1' => $validated['address_line1'],
-        'address_line2' => $validated['address_line2'] ?? null,
-        'city'          => $validated['city'],
-        'district'      => $validated['district'] ?? null,
-        'state'         => $validated['state'],
-        'pincode'       => $validated['pincode'],
-        'country'       => $validated['country'],
-    ]);
+    // $address = $application->addresses()->first() ?: $application->addresses()->create([]);
+    // $address->update([
+    //     'address_line1' => $validated['address_line1'],
+    //     'address_line2' => $validated['address_line2'] ?? null,
+    //     'city'          => $validated['city'],
+    //     'district'      => $validated['district'] ?? null,
+    //     'state'         => $validated['state'],
+    //     'pincode'       => $validated['pincode'],
+    //     'country'       => $validated['country'],
+    // ]);
+
+    $address = $application->addresses()->updateOrCreate(
+        ['application_id' => $application->id], // lookup condition
+        [
+            'address_line1' => $validated['address_line1'],
+            'address_line2' => $validated['address_line2'] ?? null,
+            'city'          => $validated['city'],
+            'district'      => $validated['district'] ?? null,
+            'state'         => $validated['state'],
+            'pincode'       => $validated['pincode'],
+            'country'       => $validated['country'],
+        ]
+    );
     $this->updateProgressBar($application->id, 'other_details');
 
     return redirect()
@@ -642,14 +663,21 @@ public function uploadDocumentsStore(Request $request, $applicationId)
     if (! $application) {
         return back()->withErrors(['db' => 'No application found for your profile.']);
     }
+    $progress_status = $this->showStep($application->id,'other_details');
+    if(($progress_status['step_name'] === 'other_details' && $progress_status['status'] !== 'Completed')
+                        || empty($progress_status['step_name'])
+    ){
+        return redirect()
+        ->route('candidate.otherDetails', $application->id);
+    }
 
     // Fetch existing education records
     $educations = $application->education()->get();
-    $progress_status = $this->showStep($application->id,'profile');
+    $progress_status = $this->showStep($application->id,'education');
         return view('candidate.education', [
                 'application' => $application,
                 'educations'  => $educations,
-                'progress_status' => $progress_status['status']
+                'progress_status' => $progress_status
         ]);
 }
 
@@ -782,10 +810,12 @@ public function previewStore(){
                     ->where('step_name', $type)
                     ->first();
 
-        $isCompleted['step_name'] = $progress->step_name;
-        $isCompleted['status'] = $progress->status;
-        $isCompleted['percentage'] = $progress->percentage;
-        $isCompleted['created_at'] = $progress->created_at;
+
+            $isCompleted['step_name'] = $progress->step_name ?? null;
+            $isCompleted['status'] = $progress->status?? null;
+            $isCompleted['percentage'] = $progress->percentage?? null;
+            $isCompleted['created_at'] = $progress->created_at?? null;
+
         return $isCompleted;
         
     }
@@ -843,6 +873,13 @@ public function printPdf($id)
             return back()->withErrors(['db' => 'No application found for your profile.']);
         }
 
+        $progress_status = $this->showStep($application->id,'education');
+        if(($progress_status['step_name'] === 'education' && $progress_status['status'] !== 'Completed')
+                            || empty($progress_status['step_name'])
+        ){
+            return redirect()
+            ->route('candidate.education', $application->id);
+        }
         $progress = \DB::table('progress_status')
             ->where('application_id', $application->id)
             ->orderBy('created_at', 'asc')
