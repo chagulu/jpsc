@@ -6,8 +6,6 @@
 <div class="container-fluid">
     <!-- Progress Bar -->
     <ul class="progressbar">
-       
-
         <li class="active"><a href="{{ route('candidate.profile', $application->id) }}">Profile</a></li>
         <li class="active"><a href="{{ route('candidate.uploadDocuments', $application->id) }}">Sign & Photo</a></li>
         <li class="active"><a href="{{ route('candidate.otherDetails', $application->id) }}">Other Details</a></li>
@@ -25,14 +23,60 @@
         </div>
         <div class="card-body">
 
+            <!-- Application Info -->
+            <div class="preview-section mb-4">
+                <h6><i class="fas fa-id-card me-2 text-primary"></i> Application Info</h6>
+                <div class="row">
+                    <div class="col-md-6"><p><strong>Application No:</strong> {{ $application->application_no ?? 'N/A' }}</p></div>
+                    <div class="col-md-6"><p><strong>Submitted Date:</strong> {{ $application->submitted_at?->format('d-m-Y h:i A') ?? 'Not Submitted' }}</p></div>
+                </div>
+            </div>
+
             <!-- Personal Information -->
             <div class="preview-section mb-4">
                 <h6><i class="fas fa-user me-2 text-primary"></i> Personal Information</h6>
                 <div class="row">
                     <div class="col-md-6"><p><strong>Full Name:</strong> {{ $application->full_name }}</p></div>
+                    <div class="col-md-6"><p><strong>Father's Name:</strong> {{ $application->father_name }}</p></div>
+                    <div class="col-md-6"><p><strong>Mother's Name:</strong> {{ $application->mother_name }}</p></div>
                     <div class="col-md-6"><p><strong>Mobile:</strong> {{ $application->mobile_no }}</p></div>
+                    <div class="col-md-6"><p><strong>Email:</strong> {{ $application->email }}</p></div>
                     <div class="col-md-6"><p><strong>Date of Birth:</strong> {{ $application->date_of_birth?->format('d-m-Y') }}</p></div>
                     <div class="col-md-6"><p><strong>Gender:</strong> {{ ucfirst($application->gender) }}</p></div>
+                    <div class="col-md-6"><p><strong>Category:</strong> {{ $application->category ?? 'N/A' }}</p></div>
+                    <div class="col-md-6"><p><strong>Marital Status:</strong> {{ ucfirst($application->marital_status ?? 'N/A') }}</p></div>
+                </div>
+            </div>
+
+            <!-- Address Information -->
+            <div class="preview-section mb-4">
+                <h6><i class="fas fa-map-marker-alt me-2 text-primary"></i> Address</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Permanent Address:</strong><br>
+                            {{ $application->permanent_address ?? 'N/A' }}<br>
+                            {{ $application->permanent_city ?? '' }},
+                            {{ $application->permanent_state ?? '' }} - {{ $application->permanent_pincode ?? '' }}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Correspondence Address:</strong><br>
+                            {{ $application->correspondence_address ?? 'N/A' }}<br>
+                            {{ $application->correspondence_city ?? '' }},
+                            {{ $application->correspondence_state ?? '' }} - {{ $application->correspondence_pincode ?? '' }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other Details -->
+            <div class="preview-section mb-4">
+                <h6><i class="fas fa-info-circle me-2 text-primary"></i> Other Details</h6>
+                <div class="row">
+                    <div class="col-md-6"><p><strong>Nationality:</strong> {{ $application->nationality ?? 'N/A' }}</p></div>
+                    <div class="col-md-6"><p><strong>Disability:</strong> {{ $application->disability ?? 'No' }}</p></div>
+                    <div class="col-md-6"><p><strong>Identification Mark:</strong> {{ $application->identification_mark ?? 'N/A' }}</p></div>
+                    <div class="col-md-6"><p><strong>Aadhaar No:</strong> {{ $application->aadhaar_no ?? 'N/A' }}</p></div>
                 </div>
             </div>
 
@@ -76,13 +120,10 @@
 
             <!-- Action Buttons -->
             <div class="text-right mt-4">
-                <a href="{{ route('candidate.education',$application->id)  }}" class="btn btn-success">
-                    <i class="fas fa-arrow-left mr-1"></i>  Back
+                <a href="{{ route('candidate.education',$application->id) }}" class="btn btn-success">
+                    <i class="fas fa-arrow-left mr-1"></i> Back
                 </a>
-                <!-- <a href="{{ route('candidate.profile') }}" class="btn btn-warning">
-                    <i class="fas fa-edit"></i> Edit
-                </a> -->
-                <a href="{{ route('candidate.completed') }}" class="btn btn-success">
+                <a href="{{ route('candidate.completed',$application->id) }}" class="btn btn-success">
                     <i class="fas fa-check-circle"></i> Submit
                 </a>
             </div>

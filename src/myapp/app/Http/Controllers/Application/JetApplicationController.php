@@ -15,6 +15,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ApplicationDocument;
 use App\Models\ApplicationEducation;
 use App\Models\ApplicationProgress;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class JetApplicationController extends Controller
 {
@@ -716,31 +717,7 @@ public function uploadDocumentsStore(Request $request, $applicationId)
         ->route('candidate.preview', $application->id)
         ->with('success', 'Education details updated successfully.');
 }
-
-
-
-
-
-    public function preview(){
-        $candidate = auth('candidate')->user();
-        // dd($candidate);
-        if (! $candidate) {
-            return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
-        }
-
-        // Fetch the candidate's latest application
-        $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
-
-        if (! $application) {
-            return back()->withErrors(['db' => 'No application found for your profile.']);
-        }
-
-        return view('candidate.preview', [
-                'application' => $application
-        ]);
-    }
-
-    public function previewStore(){
+public function previewStore(){
         $candidate = auth('candidate')->user();
 
         if (! $candidate) {
@@ -812,4 +789,80 @@ public function uploadDocumentsStore(Request $request, $applicationId)
         return $isCompleted;
         
     }
+    
+        public function downloadPdf($id)
+{
+    $application = JetApplicationModel::with(['education','documents'])->findOrFail($id);
+
+    $progress = \DB::table('progress_status')
+        ->where('application_id', $application->id)
+        ->orderBy('created_at', 'asc')
+        ->get();
+
+    $pdf = Pdf::loadView('candidate.preview', compact('application','progress'));
+    return $pdf->download("application_{$application->application_no}.pdf");
 }
+
+public function printPdf($id)
+{
+    $application = JetApplicationModel::with(['education','documents'])->findOrFail($id);
+
+    $progress = \DB::table('progress_status')
+        ->where('application_id', $application->id)
+        ->orderBy('created_at', 'asc')
+        ->get();
+
+    $pdf = Pdf::loadView('candidate.preview', compact('application','progress'));
+    return $pdf->stream("application_{$application->application_no}.pdf");
+}
+
+
+        public function viewPdf($id)
+        {
+            $application = JetApplicationModel::with(['education','documents'])->findOrFail($id);
+
+            $pdf = Pdf::loadView('candidate.preview', compact('application'));
+            return $pdf->stream("application_{$application->application_no}.pdf");
+        }
+
+        // Candidate self-preview (latest application)
+    public function preview()
+    {
+        $candidate = auth('candidate')->user();
+
+        if (! $candidate) {
+            return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
+        }
+
+        $application = JetApplicationModel::where('candidate_id', $candidate->id)
+            ->with(['education','documents'])
+            ->latest()
+            ->first();
+
+        if (! $application) {
+            return back()->withErrors(['db' => 'No application found for your profile.']);
+        }
+
+        $progress = \DB::table('progress_status')
+            ->where('application_id', $application->id)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return view('candidate.preview', compact('application','progress'));
+}
+
+    // Preview by admin or by ID (used in Completed page links)
+    public function showPreview($id)
+    {
+        $application = JetApplicationModel::with(['education','documents'])->findOrFail($id);
+
+        $progress = \DB::table('progress_status')
+            ->where('application_id', $application->id)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return view('candidate.preview', compact('application','progress'));
+    }
+
+
+        }

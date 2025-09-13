@@ -73,11 +73,30 @@ Route::get('/login', function () {
         Route::post('/preview/{application_id}', [JetApplicationController::class, 'previewStore'])->name('previewStore');
         Route::get('/completed', [JetApplicationController::class, 'completed'])->name('completed');
         Route::post('/completed/{application_id}', [JetApplicationController::class, 'completedStore'])->name('completedStore');
+        Route::get('/download-pdf/{application_id}', [JetApplicationController::class, 'downloadPdf'])->name('downloadPdf');    
+        // Self-preview (latest application)
+        Route::get('/application/preview', [JetApplicationController::class, 'preview'])
+            ->name('candidate.preview');
+
+        // Preview by ID
+        // Correct
+        Route::get('/application/{id}/preview', [JetApplicationController::class, 'showPreview'])
+            ->name('showPreview');
+
+        Route::get('/application/{id}/download', [JetApplicationController::class, 'downloadPdf'])
+            ->name('download');
+
+        Route::get('/application/{id}/print', [JetApplicationController::class, 'printPdf'])
+        ->name('print');
+
+
+
 
         // Candidate logout
         Route::post('/logout', [CandidateAuthController::class, 'logout'])->name('logout');
     });
 });
+
 
 // Candidate-protected routes outside /candidate
 Route::middleware(['auth.candidate'])->group(function () {
