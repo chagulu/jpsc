@@ -78,6 +78,76 @@
     min-width: 250px; /* Optional: responsive */
 }
 
+/* Section Headers */
+.preview-section h6 {
+    font-weight: 600;
+    font-size: 15px;
+    color: #333;
+    margin-bottom: 15px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #f1f1f1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Section Container */
+.preview-section {
+    background: #fafafa;
+    padding: 15px 18px;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+    transition: background 0.2s ease-in-out;
+}
+.preview-section:hover {
+    background: #fdfdfd;
+}
+
+/* Text Styling */
+.preview-section p {
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #444;
+}
+.preview-section strong {
+    color: #222;
+    font-weight: 600;
+}
+
+/* Uploaded File Images */
+.preview-section img {
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    padding: 3px;
+    background: #fff;
+    transition: transform 0.2s ease-in-out;
+}
+.preview-section img:hover {
+    transform: scale(1.05);
+}
+
+/* Card Styling */
+.card {
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+}
+.card:hover {
+    transform: translateY(-3px);
+}
+
+/* Card Header */
+.card-header {
+    background: linear-gradient(135deg, #1abc9c, #16a085);
+    color: #fff;
+    font-weight: 600;
+    font-size: 18px;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 12px 12px 0 0 !important;
+}
+
 /* Optional: make cards full width on mobile */
 @media (max-width: 768px) {
     .dashboardmaindiv {

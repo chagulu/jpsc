@@ -202,45 +202,5 @@
 </div>
 
 <!-- Custom Progressbar CSS -->
-<style>
-.progressbar {
-  counter-reset: step;
-  list-style: none;
-  padding-left: 0;
-}
-.progressbar li {
-  position: relative;
-  flex: 1;
-  text-align: center;
-  font-size: 0.85rem;
-}
-.progressbar li:before {
-  content: counter(step);
-  counter-increment: step;
-  width: 30px; height: 30px;
-  line-height: 30px;
-  border: 2px solid #ddd;
-  display: block;
-  margin: 0 auto 10px auto;
-  border-radius: 50%;
-  background-color: #fff;
-}
-.progressbar li.active:before {
-  border-color: #007bff;
-  background-color: #007bff;
-  color: white;
-}
-.progressbar li:after {
-  content: '';
-  position: absolute;
-  width: 100%; height: 2px;
-  background-color: #ddd;
-  top: 15px; left: -50%;
-  z-index: -1;
-}
-.progressbar li:first-child:after { content: none; }
-.progressbar li.active + li:after {
-  background-color: #007bff;
-}
-</style>
+
 @endsection
