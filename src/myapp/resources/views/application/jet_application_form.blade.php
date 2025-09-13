@@ -118,7 +118,39 @@ body {
   font-size: 1.05rem;
   border-bottom: 2px solid #0d2d53;
   margin-bottom: 0.7rem;
+
+  
+  .custom-alert {
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 12px 18px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  position: relative;
+  display: none;
+  animation: slideDown 0.4s ease;
 }
+
+.custom-alert i {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.close-btn {
+  position: absolute;
+  right: 12px;
+  top: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 18px;
+  color: inherit;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 
 /* Marquee Animation */
 @keyframes marquee {
@@ -177,8 +209,9 @@ body {
               </div>
               <div class="card-body">
                 <!-- Success & Error Message Divs -->
-              <div id="successMessage" class="alert alert-success" style="display:none;"></div>
-              <div id="errorMessage" class="alert alert-danger" style="display:none;"></div>
+              <div id="successMessage" class="alert alert-success custom-alert" style="display:none;"></div>
+              <div id="errorMessage" class="alert alert-danger custom-alert" style="display:none;"></div>
+
 
 
                <form id="candidateForm" action="{{ route('jet.application.submit') }}" method="POST">
@@ -1247,20 +1280,30 @@ function isValidMobileNumber(number) {
 }
 
    function showSuccess(msg) {
-    $("#successMessage").text(msg).show();
-    $("#errorMessage").hide();
+    $("#successMessage")
+        .html(`<i class="fas fa-check-circle"></i> ${msg} <span class="close-btn">&times;</span>`)
+        .fadeIn()
+        .delay(5000)
+        .fadeOut();
 
-    // Auto-hide after 10 seconds
-    setTimeout(() => { $("#successMessage").fadeOut(); }, 5000);
+    $("#errorMessage").hide();
 }
 
 function showError(msg) {
-    $("#errorMessage").text(msg).show();
-    $("#successMessage").hide();
+    $("#errorMessage")
+        .html(`<i class="fas fa-exclamation-circle"></i> ${msg} <span class="close-btn">&times;</span>`)
+        .fadeIn()
+        .delay(5000)
+        .fadeOut();
 
-    // Auto-hide after 10 seconds
-    setTimeout(() => { $("#errorMessage").fadeOut(); }, 5000);
+    $("#successMessage").hide();
 }
+
+// Allow manual close
+$(document).on("click", ".close-btn", function () {
+    $(this).parent().fadeOut();
+});
+
 document.addEventListener("DOMContentLoaded", function () {
   const marquee = document.querySelector(".notice-board .marquee");
   let speed = 1; // pixels per frame
