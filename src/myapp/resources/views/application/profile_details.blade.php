@@ -33,53 +33,57 @@
   <div class="summary-card">
       <h2 class="summary-title">Confirm Profile Details</h2>
 
-      <!-- <div class="row mb-3">
+      <div class="row mb-3">
         <div class="col-6 row-label">Application ID:</div>
-        <div class="col-6 text-end">{{ $application->application_no }}</div>
-      </div> -->
+        <div class="col-6 text-end">{{ $application->application_no ?? 'Pending...' }}</div>
+      </div>
+
       <div class="row mb-3">
         <div class="col-6 row-label">Aadhar Card Number:</div>
-        <div class="col-6 text-end">{{ $application->aadhaar_card_number }}</div>
+        <div class="col-6 text-end">{{ $application->aadhaar_card_number ?? 'Pending...' }}</div>
       </div>
 
       <div class="row mb-3">
         <div class="col-6 row-label">Applicant Name:</div>
-        <div class="col-6 text-end">{{ $application->full_name }}</div>
+        <div class="col-6 text-end">{{ $application->full_name ?? 'Pending...' }}</div>
       </div>
+
       <div class="row mb-3">
         <div class="col-6 row-label">Mobile:</div>
-        <div class="col-6 text-end">{{ $application->mobile_no }}</div>
+        <div class="col-6 text-end">{{ $application->mobile_no ?? 'Pending...' }}</div>
       </div>
+
       <div class="row mb-3">
         <div class="col-6 row-label">Email:</div>
-        <div class="col-6 text-end">{{ $application->email}}</div>
+        <div class="col-6 text-end">{{ $application->email ?? 'Pending...' }}</div>
       </div>
 
       <div class="row mb-3">
         <div class="col-6 row-label">Date of Birth:</div>
-        <div class="col-6 text-end">{{ $application->date_of_birth }}</div>
+        <div class="col-6 text-end">{{ $application->date_of_birth ?? 'Pending...' }}</div>
       </div>
 
       <div class="row mb-3">
         <div class="col-6 row-label">Gender:</div>
-        <div class="col-6 text-end">{{ $application->gender }}</div>
+        <div class="col-6 text-end">{{ $application->gender ?? 'Pending...' }}</div>
       </div>
 
       <div class="row mb-3">
         <div class="col-6 row-label">Father Name:</div>
-        <div class="col-6 text-end">{{ $application->father_name }}</div>
+        <div class="col-6 text-end">{{ $application->father_name ?? 'Pending...' }}</div>
       </div>
+
       <div class="row mb-3">
         <div class="col-6 row-label">Mother Name:</div>
-        <div class="col-6 text-end">{{ $application->mother_name }}</div>
+        <div class="col-6 text-end">{{ $application->mother_name ?? 'Pending...' }}</div>
       </div>
       <hr>
       
-      <form action="{{ route('profile.summary.save', $application->id) }}" method="GET">
+      <form action="{{ route('profile.summary.save', $application->application_no ?? 0) }}" method="GET">
         @csrf
         <button type="submit" name="action" value="agree" class="btn btn-primary btn-lg">I Agree</button>
         <button type="submit" name="action" value="update" class="btn btn-primary btn-lg">Update</button>
-    </form>
+      </form>
 
   </div>
 </div>
