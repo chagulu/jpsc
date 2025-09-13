@@ -41,8 +41,28 @@
       max-height: 4.5rem;
       height: 4.4rem;
     }
-    .navbar {
-      padding: 0;
+    .bssc-header {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(44,104,162,0.11);
+      padding: 14px 20px;
+      margin-bottom: 1.5rem;
+    }
+    .bssc-header img {
+      height: 100px;
+      width: 100px;
+      object-fit: contain;
+      margin-right: 20px;
+    }
+     .notice-board {
+      background: #16467f;
+      color: #fff;
+      font-weight: bold;
+      padding: 12px 0;
+      letter-spacing: 1px;
+      font-size: 1.05rem;
+      border-bottom: 2px solid #0d2d53;
+      margin-bottom: 0.7rem;
     }
   </style>
 </head>
@@ -59,14 +79,22 @@
   <div id="content-wrapper" class="d-flex flex-column">
     <div id="content">
       <!-- Topbar -->
-      <nav class="navbar navbar-expand navbar-light bg-navbar topbar static-top" style="background-color: #6777ef;">
-        <ul class="navbar-nav">
-          <div class="sidebar-brand-icon">
-            <a href="/"><img src="https://www.jpscexam.com/otr_new/img/logo/jpscImage.png" alt="JPSC Logo"></a>
-          </div>
-        </ul>
-      </nav>
-      <br>
+      
+      <div class="bssc-header d-flex align-items-center shadow-sm">
+      <img src="https://saraltyping.com/wp-content/uploads/2021/08/bihar-ssc-logo-1-1.webp" alt="BSSC Logo">
+      <div class="flex-grow-1 text-center">
+        <div style="font-size: 1.15rem; font-weight: 700; color: #1b3869;">Bihar Staff Selection Commission</div>
+        <div style="font-size: 0.98rem; color: #313131;">P.O.-VETERINARY COLLEGE, PATNA - 800014</div>
+        <div style="font-size: 0.93rem; color: #38406f;">Adv No.-05/25, 4th Graduate Level Combined Competitive Exam</div>
+        <div style="font-size: 0.93rem; color: #3b525e;">चतुर्थ स्नातक स्तरीय संयुक्त प्रतियोगिता परीक्षा</div>
+      </div>
+  </div>
+  {{-- Notice --}}
+  <div class="notice-board">
+    <div class="marquee">
+      <span>सभी आवेदकों को सूचित किया जाता है कि ऑनलाइन आवेदन प्रक्रिया 5 अक्टूबर 2025 तक खुली रहेगी | कृपया आगे की सूचना एवं अपडेट्स के लिए इस नोटिस बोर्ड पर ध्यान दें | For assistance, contact support@bssc.gov.in.</span>
+    </div>
+  </div>
 
       <!-- Container Fluid-->
       <div class="container-fluid" id="container-wrapper">
@@ -84,7 +112,7 @@
             <!-- Profile Form Card -->
             <div class="card mb-4">
               <div class="card-header py-3 d-flex flex-row align-items-center justify-content-center">
-                <h6 class="m-0 font-weight-bold text-primary">Profile Details</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Application Form</h6>
               </div>
               <div class="card-body">
                 <!-- Success & Error Message Divs -->
