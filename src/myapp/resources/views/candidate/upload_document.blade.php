@@ -65,7 +65,7 @@
                                  class="mt-2 img-thumbnail {{ optional($application->documents)->signature ? '' : 'd-none' }}" 
                                  width="120" height="80">
                         </div>
-                        <small class="form-text text-muted">Allowed formats: JPG, PNG. Max size: 100KB</small>
+                        <small class="form-text text-muted">Allowed formats: JPG, PNG. Max size: 200KB</small>
                     </div>
                 </div>
 

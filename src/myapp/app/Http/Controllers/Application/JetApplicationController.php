@@ -377,48 +377,49 @@ class JetApplicationController extends Controller
     // }
 
     public function dashboard()
-    {
-        $candidate = auth('candidate')->user();
+{
+    $candidate = auth('candidate')->user();
 
-        if (! $candidate) {
-            return redirect()->route('candidate.login')
-                ->withErrors(['auth' => 'Please log in first.']);
-        }
+    if (! $candidate) {
+        return redirect()->route('candidate.login')
+            ->withErrors(['auth' => 'Please log in first.']);
+    }
 
-        // Fetch the candidate's latest application
-        $application = JetApplicationModel::with('documents')
-            ->where('candidate_id', $candidate->id)
-            ->latest()
-            ->first();
+    // Fetch the candidate's latest application
+    $application = JetApplicationModel::with('documents')
+        ->where('candidate_id', $candidate->id)
+        ->latest()
+        ->first();
 
-        if (! $application) {
-            return back()->withErrors(['db' => 'No application found for your profile.']);
-        }
-        // Prepare OTR status dynamically
-        $statusChecks = [
-            'Email Verified'          => !empty($application->email_verified_at),
-            'Mobile Verified'         => !empty($application->mobile_verified_at),
-            'Profile Details Updated' => !empty($application->full_name),
-            'Photo Uploaded'          => optional($application->documents)->photo ? true : false,
-            'Signature Uploaded'      => optional($application->documents)->signature ? true : false,
-            'Other Details Updated'   => !empty($application->category),
-            'Education & Experience'  => $application->education()->exists(),
-            'Finally Submitted'       => $application->status === 'Submitted',
-        ];
+    if (! $application) {
+        return back()->withErrors(['db' => 'No application found for your profile.']);
+    }
 
+    // ✅ Use candidate's verification columns instead of application
+    $statusChecks = [
+        'Email Verified'          => !empty($candidate->email_verified_at),
+        'Mobile Verified'         => !empty($candidate->mobile_verified_at),
+        'Profile Details Updated' => !empty($application->full_name),
+        'Photo Uploaded'          => optional($application->documents)->photo ? true : false,
+        'Signature Uploaded'      => optional($application->documents)->signature ? true : false,
+        'Other Details Updated'   => !empty($application->category),
+        'Education & Experience'  => $application->education()->exists(),
+        'Finally Submitted'       => $application->status === 'Submitted',
+    ];
 
-        // Calculate completion percentage
-        $completedCount = collect($statusChecks)->filter()->count();
-        $totalSteps     = count($statusChecks);
-        $percentage     = round(($completedCount / $totalSteps) * 100);
+    // Calculate completion percentage
+    $completedCount = collect($statusChecks)->filter()->count();
+    $totalSteps     = count($statusChecks);
+    $percentage     = round(($completedCount / $totalSteps) * 100);
 
-        return view('candidate.dashboard', [
-            'candidate'     => $candidate,
-            'application'   => $application,
-            'statusChecks'  => $statusChecks,
-            'percentage'    => $percentage,
-        ]);
+    return view('candidate.dashboard', [
+        'candidate'     => $candidate,
+        'application'   => $application,
+        'statusChecks'  => $statusChecks,
+        'percentage'    => $percentage,
+    ]);
 }
+
 
 
     public function applicationProfile(){
@@ -485,8 +486,8 @@ public function uploadDocumentsStore(Request $request, $applicationId)
 
     // Validate uploaded files
     $request->validate([
-        'photo'     => 'nullable|image|mimes:jpg,jpeg,png|max:200000',   // 200 KB
-        'signature' => 'nullable|image|mimes:jpg,jpeg,png|max:100000',   // 100 KB
+        'photo'     => 'nullable|image|mimes:jpg,jpeg,png|max:200',   // 200 KB
+        'signature' => 'nullable|image|mimes:jpg,jpeg,png|max:200',   // 100 KB
     ]);
 
     // Fetch existing document or create new
