@@ -17,6 +17,7 @@ use App\Models\ApplicationEducation;
 use App\Models\ApplicationProgress;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Jobs\ProcessCandidateApplication;
+use App\Jobs\SendOtpJob;
 
 class JetApplicationController extends Controller
 {
@@ -35,54 +36,44 @@ class JetApplicationController extends Controller
  * Send OTP for mobile/email
  */
     public function sendOtp(Request $request)
-    {
-        $request->validate([
-            'type'  => 'required|in:mobile,email',
-            'value' => 'required|string'
-        ]);
+{
+    $request->validate([
+        'type'  => 'required|in:mobile,email',
+        'value' => 'required|string'
+    ]);
 
-        // 1️⃣ Check if candidate already exists
-        if ($request->type === 'mobile') {
-            if (Candidate::where('mobile_number', $request->value)->exists()) {
+    // 1️⃣ Check if candidate already exists
+    if ($request->type === 'mobile') {
+        if (Candidate::where('mobile_number', $request->value)->exists()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Mobile number already exists'
             ]);
         }
-
-        } elseif ($request->type === 'email') {
-            if (Candidate::where('email', $request->value)->exists()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Email already exists'
-                ]);
-            }
+    } elseif ($request->type === 'email') {
+        if (Candidate::where('email', $request->value)->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email already exists'
+            ]);
         }
-
-        // 2️⃣ Generate OTP
-        $otp = rand(100000, 999999); // 6 digit OTP
-        $key = "otp_{$request->type}_{$request->value}";
-
-        // Store in cache (5 minutes)
-        Cache::put($key, $otp, now()->addMinutes(5));
-
-        // 3️⃣ Send OTP
-        if ($request->type === 'mobile') {
-            // TODO: integrate SMS service like Twilio or MSG91
-            Log::info("Sending OTP {$otp} to mobile {$request->value}");
-        } else {
-            // Send via email
-            Mail::raw("Your OTP is: $otp", function ($message) use ($request) {
-                $message->to($request->value)
-                        ->subject("Your OTP Code");
-            });
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => "OTP sent successfully to {$request->type}.",
-        ]);
     }
+
+    // 2️⃣ Generate OTP
+    $otp = rand(100000, 999999); // 6-digit OTP
+    $key = "otp_{$request->type}_{$request->value}";
+
+    // Store in cache for 5 minutes
+    Cache::put($key, $otp, now()->addMinutes(5));
+
+    // 3️⃣ Dispatch Job (Queue)
+    SendOtpJob::dispatch($request->type, $request->value, $otp);
+
+    return response()->json([
+        'success' => true,
+        'message' => "OTP sent successfully to {$request->type}."
+    ]);
+}
 
 
     /**
