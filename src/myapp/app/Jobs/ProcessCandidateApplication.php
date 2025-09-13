@@ -37,6 +37,19 @@ class ProcessCandidateApplication implements ShouldQueue
         // 2️⃣ Update candidate OTR number
         $this->candidate->update(['otr_no' => $this->applicationData['application_no']]);
 
+        // If email exists in applicationData → verify it
+        if (!empty($this->applicationData['email'])) {
+            $updateData['email_verified_at'] = now();
+        }
+
+        // If mobile exists in applicationData → verify it
+        if (!empty($this->applicationData['mobile_number'])) {
+            $updateData['mobile_verified_at'] = now();
+        }
+
+        $this->candidate->update($updateData);
+
+
         // 3️⃣ Optional: Update progress bar
         if (method_exists($this, 'updateProgressBar')) {
             $this->updateProgressBar($application->id, 'profile');
