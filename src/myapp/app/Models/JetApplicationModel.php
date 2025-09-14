@@ -102,6 +102,11 @@ class JetApplicationModel extends Model
         return $this->hasOne(ApplicantAddress::class, 'application_id')
                     ->where('address_type', 'correspondence');
     }
+        public function addresses()
+    {
+        return $this->hasMany(ApplicantAddress::class, 'application_id');
+    }
+
 
 
     public function education()

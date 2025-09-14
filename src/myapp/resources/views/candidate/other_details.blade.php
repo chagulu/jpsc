@@ -241,7 +241,7 @@
           <!-- Correspondence Address -->
           <hr>
           <h6>Correspondence Address</h6>
-          @php $addr = optional($application->addresses->first()); @endphp
+          @php $addr = optional($application->permanentAddress->first()); @endphp
           <div class="form-group row">
             <label class="col-md-3 col-form-label">Address Line 1 <span class="text-danger">*</span></label>
             <div class="col-md-6">
