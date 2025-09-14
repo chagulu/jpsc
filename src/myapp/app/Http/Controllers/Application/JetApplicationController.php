@@ -644,7 +644,7 @@ public function uploadDocumentsStore(Request $request, $applicationId)
             ]
         );
     });
-
+   $this->updateProgressBar($application->id, 'other_details');
     return redirect()->route('candidate.education', $application->id)
         ->with('success', 'Other details saved successfully!');
 }
