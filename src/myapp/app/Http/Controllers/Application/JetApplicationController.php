@@ -436,7 +436,7 @@ class JetApplicationController extends Controller
         if (! $application) {
             return back()->withErrors(['db' => 'No application found for your profile.']);
         }
-        $progress_status = $this->showStep($application->id,'profile');
+        $progress_status = $this->showStep($application->id,'photo');
         return view('candidate.candidate_profile', [
                 'application' => $application,
                 'progress_status' => $progress_status
