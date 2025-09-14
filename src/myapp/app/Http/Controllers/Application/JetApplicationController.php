@@ -868,37 +868,34 @@ public function printPdf($id)
         }
 
         // Candidate self-preview (latest application)
-    public function preview()
-    {
-        $candidate = auth('candidate')->user();
+   public function preview()
+{
+    $candidate = auth('candidate')->user();
 
-        if (! $candidate) {
-            return redirect()->route('candidate.login')->withErrors(['auth' => 'Please log in first.']);
-        }
+    if (! $candidate) {
+        return redirect()->route('candidate.login')
+            ->withErrors(['auth' => 'Please log in first.']);
+    }
 
-        $application = JetApplicationModel::where('candidate_id', $candidate->id)
-            ->with(['education','documents'])
-            ->latest()
-            ->first();
+    // Fetch latest application with related data
+    $application = JetApplicationModel::where('candidate_id', $candidate->id)
+        ->with([
+            'education',
+            'documents',
+            'permanentAddress',
+            'correspondenceAddress'
+        ])
+        ->latest()
+        ->first();
 
-        if (! $application) {
-            return back()->withErrors(['db' => 'No application found for your profile.']);
-        }
+    if (! $application) {
+        return redirect()->route('candidate.dashboard')
+            ->withErrors(['application' => 'No application found.']);
+    }
 
-        $progress_status = $this->showStep($application->id,'education');
-        if(($progress_status['step_name'] === 'education' && $progress_status['status'] !== 'Completed')
-                            || empty($progress_status['step_name'])
-        ){
-            return redirect()
-            ->route('candidate.education', $application->id);
-        }
-        $progress = \DB::table('progress_status')
-            ->where('application_id', $application->id)
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        return view('candidate.preview', compact('application','progress'));
+    return view('candidate.preview', compact('application'));
 }
+
 
     // Preview by admin or by ID (used in Completed page links)
     public function showPreview($id)

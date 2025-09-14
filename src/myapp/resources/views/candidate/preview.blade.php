@@ -49,25 +49,29 @@
             </div>
 
             <!-- Address Information -->
+            
             <div class="preview-section mb-4">
                 <h6><i class="fas fa-map-marker-alt me-2 text-primary"></i> Address</h6>
                 <div class="row">
                     <div class="col-md-6">
                         <p><strong>Permanent Address:</strong><br>
-                            {{ $application->permanent_address ?? 'N/A' }}<br>
-                            {{ $application->permanent_city ?? '' }},
-                            {{ $application->permanent_state ?? '' }} - {{ $application->permanent_pincode ?? '' }}
+                            {{ $application->permanentAddress?->address_line1 ?? 'N/A' }}<br>
+                            {{ $application->permanentAddress?->city ?? '' }},
+                            {{ $application->permanentAddress?->state ?? '' }}
+                            - {{ $application->permanentAddress?->pincode ?? '' }}
                         </p>
                     </div>
                     <div class="col-md-6">
                         <p><strong>Correspondence Address:</strong><br>
-                            {{ $application->correspondence_address ?? 'N/A' }}<br>
-                            {{ $application->correspondence_city ?? '' }},
-                            {{ $application->correspondence_state ?? '' }} - {{ $application->correspondence_pincode ?? '' }}
+                            {{ $application->correspondenceAddress?->address_line1 ?? 'N/A' }}<br>
+                            {{ $application->correspondenceAddress?->city ?? '' }},
+                            {{ $application->correspondenceAddress?->state ?? '' }}
+                            - {{ $application->correspondenceAddress?->pincode ?? '' }}
                         </p>
                     </div>
                 </div>
             </div>
+
 
             <!-- Other Details -->
             <div class="preview-section mb-4">
