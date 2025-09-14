@@ -4,15 +4,14 @@ namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ApplicantAddress;
 
 class ApplicantModel extends Model
 {
     use HasFactory;
 
-    // Correct table name
     protected $table = 'applications';
 
-    // Mass assignable fields
     protected $fillable = [
         'full_name',
         'gender',
@@ -45,7 +44,6 @@ class ApplicantModel extends Model
         'user_agent',
     ];
 
-    // Optional: Casts
     protected $casts = [
         'date_of_birth' => 'date',
         'age' => 'integer',
@@ -62,7 +60,13 @@ class ApplicantModel extends Model
         'form_json' => 'array',
     ];
 
-    // If you want a relation with payments
+    // 🔗 Relation: One Application has many addresses
+    public function addresses()
+    {
+        return $this->hasMany(ApplicantAddress::class, 'application_id', 'id');
+    }
+
+    // If you want payments relation
     public function payments()
     {
         return $this->hasMany(Payment::class, 'application_id', 'id');

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Admin\ApplicantModel;
 
 class ApplicantAddress extends Model
 {
@@ -20,12 +21,12 @@ class ApplicantAddress extends Model
         'district',
         'pincode',
         'country',
-        'address_type',
+        'address_type', // e.g. permanent / correspondence
     ];
 
-    // Relationship: belongs to application
+    // 🔗 Relation: Each address belongs to one application
     public function application()
     {
-        return $this->belongsTo(JetApplicationModel::class, 'application_id');
+        return $this->belongsTo(ApplicantModel::class, 'application_id', 'id');
     }
 }

@@ -18,6 +18,7 @@ use App\Models\ApplicationProgress;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Jobs\ProcessCandidateApplication;
 use App\Jobs\SendOtpJob;
+use App\Models\ApplicantAddress;
 
 class JetApplicationController extends Controller
 {
@@ -552,7 +553,7 @@ public function uploadDocumentsStore(Request $request, $applicationId)
         
     }
 
-    public function otherDetailsStore(Request $request)
+   public function otherDetailsStore(Request $request, $applicationId)
 {
     $candidate = auth('candidate')->user();
 
@@ -561,11 +562,13 @@ public function uploadDocumentsStore(Request $request, $applicationId)
             ->withErrors(['auth' => 'Please log in first.']);
     }
 
-    // Validate input
-    $validated = $request->validate([
+    // ✅ Validation rules
+    $validator = Validator::make($request->all(), [
         'dob'      => ['required', 'date'],
         'gender'   => ['required', 'in:Male,Female,Transgender'],
-        'category' => ['required', 'in:UR,SC,ST,EBC,BC,EWS,OBC'],
+        'category' => ['required', 'in:UR,EWS,SC,ST,BC-I,BC-II,OBC,EBC,BC'],
+
+        // correspondence
         'address_line1' => 'required|string|max:255',
         'address_line2' => 'nullable|string|max:255',
         'city'          => 'required|string|max:100',
@@ -573,54 +576,78 @@ public function uploadDocumentsStore(Request $request, $applicationId)
         'state'         => 'required|string|max:100',
         'pincode'       => 'required|string|max:10',
         'country'       => 'required|string|max:100',
+
+        // permanent
+        'permanentAddress1' => 'nullable|string|max:255',
+        'permanentAddress2' => 'nullable|string|max:255',
+        'permanentCity'     => 'nullable|string|max:100',
+        'permanentDistrict' => 'nullable|string|max:100',
+        'permanentState'    => 'nullable|string|max:100',
+        'permanentPinCode'  => 'nullable|string|max:10',
+        'permanentCountry'  => 'nullable|string|max:100',
     ]);
 
-    // Fetch candidate's latest application
-    $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
+    // ✅ If validation fails, redirect back with errors + old input
+    if ($validator->fails()) {
+        return redirect()
+            ->back()
+            ->withErrors($validator)
+            ->withInput();
+    }
+
+    $validated = $validator->validated();
+
+    // ✅ Find application
+    $application = JetApplicationModel::where('id', $applicationId)
+        ->where('candidate_id', $candidate->id)
+        ->first();
 
     if (!$application) {
         return back()->withErrors(['db' => 'No application found for your profile.']);
     }
 
-    // Update application details
-    $application->update([
-        'date_of_birth' => $validated['dob'],
-        'gender'        => $validated['gender'],
-        'category'      => $validated['category'],
-        'last_edit_at'  => now(),
-    ]);
+    // ✅ Transaction ensures both application & addresses are saved together
+    DB::transaction(function () use ($application, $validated) {
+        // Update application
+        $application->update([
+            'date_of_birth' => $validated['dob'],
+            'gender'        => $validated['gender'],
+            'category'      => $validated['category'],
+            'last_edit_at'  => now(),
+        ]);
 
-    // Update or create address
-    // $address = $application->addresses()->first() ?: $application->addresses()->create([]);
-    // $address->update([
-    //     'address_line1' => $validated['address_line1'],
-    //     'address_line2' => $validated['address_line2'] ?? null,
-    //     'city'          => $validated['city'],
-    //     'district'      => $validated['district'] ?? null,
-    //     'state'         => $validated['state'],
-    //     'pincode'       => $validated['pincode'],
-    //     'country'       => $validated['country'],
-    // ]);
+        // Correspondence address
+        ApplicantAddress::updateOrCreate(
+            ['application_id' => $application->id, 'address_type' => 'correspondence'],
+            [
+                'address_line1' => $validated['address_line1'],
+                'address_line2' => $validated['address_line2'] ?? null,
+                'city'          => $validated['city'],
+                'district'      => $validated['district'] ?? null,
+                'state'         => $validated['state'],
+                'pincode'       => $validated['pincode'],
+                'country'       => $validated['country'],
+            ]
+        );
 
-    $address = $application->addresses()->updateOrCreate(
-        ['application_id' => $application->id], // lookup condition
-        [
-            'address_line1' => $validated['address_line1'],
-            'address_line2' => $validated['address_line2'] ?? null,
-            'city'          => $validated['city'],
-            'district'      => $validated['district'] ?? null,
-            'state'         => $validated['state'],
-            'pincode'       => $validated['pincode'],
-            'country'       => $validated['country'],
-        ]
-    );
-    $this->updateProgressBar($application->id, 'other_details');
+        // Permanent address (fallback to correspondence if empty)
+        ApplicantAddress::updateOrCreate(
+            ['application_id' => $application->id, 'address_type' => 'permanent'],
+            [
+                'address_line1' => $validated['permanentAddress1'] ?? $validated['address_line1'],
+                'address_line2' => $validated['permanentAddress2'] ?? $validated['address_line2'],
+                'city'          => $validated['permanentCity'] ?? $validated['city'],
+                'district'      => $validated['permanentDistrict'] ?? $validated['district'],
+                'state'         => $validated['permanentState'] ?? $validated['state'],
+                'pincode'       => $validated['permanentPinCode'] ?? $validated['pincode'],
+                'country'       => $validated['permanentCountry'] ?? $validated['country'],
+            ]
+        );
+    });
 
-    return redirect()
-        ->route('candidate.education', $application->id)
-        ->with('success', 'Other details saved successfully.');
+    return redirect()->route('candidate.education', $application->id)
+        ->with('success', 'Other details saved successfully!');
 }
-
 
 
     public function education(){
