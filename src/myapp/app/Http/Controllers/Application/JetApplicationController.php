@@ -553,7 +553,7 @@ public function uploadDocumentsStore(Request $request, $applicationId)
         
     }
 
-   public function otherDetailsStore(Request $request, $applicationId)
+  public function otherDetailsStore(Request $request, $applicationId)
 {
     $candidate = auth('candidate')->user();
 
@@ -568,7 +568,7 @@ public function uploadDocumentsStore(Request $request, $applicationId)
         'gender'   => ['required', 'in:Male,Female,Transgender'],
         'category' => ['required', 'in:UR,EWS,SC,ST,BC-I,BC-II,OBC,EBC,BC'],
 
-        // correspondence
+        // Correspondence address
         'address_line1' => 'required|string|max:255',
         'address_line2' => 'nullable|string|max:255',
         'city'          => 'required|string|max:100',
@@ -577,7 +577,7 @@ public function uploadDocumentsStore(Request $request, $applicationId)
         'pincode'       => 'required|string|max:10',
         'country'       => 'required|string|max:100',
 
-        // permanent
+        // Permanent address (optional)
         'permanentAddress1' => 'nullable|string|max:255',
         'permanentAddress2' => 'nullable|string|max:255',
         'permanentCity'     => 'nullable|string|max:100',
@@ -587,7 +587,7 @@ public function uploadDocumentsStore(Request $request, $applicationId)
         'permanentCountry'  => 'nullable|string|max:100',
     ]);
 
-    // ✅ If validation fails, redirect back with errors + old input
+    // ✅ Validation fails
     if ($validator->fails()) {
         return redirect()
             ->back()
@@ -597,7 +597,7 @@ public function uploadDocumentsStore(Request $request, $applicationId)
 
     $validated = $validator->validated();
 
-    // ✅ Find application
+    // ✅ Find application for current candidate
     $application = JetApplicationModel::where('id', $applicationId)
         ->where('candidate_id', $candidate->id)
         ->first();
@@ -606,9 +606,9 @@ public function uploadDocumentsStore(Request $request, $applicationId)
         return back()->withErrors(['db' => 'No application found for your profile.']);
     }
 
-    // ✅ Transaction ensures both application & addresses are saved together
+    // ✅ Save within a transaction
     DB::transaction(function () use ($application, $validated) {
-        // Update application
+        // Update application main fields
         $application->update([
             'date_of_birth' => $validated['dob'],
             'gender'        => $validated['gender'],
@@ -644,10 +644,14 @@ public function uploadDocumentsStore(Request $request, $applicationId)
             ]
         );
     });
-   $this->updateProgressBar($application->id, 'other_details');
+
+    // ✅ Update progress bar if you have one
+    $this->updateProgressBar($application->id, 'other_details');
+
     return redirect()->route('candidate.education', $application->id)
         ->with('success', 'Other details saved successfully!');
 }
+
 
 
     public function education(){

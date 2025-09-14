@@ -241,7 +241,7 @@
           <!-- Correspondence Address -->
           <hr>
           <h6>Correspondence Address</h6>
-          @php $addr = optional($application->permanentAddress->first()); @endphp
+          @php $addr = optional($application->addresses->first()); @endphp
           <div class="form-group row">
             <label class="col-md-3 col-form-label">Address Line 1 <span class="text-danger">*</span></label>
             <div class="col-md-6">
@@ -287,7 +287,7 @@
             <input type="checkbox" class="form-check-input" id="sameAddress" {{ old('sameAddress') ? 'checked' : '' }}>
             <label class="form-check-label" for="sameAddress">Same as Correspondence Address</label>
           </div>
-
+         <div id="permanentAddressSection">
           <h6>Permanent Address</h6>
           @php $paddr = optional($application->addresses->get(1)); @endphp
           <div class="form-group row">
@@ -333,6 +333,7 @@
                 value="{{ old('permanentCountry', $paddr->country ?? 'India') }}">
             </div>
           </div>
+          </div>
 
           @if ($errors->any())
             <div class="alert alert-danger">
@@ -366,76 +367,100 @@
   </div>
 @endsection
 
-@push('scripts')
+
 <script>
-  // Toggle Primitive Tribe and PTG based on category
-  (function() {
-    function togglePrimitive() {
-      var cat = document.querySelector('[name="category"]').value;
-      var show = (cat === 'ST');
-      document.getElementById('primitiveTribeShow').style.display = show ? '' : 'none';
-      if (!show) document.getElementById('ptgBlock').style.display = 'none';
-    }
-    document.querySelector('[name="category"]').addEventListener('change', togglePrimitive);
+document.addEventListener("DOMContentLoaded", function () {
+  // ===== Primitive Tribe & PTG =====
+  function togglePrimitive() {
+    var catEl = document.querySelector('[name="category"]');
+    if (!catEl) return;
+    var cat = catEl.value;
+    var show = (cat === 'ST');
+    var primitiveDiv = document.getElementById('primitiveTribeShow');
+    var ptgDiv = document.getElementById('ptgBlock');
+    if (primitiveDiv) primitiveDiv.style.display = show ? '' : 'none';
+    if (!show && ptgDiv) ptgDiv.style.display = 'none';
+  }
+  var catEl = document.querySelector('[name="category"]');
+  if (catEl) {
+    catEl.addEventListener('change', togglePrimitive);
     togglePrimitive();
+  }
 
-    // Primitive tribe -> PTG
-    function onPrimitiveChange() {
-      var val = document.querySelector('input[name="primitiveTribe"]:checked');
-      document.getElementById('ptgBlock').style.display = (val && val.value === 'true') ? '' : 'none';
-    }
-    document.querySelectorAll('input[name="primitiveTribe"]').forEach(function(el){ el.addEventListener('change', onPrimitiveChange); });
-    onPrimitiveChange();
+  function onPrimitiveChange() {
+    var val = document.querySelector('input[name="primitiveTribe"]:checked');
+    var ptgDiv = document.getElementById('ptgBlock');
+    if (ptgDiv) ptgDiv.style.display = (val && val.value === 'true') ? '' : 'none';
+  }
+  document.querySelectorAll('input[name="primitiveTribe"]').forEach(function (el) {
+    el.addEventListener('change', onPrimitiveChange);
+  });
+  onPrimitiveChange();
 
-    // Benchmark disability toggles
-    function toggleDisability() {
-      var val = document.querySelector('input[name="benchmarkDisability"]:checked');
-      var show = (val && val.value === 'true');
-      document.getElementById('disabilityDetails').style.display = show ? '' : 'none';
-      if (!show) {
-        document.getElementById('subtypeWrap').style.display = 'none';
-        document.getElementById('scribeWrap').style.display = 'none';
+  // ===== Benchmark Disability =====
+  function toggleDisability() {
+    var val = document.querySelector('input[name="benchmarkDisability"]:checked');
+    var show = (val && val.value === 'true');
+    var details = document.getElementById('disabilityDetails');
+    var subtype = document.getElementById('subtypeWrap');
+    var scribe = document.getElementById('scribeWrap');
+    if (details) details.style.display = show ? '' : 'none';
+    if (subtype) subtype.style.display = show ? subtype.style.display : 'none';
+    if (scribe) scribe.style.display = show ? scribe.style.display : 'none';
+  }
+  document.querySelectorAll('input[name="benchmarkDisability"]').forEach(function (el) {
+    el.addEventListener('change', toggleDisability);
+  });
+  toggleDisability();
+
+  // Type of Disability -> sub-type + scribe
+  var typeSel = document.getElementById('typeOfDisability');
+  if (typeSel) {
+    typeSel.addEventListener('change', function () {
+      var has = !!this.value;
+      var subtype = document.getElementById('subtypeWrap');
+      var scribe = document.getElementById('scribeWrap');
+      if (subtype) subtype.style.display = has ? '' : 'none';
+      if (scribe) scribe.style.display = has ? '' : 'none';
+    });
+  }
+
+  // ===== Marital Status -> spouse name =====
+  function toggleSpouse() {
+    var val = document.querySelector('input[name="maritalStatus"]:checked');
+    var spouseDiv = document.getElementById('spouseWrap');
+    if (spouseDiv) spouseDiv.style.display = (val && val.value === 'Married') ? '' : 'none';
+  }
+  document.querySelectorAll('input[name="maritalStatus"]').forEach(function (el) {
+    el.addEventListener('change', toggleSpouse);
+  });
+  toggleSpouse();
+
+  // ===== Permanent Address =====
+  var chk = document.getElementById('sameAddress');
+  var permSection = document.getElementById('permanentAddressSection');
+  if (chk && permSection) {
+    function togglePermanent() {
+      if (chk.checked) {
+        // hide section
+        permSection.style.display = 'none';
+        // copy values
+        permSection.querySelector('#permanentAddress1').value = document.querySelector('[name="address_line1"]').value || '';
+        permSection.querySelector('#permanentAddress2').value = document.querySelector('[name="address_line2"]').value || '';
+        permSection.querySelector('#permanentCity').value = document.querySelector('[name="city"]').value || '';
+        permSection.querySelector('#permanentDistrict').value = document.querySelector('[name="district"]').value || '';
+        permSection.querySelector('#permanentState').value = document.querySelector('[name="state"]').value || '';
+        permSection.querySelector('#permanentPinCode').value = document.querySelector('[name="pincode"]').value || '';
+        permSection.querySelector('#permanentCountry').value = document.querySelector('[name="country"]').value || 'India';
+      } else {
+        permSection.style.display = '';
       }
     }
-    document.querySelectorAll('input[name="benchmarkDisability"]').forEach(function(el){ el.addEventListener('change', toggleDisability); });
-    toggleDisability();
-
-    // Type of disability -> show sub-type + scribe
-    var typeSel = document.getElementById('typeOfDisability');
-    if (typeSel) {
-      typeSel.addEventListener('change', function() {
-        var has = !!this.value;
-        document.getElementById('subtypeWrap').style.display = has ? '' : 'none';
-        // You can populate #subtypeOfDisability here based on this.value
-        document.getElementById('scribeWrap').style.display = has ? '' : 'none';
-      });
-    }
-
-    // Marital status -> spouse name
-    function toggleSpouse() {
-      var val = document.querySelector('input[name="maritalStatus"]:checked');
-      document.getElementById('spouseWrap').style.display = (val && val.value === 'Married') ? '' : 'none';
-    }
-    document.querySelectorAll('input[name="maritalStatus"]').forEach(function(el){ el.addEventListener('change', toggleSpouse); });
-    toggleSpouse();
-
-    // Same as correspondence -> copy fields
-    var chk = document.getElementById('sameAddress');
-    if (chk) {
-      chk.addEventListener('change', function() {
-        if (this.checked) {
-          document.getElementById('permanentAddress1').value = document.querySelector('[name="address_line1"]').value || '';
-          document.getElementById('permanentAddress2').value = document.querySelector('[name="address_line2"]').value || '';
-          document.getElementById('permanentCity').value = document.querySelector('[name="city"]').value || '';
-          document.getElementById('permanentDistrict').value = document.querySelector('[name="district"]').value || '';
-          document.getElementById('permanentState').value = document.querySelector('[name="state"]').value || '';
-          document.getElementById('permanentPinCode').value = document.querySelector('[name="pincode"]').value || '';
-          document.getElementById('permanentCountry').value = document.querySelector('[name="country"]').value || 'India';
-        }
-      });
-    }
-
-    // Domicile list could be populated from server; placeholder keeps current value.
-  })();
+    chk.addEventListener('change', togglePermanent);
+    togglePermanent(); // run on load
+  }
+});
 </script>
-@endpush
+
+
+
