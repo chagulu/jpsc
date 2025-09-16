@@ -229,6 +229,7 @@
             <div class="col-md-6">
               @php $domOld = old('domicile_state', $application->domicile_state ?? ''); @endphp
               <select id="domicile_state" name="domicile_state" class="form-control">
+                <option value="Jharkhand" selected>Jharkhand</option>
                 @if($domOld)
                   <option value="{{ $domOld }}" selected>{{ $domOld }}</option>
                 @else

@@ -46,19 +46,19 @@
             <tr>
                 <th>Permanent</th>
                 <td>
-                    {{ $application->permanent_address ?? 'N/A' }},
-                    {{ $application->permanent_city ?? '' }},
-                    {{ $application->permanent_state ?? '' }} -
-                    {{ $application->permanent_pincode ?? '' }}
+                    {{ $application->permanentAddress?->address_line1 ?? 'N/A' }}<br>
+                    {{ $application->permanentAddress?->city ?? '' }},
+                    {{ $application->permanentAddress?->state ?? '' }}
+                    - {{ $application->permanentAddress?->pincode ?? '' }}
                 </td>
             </tr>
             <tr>
                 <th>Correspondence</th>
                 <td>
-                    {{ $application->correspondence_address ?? 'N/A' }},
-                    {{ $application->correspondence_city ?? '' }},
-                    {{ $application->correspondence_state ?? '' }} -
-                    {{ $application->correspondence_pincode ?? '' }}
+                    {{ $application->correspondenceAddress?->address_line1 ?? 'N/A' }}<br>
+                    {{ $application->correspondenceAddress?->city ?? '' }},
+                    {{ $application->correspondenceAddress?->state ?? '' }}
+                    - {{ $application->correspondenceAddress?->pincode ?? '' }}
                 </td>
             </tr>
         </table>

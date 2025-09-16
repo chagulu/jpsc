@@ -20,6 +20,8 @@ class Candidate extends Authenticatable
         'otp',
         'otp_expires_at',
         'remember_token',
+        'email_verified_at',
+        'mobile_verified_at'
     ];
 
     // Hidden fields (not exposed in arrays or JSON)
@@ -33,6 +35,8 @@ class Candidate extends Authenticatable
         'otp_expires_at' => 'datetime',
         'created_at'     => 'datetime',
         'updated_at'     => 'datetime',
+        'email_verified_at' => 'datetime',
+        'mobile_verified_at' => 'datetime',
     ];
 
     // Relationships

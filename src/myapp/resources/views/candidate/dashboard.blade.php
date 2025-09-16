@@ -28,7 +28,7 @@
                                         @else
                                             <span class="badge bg-danger rounded-pill">✖</span>
                                             @if($label === 'Photo Uploaded')
-                                                <a href="/otr/sign-photo/open-sign-photo-page?mode=edit" 
+                                                <a href="" 
                                                    class="small text-primary ms-2">Click Here To Add</a>
                                             @endif
                                         @endif
@@ -61,7 +61,7 @@
 
                             <div class="row text-center mb-3">
                                 <div class="col">
-                                    <img src="{{ $application->documents->photo ?? asset('candidate/photos/profile.png') }}" 
+                                    <img src="{{ asset('storage/' . $application->documents?->photo) ?? asset('candidate/photos/profile.png') }}" 
                                          class="rounded border" 
                                          width="120" height="120"
                                          onerror="this.onerror=null; this.src='{{ asset('candidate/photos/profile.png') }}';"
@@ -69,7 +69,7 @@
                                     <p class="mt-2 small text-muted">Photo</p>
                                 </div>
                                 <div class="col">
-                                    <img src="{{ $application->documents->signature ?? asset('candidate/signatures/signature.jpg') }}" 
+                                    <img src="{{ asset('storage/' . $application->documents?->signature) ?? asset('candidate/signatures/signature.jpg') }}" 
                                          class="rounded border" 
                                          width="120" height="120"
                                          onerror="this.onerror=null; this.src='{{ asset('candidate/signatures/signature.jpg') }}';"
@@ -86,7 +86,7 @@
                                     </tr>
                                     <tr>
                                         <th scope="row">Date of Birth</th>
-                                        <td>{{ $application->dob ?? '---' }}</td>
+                                        <td>{{ $application->date_of_birth ?? '---' }}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row">Gender</th>

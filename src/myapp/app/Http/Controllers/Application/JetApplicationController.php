@@ -811,7 +811,13 @@ public function previewStore()
 
         // Fetch the candidate's latest application
         $application = JetApplicationModel::where('candidate_id', $candidate->id)->latest()->first();
-
+        $progress_status = $this->showStep($application->id,'education');
+        if(($progress_status['step_name'] === 'education' && $progress_status['status'] !== 'Completed')
+                            || empty($progress_status['step_name'])
+        ){
+            return redirect()
+            ->route('candidate.education', $application->id);
+        }
         if (! $application) {
             return back()->withErrors(['db' => 'No application found for your profile.']);
         }
@@ -918,6 +924,13 @@ public function printPdf($id)
         ->latest()
         ->first();
 
+    $progress_status = $this->showStep($application->id,'education');
+    if(($progress_status['step_name'] === 'education' && $progress_status['status'] !== 'Completed')
+                        || empty($progress_status['step_name'])
+    ){
+        return redirect()
+        ->route('candidate.education', $application->id);
+    }
     if (! $application) {
         return redirect()->route('candidate.dashboard')
             ->withErrors(['application' => 'No application found.']);
