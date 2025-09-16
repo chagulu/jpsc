@@ -30,36 +30,36 @@ class ProcessCandidateApplication implements ShouldQueue
      * Execute the job.
      */
     public function handle()
-    {
-        // 1️⃣ Insert application into DB
-        $application = JetApplicationModel::create($this->applicationData);
+{
+    // Insert application
+    $application = JetApplicationModel::create($this->applicationData); // keys match $fillable [2]
 
-        // 2️⃣ Update candidate OTR number
-        $this->candidate->update(['otr_no' => $this->applicationData['application_no']]);
+    // Update candidate OTR (optional if already set)
+    $this->candidate->update(['otr_no' => $this->applicationData['application_no']]);
 
-        // If email exists in applicationData → verify it
-        if (!empty($this->applicationData['email'])) {
-            $updateData['email_verified_at'] = now();
-        }
+    // Prepare candidate verification updates
+    $updateData = [];
 
-        // If mobile exists in applicationData → verify it
-        if (!empty($this->applicationData['mobile_number'])) {
-            $updateData['mobile_verified_at'] = now();
-        }
-
-        $this->candidate->update($updateData);
-
-
-        // 3️⃣ Optional: Update progress bar
-        if (method_exists($this, 'updateProgressBar')) {
-            $this->updateProgressBar($application->id, 'profile');
-        }
-
-        // 4️⃣ Clear session preview for this candidate
-        // Note: only clear if using session keys like 'preview_application_<candidate_id>'
-        $sessionKey = 'preview_application_' . $this->candidate->id;
-        if (Session::has($sessionKey)) {
-            Session::forget($sessionKey);
-        }
+    if (!empty($this->applicationData['email'])) {
+        $updateData['email_verified_at'] = now();
     }
+    if (!empty($this->applicationData['mobile_no'])) { // use mobile_no, not mobile_number
+        $updateData['mobile_verified_at'] = now();
+    }
+    if ($updateData) {
+        $this->candidate->update($updateData);
+    }
+
+    // Optional: update progress
+    if (method_exists($this, 'updateProgressBar')) {
+        $this->updateProgressBar($application->id, 'profile');
+    }
+
+    // Optional: clear candidate-specific preview key if used
+    $sessionKey = 'preview_application_' . $this->candidate->id;
+    if (Session::has($sessionKey)) {
+        Session::forget($sessionKey);
+    }
+}
+
 }

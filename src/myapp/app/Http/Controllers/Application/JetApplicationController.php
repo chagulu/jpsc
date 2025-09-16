@@ -124,73 +124,98 @@ class JetApplicationController extends Controller
      * Handle POST of JET form
      */
  
-    public function submitForm(Request $request)
+  public function submitForm(Request $request)
 {
-    // 1️⃣ Minimal logging
+    // 1) Minimal logging
     Log::info('Incoming application', [
-        'mobile' => $request->mobileNumber,
-        'email'  => $request->emailId,
+        'mobile' => $request->input('mobileNumber'),
+        'email'  => $request->input('emailId'),
         'ip'     => $request->ip(),
     ]);
 
-    // 2️⃣ Validation
+    // 2) Validation mapped to actual DB columns
     $validated = $request->validate([
-        'emailId'      => 'required|email|max:150|unique:candidates,email',
-        'name'         => 'required|string|max:150',
-        'rollNumber'   => 'required|string|max:10',
-        'gender'       => 'required|in:Male,Female,Third Gender',
-        'dateOfBirth'  => 'required|date',
-        'fatherName'   => 'required|string|max:20',
-        'motherName'   => 'required|string|max:20',
-        'mobileNumber' => 'required|digits:10|unique:candidates,mobile_number',
-    ]);
+        'emailId'      => 'required|email|max:150|unique:candidates,email',           // candidates.email
+        'name'         => 'required|string|max:150',                                  // applications.full_name
+        'rollNumber'   => 'required|string|max:10',                                   // applications.roll_number
+        'gender'       => 'required|in:Male,Female,Third Gender',                     // applications.gender
+        'dateOfBirth'  => 'required|date',                                            // applications.date_of_birth
+        'fatherName'   => 'required|string|max:20',                                   // applications.father_name
+        'motherName'   => 'required|string|max:20',                                   // applications.mother_name
+        'mobileNumber' => 'required|digits:10|unique:candidates,mobile_number',       // candidates.mobile_number
+        'aadhaarCardNumber' => 'nullable|string|size:12',                             // applications.aadhaar_card_number
+    ]); // [15]
 
-    // 3️⃣ OTP verification
-    if (session('otp_verified.mobile') !== $request->mobileNumber) {
+    // 3) OTP verification via session
+    if (session('otp_verified.mobile') !== $request->input('mobileNumber')) {
         return back()->withErrors(['db' => 'Mobile number is not verified'])->withInput();
     }
-    if (session('otp_verified.email') !== $request->emailId) {
+    if (session('otp_verified.email') !== $request->input('emailId')) {
         return back()->withErrors(['db' => 'Email Id is not verified'])->withInput();
     }
 
     try {
-        // 4️⃣ Candidate creation
-        $applicationNo = 'APP-' . time() . '-' . rand(1000, 9999);
+        // 4) Candidate upsert keyed by email & mobile_number
+        $applicationNo = 'APP-' . now()->timestamp . '-' . random_int(1000, 9999);
 
         $candidate = Candidate::firstOrCreate(
-            ['email' => $request->emailId, 'mobile_number' => $request->mobileNumber],
-            ['otr_no' => $applicationNo]
-        );
+            [
+                'email'         => $request->input('emailId'),
+                'mobile_number' => $request->input('mobileNumber'),
+            ],
+            [
+                'otr_no' => $applicationNo,
+            ]
+        ); // [2]
 
         if (JetApplicationModel::where('candidate_id', $candidate->id)->exists()) {
             return back()->withErrors(['db' => 'You have already submitted an application.'])->withInput();
         }
 
-        // 5️⃣ Prepare minimal session preview (for immediate summary)
+        // 5) Build normalized application payload for the Job using model columns
+        $appData = [
+            'application_no'       => $applicationNo,
+            'aadhaar_card_number'  => $request->input('aadhaarCardNumber'),
+            'full_name'            => $request->input('name'),
+            'roll_number'          => $request->input('rollNumber'),
+            'gender'               => $request->input('gender'),
+            'date_of_birth'        => $request->input('dateOfBirth'),
+            'father_name'          => $request->input('fatherName'),
+            'mother_name'          => $request->input('motherName'),
+            'mobile_no'            => $request->input('mobileNumber'),
+            'email'                => $request->input('emailId'),
+            'candidate_id'         => $candidate->id,
+            'ip_address'           => $request->ip(),
+            'user_agent'           => (string) $request->header('User-Agent'),
+            'submission_stage'     => 'Draft',
+            'submitted_at'         => now(),
+            'form_json'            => $request->except(['_token']), // optional snapshot
+            // boolean flags can be filled later in subsequent steps
+        ];
+
+        // 6) Minimal session preview for UI
         session([
             'application_preview' => [
-                'application_no'      => $applicationNo,
-                'aadhaar_card_number' => $request->aadhaarCardNumber,
-                'full_name'           => $request->name,
-                'mobile_no'           => $request->mobileNumber,
-                'email'               => $request->emailId,
-                'date_of_birth'       => $request->dateOfBirth,
-                'gender'              => $request->gender,
-                'father_name'         => $request->fatherName,
-                'mother_name'         => $request->motherName,
+                'application_no'      => $appData['application_no'],
+                'aadhaar_card_number' => $appData['aadhaar_card_number'],
+                'full_name'           => $appData['full_name'],
+                'mobile_no'           => $appData['mobile_no'],
+                'email'               => $appData['email'],
+                'date_of_birth'       => $appData['date_of_birth'],
+                'gender'              => $appData['gender'],
+                'father_name'         => $appData['father_name'],
+                'mother_name'         => $appData['mother_name'],
             ]
-        ]);
+        ]); // [2]
 
-        // 6️⃣ Dispatch queue for full DB insert
-        ProcessCandidateApplication::dispatch($candidate, $request->all());
+        // 7) Dispatch background job with normalized payload
+        ProcessCandidateApplication::dispatch($candidate, $appData); // ensure job ctor matches
 
-        // 7️⃣ Auto-login candidate immediately
+        // 8) Auto-login candidate
         auth('candidate')->login($candidate);
 
-        // 8️⃣ Redirect to summary page
-        return redirect()
-            ->route('profile.summary')
-            ->with('success', 'Application is being processed and you are logged in.');
+        // 9) Redirect
+        return redirect()->route('profile.summary')->with('success', 'Application is being processed and you are logged in.');
 
     } catch (\Throwable $e) {
         Log::error('Application submission failed', [
@@ -206,6 +231,7 @@ class JetApplicationController extends Controller
         return back()->withErrors(['db' => $msg])->withInput();
     }
 }
+
 
 
 
